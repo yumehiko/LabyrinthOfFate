@@ -9,16 +9,16 @@ namespace yumehiko.LOF
     /// 毎ターンランダムに移動する。
     /// </summary>
 	public class DummyStepMan : ActorBrain
-	{
-		[SerializeField] private GridMovement gridMovement;
+    {
+        [SerializeField] private GridMovement gridMovement;
         [SerializeField] private ActorVisual visual;
 
         public override Affiliation Affiliation => Affiliation.Enemy;
 
-		/// <summary>
+        /// <summary>
         /// ターンアクションを実行する。
         /// </summary>
-		public override async UniTask DoTurnAction(float timeFactor)
+        public override async UniTask DoTurnAction(float timeFactor)
         {
             await Move(0.25f);
         }
@@ -26,14 +26,14 @@ namespace yumehiko.LOF
         private async UniTask Move(float duration)
         {
             //このままだと攻撃はできない。
-            var entityType = EntityType.None;
-            var direction = ActorDirection.None;
-            while (entityType != EntityType.None)
+            EntityType entityType;
+            ActorDirection direction;
+            do
             {
                 direction = GetRandomDirection();
                 IEntity entity = gridMovement.CheckEntityTo(direction);
                 entityType = entity == null ? EntityType.None : entity.EntityType;
-            }
+            } while (entityType != EntityType.None);
 
             Vector2 endPoint = gridMovement.StepTo(direction);
             await visual.StepAnimation(endPoint, duration);
