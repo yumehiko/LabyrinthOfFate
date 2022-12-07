@@ -16,7 +16,7 @@ namespace yumehiko.LOF
         private void Awake()
         {
             entitySpawner.SpawnEntities();
-            turn.Startup(entitySpawner.Players, entitySpawner.Enemies).Forget();
+            turn.Startup(entitySpawner.Player, entitySpawner.Enemies).Forget();
         }
     }
 }

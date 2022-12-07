@@ -5,11 +5,12 @@ using UnityEngine;
 namespace yumehiko.LOF
 {
 	/// <summary>
-    /// Actorの所属を示す。
+    /// Actorの陣営を示す。
     /// </summary>
 	public enum Affiliation 
 	{
-		Player,
-		Enemy,
+		Player, //プレイヤー専用の陣営。
+		Enemy, //敵陣営。
+		//これ以外に、プレイヤー側陣営なども追加できるだろう。
 	}
 }

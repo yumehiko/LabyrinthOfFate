@@ -14,7 +14,7 @@ namespace yumehiko.LOF
     /// </summary>
     public class Turn : MonoBehaviour
     {
-        private IReadOnlyList<IActor> players;
+        private IActor player;
         private IReadOnlyList<IActor> enemies;
         private bool isTurnLooping = false;
 
@@ -29,9 +29,9 @@ namespace yumehiko.LOF
         /// <summary>
         /// ターンシステムを起動する。
         /// </summary>
-        public async UniTaskVoid Startup(IReadOnlyList<IActor> players, IReadOnlyList<IActor> enemies)
+        public async UniTaskVoid Startup(IActor player, IReadOnlyList<IActor> enemies)
         {
-            this.players = players;
+            this.player = player;
             this.enemies = enemies;
 
             //ターンループ開始。
@@ -52,10 +52,7 @@ namespace yumehiko.LOF
 
         private async UniTask DoTurn(CancellationToken token)
         {
-            foreach(IActor player in players)
-            {
-                await player.DoTurnAction(1.0f, token);
-            }
+            await player.DoTurnAction(1.0f, token);
 
             foreach (IActor enemy in enemies)
             {

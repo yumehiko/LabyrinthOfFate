@@ -5,8 +5,7 @@ using UnityEngine;
 namespace yumehiko.LOF
 {
     /// <summary>
-    /// Actorだと教えるためだけのコンポーネント……大変馬鹿っぽい。
-    /// ActorBodyなどとして、HP情報などをまとめるコンポーネントにしたらいいか？
+    /// ColliderによってActorだと教えるためだけのコンポーネント……大変馬鹿っぽい。
     /// </summary>
     public class ActorBody : MonoBehaviour, IEntity
     {

@@ -9,14 +9,14 @@ namespace yumehiko.LOF
 	/// <summary>
     /// Actorの挙動を決めるクラス。
     /// </summary>
-	public class ActorBrain : MonoBehaviour, IActor
+	public abstract class ActorBrain : MonoBehaviour, IActor
 	{
         public EntityType EntityType => EntityType.Actor;
-		public virtual Affiliation Affiliation { get; }
+        public abstract Affiliation Affiliation { get; }
+        public abstract ActorStatus Status { get; }
 
-        public virtual UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
+
+        public abstract void SetProfile(ActorStatus status, ActorVisual visual);
     }
 }

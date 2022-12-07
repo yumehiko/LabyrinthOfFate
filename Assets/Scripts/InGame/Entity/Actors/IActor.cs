@@ -9,7 +9,7 @@ namespace yumehiko.LOF
 	public interface IActor : IEntity
 	{
 		/// <summary>
-        /// 所属。
+        /// 陣営。
         /// </summary>
 		Affiliation Affiliation { get; }
 
@@ -18,5 +18,16 @@ namespace yumehiko.LOF
         /// </summary>
         /// <param name="animationSpeedFactor"></param>
 		UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
+
+		/// <summary>
+        /// StatusやVisualをセットする。
+        /// </summary>
+        /// <param name="profile"></param>
+		void SetProfile(ActorStatus status, ActorVisual visual);
+
+		/// <summary>
+        /// このActorのステータス。
+        /// </summary>
+		ActorStatus Status { get; }
 	}
 }

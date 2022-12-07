@@ -14,10 +14,10 @@ namespace yumehiko.LOF
         [SerializeField] private Player playerPrefab;
         [SerializeField] private List<ActorProfile> spawnableEnemyProfiles;
 
-        public IReadOnlyList<IActor> Players => players;
+        public IActor Player => player;
         public IReadOnlyList<IActor> Enemies => enemies;
 
-        private readonly List<IActor> players = new List<IActor>();
+        private IActor player;
         private readonly List<IActor> enemies = new List<IActor>();
 
         public void SpawnEntities()
@@ -36,7 +36,7 @@ namespace yumehiko.LOF
                 switch (spawnPoint.Affiliation)
                 {
                     case Affiliation.Player:
-                        players.Add(SpawnPlayer(spawnPoint));
+                        player = SpawnPlayer(spawnPoint);
                         break;
                     case Affiliation.Enemy:
                         var id = Random.Range(0, spawnableEnemyProfiles.Count);

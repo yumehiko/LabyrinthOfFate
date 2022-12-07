@@ -16,8 +16,10 @@ namespace yumehiko.LOF
 
         public EntityType EntityType => EntityType.Actor;
         public Affiliation Affiliation => Affiliation.Player;
+        public ActorStatus Status => status;
 
         private PlayerControlMode controlMode = PlayerControlMode.Move;
+        private ActorStatus status;
         private readonly AsyncReactiveProperty<ActorDirection> inputDirection = new AsyncReactiveProperty<ActorDirection>(ActorDirection.None);
 
         private void Awake()
@@ -41,6 +43,11 @@ namespace yumehiko.LOF
 
             //いずれかのターン消費行動が確定したら、行動終了。
             await UniTask.WhenAny(inputs);
+        }
+
+        public void SetProfile(ActorStatus status, ActorVisual visual)
+        {
+            this.status = status;
         }
 
         private async UniTask InputMove(float animationSpeedFactor, CancellationToken token)

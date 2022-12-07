@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: DummyStepMan
   m_EditorClassIdentifier: 
   prefab: {fileID: 3120245051408395037, guid: 538e46f0580ef45b4a26a8e39b0bb641, type: 3}
+  actorName: StepMan
+  hp: 3
+  attackDamage: 1
