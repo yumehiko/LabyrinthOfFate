@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System.Threading;
 
 namespace yumehiko.LOF
 {
@@ -13,7 +14,7 @@ namespace yumehiko.LOF
         public EntityType EntityType => EntityType.Actor;
 		public virtual Affiliation Affiliation { get; }
 
-        public virtual UniTask DoTurnAction(float timeFactor)
+        public virtual UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
             throw new System.NotImplementedException();
         }

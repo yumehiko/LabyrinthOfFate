@@ -16,8 +16,9 @@ namespace yumehiko.LOF
         /// <param name="endPoint"></param>
         /// <param name="duration"></param>
         /// <returns></returns>
-        public Tweener StepAnimation(Vector2 endPoint, float duration)
+        public Tweener StepAnimation(Vector2 endPoint, float speedFactor)
         {
+            float duration = 0.25f * speedFactor;
             return transform.DOMove(endPoint, duration).SetLink(gameObject);
         }
     }

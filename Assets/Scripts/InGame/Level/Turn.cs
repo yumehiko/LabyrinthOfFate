@@ -4,7 +4,7 @@ using UnityEngine;
 using UniRx;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
-
+using System.Threading;
 
 namespace yumehiko.LOF
 {
@@ -18,6 +18,14 @@ namespace yumehiko.LOF
         private IReadOnlyList<IActor> enemies;
         private bool isTurnLooping = false;
 
+        private CancellationTokenSource actionCancelTokenSource = new CancellationTokenSource();
+
+        private void OnDestroy()
+        {
+            actionCancelTokenSource.Cancel();
+            actionCancelTokenSource.Dispose();
+        }
+
         /// <summary>
         /// ターンシステムを起動する。
         /// </summary>
@@ -30,7 +38,10 @@ namespace yumehiko.LOF
             isTurnLooping = true;
             while(isTurnLooping)
             {
-                await DoTurn();
+                await DoTurn(actionCancelTokenSource.Token);
+                actionCancelTokenSource.Cancel();
+                actionCancelTokenSource.Dispose();
+                actionCancelTokenSource = new CancellationTokenSource();
             }
         }
 
@@ -39,16 +50,16 @@ namespace yumehiko.LOF
             isTurnLooping = true;
         }
 
-        private async UniTask DoTurn()
+        private async UniTask DoTurn(CancellationToken token)
         {
             foreach(IActor player in players)
             {
-                await player.DoTurnAction(1.0f);
+                await player.DoTurnAction(1.0f, token);
             }
 
             foreach (IActor enemy in enemies)
             {
-                await enemy.DoTurnAction(1.0f);
+                await enemy.DoTurnAction(0.5f, token);
             }
         }
     }

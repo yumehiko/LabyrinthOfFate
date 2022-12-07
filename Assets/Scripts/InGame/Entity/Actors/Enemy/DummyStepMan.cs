@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 
 namespace yumehiko.LOF
@@ -18,12 +19,12 @@ namespace yumehiko.LOF
         /// <summary>
         /// ターンアクションを実行する。
         /// </summary>
-        public override async UniTask DoTurnAction(float timeFactor)
+        public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
-            await Move(0.25f);
+            await Move(animationSpeedFactor, token);
         }
 
-        private async UniTask Move(float duration)
+        private async UniTask Move(float animationSpeedFactor, CancellationToken token)
         {
             //このままだと攻撃はできない。
             EntityType entityType;
@@ -36,7 +37,7 @@ namespace yumehiko.LOF
             } while (entityType != EntityType.None);
 
             Vector2 endPoint = gridMovement.StepTo(direction);
-            await visual.StepAnimation(endPoint, duration);
+            await visual.StepAnimation(endPoint, animationSpeedFactor);
         }
 
         private ActorDirection GetRandomDirection()
