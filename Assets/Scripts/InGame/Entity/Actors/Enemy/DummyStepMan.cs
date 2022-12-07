@@ -15,8 +15,8 @@ namespace yumehiko.LOF
         public override ActorStatus Status => status;
 
         [SerializeField] private GridMovement gridMovement;
-        [SerializeField] private ActorVisual visual;
 
+        private ActorVisual visual;
         private ActorStatus status;
 
         /// <summary>
@@ -30,6 +30,7 @@ namespace yumehiko.LOF
         public override void SetProfile(ActorStatus status, ActorVisual visual)
         {
             this.status = status;
+            this.visual = visual;
         }
 
         private async UniTask Move(float animationSpeedFactor, CancellationToken token)

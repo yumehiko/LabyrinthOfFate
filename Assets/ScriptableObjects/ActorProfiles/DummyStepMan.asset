@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 874cb8f4ff81b4708b993b0c00f8503f, type: 3}
   m_Name: DummyStepMan
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3120245051408395037, guid: 538e46f0580ef45b4a26a8e39b0bb641, type: 3}
-  actorName: StepMan
-  hp: 3
-  attackDamage: 1
+  brain: {fileID: 3120245051408395037, guid: 538e46f0580ef45b4a26a8e39b0bb641, type: 3}
+  visual: {fileID: 7934341389982667600, guid: f2554523d04c4458fa2764fc54b5ba68, type: 3}
+  status:
+    name: StepMan
+    hp: 3
+    ad: 1

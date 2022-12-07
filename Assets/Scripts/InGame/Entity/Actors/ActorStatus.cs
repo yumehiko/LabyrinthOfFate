@@ -4,17 +4,15 @@ using UnityEngine;
 
 namespace yumehiko.LOF
 {
+    [System.Serializable]
 	public class ActorStatus
 	{
-        public string Name { get; private set; }
-        public int Hp { get; private set; }
-        public int AttackDamage { get; private set; }
+        public string Name => name;
+        public int HP => hp;
+        public int AD => ad;
 
-        public void SetStatus(ActorProfile profile)
-        {
-            Name = profile.Name;
-            Hp = profile.Hp;
-            AttackDamage = profile.AttackDamage;
-        }
+        [SerializeField] private string name;
+        [SerializeField] private int hp;
+        [SerializeField] private int ad;
     }
 }

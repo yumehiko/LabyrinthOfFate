@@ -10,14 +10,12 @@ namespace yumehiko.LOF
 	[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/ActorProfile")]
 	public class ActorProfile : ScriptableObject
 	{
-		public ActorBrain Prefab => prefab;
-		public string Name => actorName;
-		public int Hp => hp;
-		public int AttackDamage => attackDamage;
+		public ActorBrain Brain => brain;
+		public ActorVisual Visual => visual;
+		public ActorStatus Status => status;
 
-		[SerializeField] private ActorBrain prefab;
-		[SerializeField] private string actorName;
-		[SerializeField] private int hp;
-		[SerializeField] private int attackDamage;
+		[SerializeField] private ActorBrain brain;
+		[SerializeField] private ActorVisual visual;
+		[SerializeField] private ActorStatus status;
 	}
 }

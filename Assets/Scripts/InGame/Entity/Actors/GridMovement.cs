@@ -12,14 +12,16 @@ namespace yumehiko.LOF
     /// </summary>
     public class GridMovement : MonoBehaviour
     {
+        [SerializeField] private Rigidbody2D rigidBody;
+
         /// <summary>
         /// 現在の位置から、指定した方向に1マス進む。
         /// </summary>
         /// <param name="value"></param>
         public Vector2 StepTo(ActorDirection direction)
         {
-            Vector2 endPoint = (Vector2)transform.position + DirectionToVector(direction);
-            transform.position = endPoint;
+            Vector2 endPoint = rigidBody.position + DirectionToVector(direction);
+            rigidBody.position = endPoint;
             return endPoint;
         }
 
@@ -30,7 +32,7 @@ namespace yumehiko.LOF
         /// <returns></returns>
         public IEntity CheckEntityTo(ActorDirection direction)
         {
-            Vector2 point = (Vector2)transform.position + DirectionToVector(direction);
+            Vector2 point = rigidBody.position + DirectionToVector(direction);
             RaycastHit2D hit = Physics2D.Raycast(point, Vector2.zero);
             if(hit.collider == null)
             {

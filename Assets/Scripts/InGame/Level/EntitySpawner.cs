@@ -11,7 +11,8 @@ namespace yumehiko.LOF
 	{
         [SerializeField] private Transform spawnPointsParent;
         [SerializeField] private Transform entitiesParent;
-        [SerializeField] private Player playerPrefab;
+        [SerializeField] private Transform entitiesVisualParent;
+        [SerializeField] private PlayerInformation playerInformation;
         [SerializeField] private List<ActorProfile> spawnableEnemyProfiles;
 
         public IActor Player => player;
@@ -53,7 +54,9 @@ namespace yumehiko.LOF
         /// </summary>
         private IActor SpawnActor(ISpawnPoint spawnPoint, ActorProfile profile)
         {
-            var actor = Instantiate(profile.Prefab, spawnPoint.Position, Quaternion.identity, entitiesParent);
+            var actor = Instantiate(profile.Brain, spawnPoint.Position, Quaternion.identity, entitiesParent);
+            var visual = Instantiate(profile.Visual, spawnPoint.Position, Quaternion.identity, entitiesVisualParent);
+            actor.SetProfile(profile.Status, visual);
             return actor;
         }
 
@@ -62,7 +65,11 @@ namespace yumehiko.LOF
         /// </summary>
         private IActor SpawnPlayer(ISpawnPoint spawnPoint)
         {
+            var playerPrefab = playerInformation.PlayerPrefab;
+            var visualPrefab = playerInformation.PlayerVisualPrefab;
             var player = Instantiate(playerPrefab, spawnPoint.Position, Quaternion.identity, entitiesParent);
+            var visual = Instantiate(visualPrefab, spawnPoint.Position, Quaternion.identity, entitiesVisualParent);
+            player.SetProfile(playerInformation.PlayerStatus, visual);
             return player;
         }
     }

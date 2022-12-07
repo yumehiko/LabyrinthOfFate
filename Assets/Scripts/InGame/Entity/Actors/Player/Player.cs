@@ -11,15 +11,15 @@ namespace yumehiko.LOF
 {
     public class Player : MonoBehaviour, IActor
     {
-        [SerializeField] private GridMovement gridMovement;
-        [SerializeField] private ActorVisual visual;
-
         public EntityType EntityType => EntityType.Actor;
         public Affiliation Affiliation => Affiliation.Player;
         public ActorStatus Status => status;
 
-        private PlayerControlMode controlMode = PlayerControlMode.Move;
+        [SerializeField] private GridMovement gridMovement;
+
         private ActorStatus status;
+        private ActorVisual visual;
+        private PlayerControlMode controlMode = PlayerControlMode.Move;
         private readonly AsyncReactiveProperty<ActorDirection> inputDirection = new AsyncReactiveProperty<ActorDirection>(ActorDirection.None);
 
         private void Awake()
@@ -48,6 +48,7 @@ namespace yumehiko.LOF
         public void SetProfile(ActorStatus status, ActorVisual visual)
         {
             this.status = status;
+            this.visual = visual;
         }
 
         private async UniTask InputMove(float animationSpeedFactor, CancellationToken token)
