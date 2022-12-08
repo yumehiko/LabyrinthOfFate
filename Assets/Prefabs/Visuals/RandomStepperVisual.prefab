@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 3120245051408395034}
   - component: {fileID: 7934341389982667600}
   m_Layer: 0
-  m_Name: DummyStepManVisual
+  m_Name: RandomStepperVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

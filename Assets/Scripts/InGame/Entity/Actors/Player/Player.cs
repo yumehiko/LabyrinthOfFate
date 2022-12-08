@@ -13,12 +13,12 @@ namespace yumehiko.LOF
     {
         public EntityType EntityType => EntityType.Actor;
         public Affiliation Affiliation => Affiliation.Player;
-        public ActorStatus Status => status;
+        public ActorBody Body => body;
 
         [SerializeField] private GridMovement gridMovement;
 
-        private ActorStatus status;
         private ActorVisual visual;
+        private ActorBody body;
         private PlayerControlMode controlMode = PlayerControlMode.Move;
         private readonly AsyncReactiveProperty<ActorDirection> inputDirection = new AsyncReactiveProperty<ActorDirection>(ActorDirection.None);
 
@@ -38,7 +38,7 @@ namespace yumehiko.LOF
             //移動入力・UI入力を待つ。
             var inputs = new List<UniTask>
             {
-                InputMove(animationSpeedFactor, token),
+                InputDirection(animationSpeedFactor, token),
             };
 
             //いずれかのターン消費行動が確定したら、行動終了。
@@ -47,32 +47,59 @@ namespace yumehiko.LOF
 
         public void SetProfile(ActorStatus status, ActorVisual visual)
         {
-            this.status = status;
+            if(body != null)
+            {
+                return;
+            }
+            body = new ActorBody(status);
             this.visual = visual;
         }
 
-        private async UniTask InputMove(float animationSpeedFactor, CancellationToken token)
+        /// <summary>
+        /// 方向入力による行動。
+        /// </summary>
+        /// <param name="animationSpeedFactor"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async UniTask InputDirection(float animationSpeedFactor, CancellationToken token)
         {
-            bool isMoveConfirm = false;
+            bool isActionComplete = false;
             ReactiveInput.ClearDirection();
 
-            while (!isMoveConfirm)
+            while (!isActionComplete)
             {
                 var direction = await inputDirection.WaitAsync(token);
 
                 //ここで実際に移動可能かをチェックする。不可能なら無視する。
                 IEntity entity = gridMovement.CheckEntityTo(direction);
                 var entityType = entity == null ? EntityType.None : entity.EntityType;
-                if (entityType != EntityType.None)
-                {
-                    continue;
-                }
 
-                //移動可能なことが確定したので、移動する。
-                var endPoint = gridMovement.StepTo(direction);
-                await visual.StepAnimation(endPoint, animationSpeedFactor);
-                isMoveConfirm = true;
+                switch(entityType)
+                {
+                    case EntityType.None:
+                        await Move(direction, animationSpeedFactor);
+                        break;
+                    case EntityType.Actor:
+                        var actor = (IActor)entity;
+                        await Attack(actor, animationSpeedFactor);
+                        break;
+                    case EntityType.Terrain: continue;
+                    default: throw new Exception("未定義のEntityType");
+                }
+                isActionComplete = true;
             }
+        }
+
+        private async UniTask Attack(IActor target, float animationSpeedFactor)
+        {
+            body.Attack(target.Body);
+            await UniTask.Delay(100);
+        }
+
+        private async UniTask Move(ActorDirection direction, float animationSpeedFactor)
+        {
+            var endPoint = gridMovement.StepTo(direction);
+            await visual.StepAnimation(endPoint, animationSpeedFactor);
         }
     }
 }

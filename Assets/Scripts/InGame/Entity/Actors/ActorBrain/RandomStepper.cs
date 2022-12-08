@@ -9,15 +9,11 @@ namespace yumehiko.LOF
     /// <summary>
     /// 毎ターンランダムに移動する。
     /// </summary>
-	public class DummyStepMan : ActorBrain
+	public class RandomStepper : ActorBrain
     {
         public override Affiliation Affiliation => Affiliation.Enemy;
-        public override ActorStatus Status => status;
 
         [SerializeField] private GridMovement gridMovement;
-
-        private ActorVisual visual;
-        private ActorStatus status;
 
         /// <summary>
         /// ターンアクションを実行する。
@@ -25,12 +21,6 @@ namespace yumehiko.LOF
         public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
             await Move(animationSpeedFactor, token);
-        }
-
-        public override void SetProfile(ActorStatus status, ActorVisual visual)
-        {
-            this.status = status;
-            this.visual = visual;
         }
 
         private async UniTask Move(float animationSpeedFactor, CancellationToken token)

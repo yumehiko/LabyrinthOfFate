@@ -5,8 +5,8 @@ using UnityEngine;
 namespace yumehiko.LOF
 {
 	/// <summary>
-    /// あるレベルに登場できるActorのプロフィール。
-    /// </summary>
+	/// あるレベルに登場できるActorのプロフィール。
+	/// </summary>
 	[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/ActorProfile")]
 	public class ActorProfile : ScriptableObject
 	{

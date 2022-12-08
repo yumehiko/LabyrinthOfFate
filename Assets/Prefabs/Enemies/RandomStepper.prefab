@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3120245051408395034}
-  - component: {fileID: 3120245051408395037}
   - component: {fileID: 1417967951735311427}
   - component: {fileID: 3975271651364630778}
   - component: {fileID: 7512792030708987178}
+  - component: {fileID: 8682805847053097921}
   m_Layer: 0
-  m_Name: DummyStepMan
+  m_Name: RandomStepper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,19 +34,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3120245051408395037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3120245051408395036}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 662127636a1644dba862193aadb78a46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gridMovement: {fileID: 7512792030708987178}
 --- !u!50 &1417967951735311427
 Rigidbody2D:
   serializedVersion: 4
@@ -107,3 +94,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rigidBody: {fileID: 1417967951735311427}
+--- !u!114 &8682805847053097921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3120245051408395036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 662127636a1644dba862193aadb78a46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridMovement: {fileID: 7512792030708987178}

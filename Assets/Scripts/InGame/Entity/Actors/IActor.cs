@@ -8,6 +8,8 @@ namespace yumehiko.LOF
 {
 	public interface IActor : IEntity
 	{
+		ActorBody Body { get; }
+
 		/// <summary>
         /// 陣営。
         /// </summary>
@@ -24,10 +26,5 @@ namespace yumehiko.LOF
         /// </summary>
         /// <param name="profile"></param>
 		void SetProfile(ActorStatus status, ActorVisual visual);
-
-		/// <summary>
-        /// このActorのステータス。
-        /// </summary>
-		ActorStatus Status { get; }
 	}
 }
