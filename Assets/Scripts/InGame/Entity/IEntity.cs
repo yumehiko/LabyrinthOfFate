@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace yumehiko.LOF
+namespace yumehiko.LOF.Model
 {
 	/// <summary>
     /// このゲームにおける、実体を伴うあらゆるもの。

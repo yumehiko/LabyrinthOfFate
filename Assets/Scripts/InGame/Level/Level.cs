@@ -1,22 +1,41 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VContainer;
+using Cysharp.Threading.Tasks;
+using yumehiko.LOF.Model;
+using VContainer.Unity;
 
-namespace yumehiko.LOF
+namespace yumehiko.LOF.Presenter
 {
     /// <summary>
-    /// レベル。攻略が要求される1つの単位。フロア、階層。
-    /// プレイヤー、地形、敵などのエンティティから成る。
+    /// レベル。攻略が要求される1つの単位。
+    /// ダンジョン、プレイヤー、敵などのエンティティから成る。
     /// </summary>
-	public class Level : MonoBehaviour
-	{
-		[SerializeField] private EntitySpawner entitySpawner;
-        [SerializeField] private Turn turn;
+	public class Level : IStartable
+    {
+        private readonly Dungeon dungeon;
+        private readonly EntitySpawner entitySpawner;
+        private readonly Turn turn;
 
-        private void Awake()
+        [Inject]
+        public Level(Dungeon dungeon, EntitySpawner entitySpawner, Turn turn)
         {
-            entitySpawner.SpawnEntities();
-            turn.Startup(entitySpawner.Player, entitySpawner.Enemies).Forget();
+            Debug.Log("level");
+            this.dungeon = dungeon;
+            this.entitySpawner = entitySpawner;
+            this.turn = turn;
+        }
+
+        public void Start()
+        {
+            entitySpawner.SpawnEntities(dungeon.EntitySpawnPoints);
+            turn.StartTurnLoop(entitySpawner.Player, entitySpawner.Enemies).Forget();
+        }
+
+        public void EndLevel()
+        {
+            turn.EndTurnLoop();
         }
     }
 }

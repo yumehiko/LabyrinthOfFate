@@ -2,62 +2,67 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using UniRx.Triggers;
+using UniRx.Toolkit;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using System;
 
-namespace yumehiko.LOF
+namespace yumehiko.LOF.Presenter
 {
 
     /// <summary>
     /// このゲームにおけるターンを表す。
     /// </summary>
-    public class Turn : MonoBehaviour
+    public class Turn : IDisposable
     {
-        private IActor player;
-        private IReadOnlyList<IActor> enemies;
-        private bool isTurnLooping = false;
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-        private CancellationTokenSource actionCancelTokenSource = new CancellationTokenSource();
-
-        private void OnDestroy()
+        /// <summary>
+        /// ターンループを開始する。
+        /// </summary>
+        public async UniTaskVoid StartTurnLoop(IActorBrain player, IReadOnlyList<IActorBrain> enemies)
         {
-            actionCancelTokenSource.Cancel();
-            actionCancelTokenSource.Dispose();
+            var token = cancellationTokenSource.Token;
+
+            try
+            {
+                await TurnLoop(player, enemies, token);
+            }
+            catch
+            {
+                Debug.Log("ターンループ終了");
+                Dispose();
+            }
+        }
+
+        private async UniTask TurnLoop(IActorBrain player, IReadOnlyList<IActorBrain> enemies, CancellationToken token)
+        {
+            while (true)
+            {
+                token.ThrowIfCancellationRequested();
+                await player.DoTurnAction(1.0f, token);
+                foreach (IActorBrain enemy in enemies)
+                {
+                    token.ThrowIfCancellationRequested();
+                    await enemy.DoTurnAction(0.5f, token);
+                }
+            }
         }
 
         /// <summary>
-        /// ターンシステムを起動する。
+        /// ターンループを終了する。
         /// </summary>
-        public async UniTaskVoid Startup(IActor player, IReadOnlyList<IActor> enemies)
-        {
-            this.player = player;
-            this.enemies = enemies;
-
-            //ターンループ開始。
-            isTurnLooping = true;
-            while(isTurnLooping)
-            {
-                await DoTurn(actionCancelTokenSource.Token);
-                actionCancelTokenSource.Cancel();
-                actionCancelTokenSource.Dispose();
-                actionCancelTokenSource = new CancellationTokenSource();
-            }
-        }
-
         public void EndTurnLoop()
         {
-            isTurnLooping = true;
+            cancellationTokenSource.Cancel();
         }
 
-        private async UniTask DoTurn(CancellationToken token)
+        public void Dispose()
         {
-            await player.DoTurnAction(1.0f, token);
-
-            foreach (IActor enemy in enemies)
-            {
-                await enemy.DoTurnAction(0.5f, token);
-            }
+            cancellationTokenSource?.Cancel();
+            cancellationTokenSource?.Dispose();
         }
     }
 }

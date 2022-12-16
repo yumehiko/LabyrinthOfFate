@@ -1,76 +1,114 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VContainer;
+using yumehiko.LOF.Model;
+using yumehiko.LOF.View;
+using UniRx;
+using System;
 
-namespace yumehiko.LOF
+namespace yumehiko.LOF.Presenter
 {
     /// <summary>
-    /// Entityを生成する。
+    /// 実行中のゲームの、全てのエンティティを生成し、そのPresenter全てを保持する。
     /// </summary>
-	public class EntitySpawner : MonoBehaviour
-	{
-        [SerializeField] private Transform spawnPointsParent;
-        [SerializeField] private Transform entitiesParent;
-        [SerializeField] private Transform entitiesVisualParent;
-        [SerializeField] private PlayerInformation playerInformation;
-        [SerializeField] private List<ActorProfile> spawnableEnemyProfiles;
+    public class EntitySpawner : IDisposable
+    {
+        public IActorBrain Player => player;
+        public IReadOnlyList<IActorBrain> Enemies => enemies;
 
-        public IActor Player => player;
-        public IReadOnlyList<IActor> Enemies => enemies;
+        private IActorBrain player;
+        private readonly List<IActorBrain> enemies;
+        private readonly EntityViews views;
+        private readonly Entities models;
 
-        private IActor player;
-        private readonly List<IActor> enemies = new List<IActor>();
+        private readonly List<ActorProfile> enemyProfiles;
+        private readonly Floor floor;
+        private readonly PlayerInformation playerInformation;
 
-        public void SpawnEntities()
+        private readonly CompositeDisposable disposables = new CompositeDisposable();
+
+        [Inject]
+        public EntitySpawner(
+            Dungeon dungeon,
+            PlayerInformation playerInformation,
+            List<ActorProfile> enemyProfiles,
+            Entities models,
+            EntityViews views)
         {
-            SpawnActors();
+            Debug.Log("SpawnerSpawn");
+            this.models = models;
+            this.views = views;
+            this.floor = dungeon.Floor;
+            this.playerInformation = playerInformation;
+            this.enemyProfiles = enemyProfiles;
         }
 
-        /// <summary>
-        /// 全てのActorを生成する。
-        /// </summary>
-        private void SpawnActors()
+        public void Dispose()
         {
-            var spawnPoints = spawnPointsParent.GetComponentsInChildren<ISpawnPoint>();
-            foreach (ISpawnPoint spawnPoint in spawnPoints)
+            disposables.Dispose();
+        }
+
+        public void SpawnEntities(EntitySpawnPoints spawnPoints)
+        {
+            foreach (var spawnPoint in spawnPoints)
             {
-                switch (spawnPoint.Affiliation)
-                {
-                    case Affiliation.Player:
-                        player = SpawnPlayer(spawnPoint);
-                        break;
-                    case Affiliation.Enemy:
-                        var id = Random.Range(0, spawnableEnemyProfiles.Count);
-                        enemies.Add(SpawnActor(spawnPoint, spawnableEnemyProfiles[id]));
-                        break;
-                    default:
-                        throw new System.Exception("未定義の陣営が生成された。");
-                }
+                Debug.Log($"{spawnPoint.Type}");
+                SpawnEntity(spawnPoint);
+            }
+            if (player == null)
+            {
+                throw new Exception("Playerが生成できなかった。");
             }
         }
 
-        /// <summary>
-        /// Actorを生成する。
-        /// </summary>
-        private IActor SpawnActor(ISpawnPoint spawnPoint, ActorProfile profile)
+        private void SpawnEntity(EntitySpawnPoint spawnPoint)
         {
-            var actor = Instantiate(profile.Brain, spawnPoint.Position, Quaternion.identity, entitiesParent);
-            var visual = Instantiate(profile.Visual, spawnPoint.Position, Quaternion.identity, entitiesVisualParent);
-            actor.SetProfile(profile.Status, visual);
-            return actor;
+            switch (spawnPoint.Type)
+            {
+                case ActorType.Player:
+                    if (player != null)
+                    {
+                        return;
+                    }
+                    player = SpawnPlayer(spawnPoint);
+                    return;
+                case ActorType.Enemy:
+                    SpawnEnemy(spawnPoint);
+                    return;
+            }
         }
 
-        /// <summary>
-        /// プレイヤーが操作するキャラクターを生成する。
-        /// </summary>
-        private IActor SpawnPlayer(ISpawnPoint spawnPoint)
+        private IActorBrain SpawnPlayer(EntitySpawnPoint spawnPoint)
         {
-            var playerPrefab = playerInformation.PlayerPrefab;
-            var visualPrefab = playerInformation.PlayerVisualPrefab;
-            var player = Instantiate(playerPrefab, spawnPoint.Position, Quaternion.identity, entitiesParent);
-            var visual = Instantiate(visualPrefab, spawnPoint.Position, Quaternion.identity, entitiesVisualParent);
-            player.SetProfile(playerInformation.PlayerStatus, visual);
-            return player;
+            var body = models.SpawnPlayer(playerInformation.Status, spawnPoint.Position);
+            var view = views.SpawnEntityView(spawnPoint, playerInformation.View);
+            var brain = new Player(floor, models, body, view);
+            return brain;
+
+        }
+
+        private IActorBrain SpawnEnemy(EntitySpawnPoint spawnPoint)
+        {
+            var id = UnityEngine.Random.Range(0, enemyProfiles.Count);
+            var profile = enemyProfiles[id];
+            switch (profile.Status.BrainType)
+            {
+                case BrainType.RandomStep:
+                    var body = models.SpawnEnemy(profile.Status, spawnPoint.Position);
+                    var view = views.SpawnEntityView(spawnPoint, profile.View);
+                    var brain = new RandomStepper(floor, models, body, view);
+                    body.OnDie.Subscribe(_ => RemoveEnemy(brain, body, view)).AddTo(disposables);
+                    return brain;
+                default: throw new Exception("未定義のBrainTypeが指定された。");
+            }
+        }
+
+        private void RemoveEnemy(IActorBrain brain, IActor enemy, IActorView view)
+        {
+            enemies.Remove(brain);
+            models.RemoveEnemy(enemy);
+            views.Remove(view);
         }
     }
 }
