@@ -14,8 +14,6 @@ namespace yumehiko.LOF.Model
     /// </summary>
     public class Actor : IActor
     {
-        //TODO:HPとかは別のクラスに移したい。
-        //ActorStatusAssetクラスと、それから生成するActorStatusクラスに分ける。
         public IReadOnlyReactiveProperty<int> HP => hp;
         public Vector2Int Position { get; private set; }
         public ActorType ActorType { get; }
@@ -29,6 +27,8 @@ namespace yumehiko.LOF.Model
         private readonly Subject<Unit> onStep = new Subject<Unit>();
         private readonly Subject<Unit> onAttack = new Subject<Unit>();
 
+        //TODO:HPとかは別のクラスに移したい。
+        //ActorStatusAssetクラスと、それから生成するActorStatusクラスに分ける。
         public Actor(ActorStatus status, Vector2Int position)
         {
             this.status = status;

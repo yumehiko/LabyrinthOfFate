@@ -20,17 +20,17 @@ namespace yumehiko.LOF.Presenter
         public Actor Body => body;
 
         private readonly Dungeon floor;
-        private readonly Entities entities;
+        private readonly Actors actors;
         private readonly Actor body;
         private readonly IActorView view;
 
         private readonly AsyncReactiveProperty<ActorDirection> inputDirection = new AsyncReactiveProperty<ActorDirection>(ActorDirection.None);
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-        public Player(Dungeon floor, Entities entities, Actor body, IActorView view)
+        public Player(Dungeon floor, Actors actors, Actor body, IActorView view)
         {
             this.floor = floor;
-            this.entities = entities;
+            this.actors = actors;
             this.body = body;
             this.view = view;
 
@@ -75,7 +75,7 @@ namespace yumehiko.LOF.Presenter
                 var targetPoint = body.GetPositionWithDirection(direction);
 
                 //指定地点にEnemyがいないかをチェックする。
-                IActor enemy = entities.GetEnemyAt(targetPoint);
+                IActor enemy = actors.GetEnemyAt(targetPoint);
                 if (enemy != null) //Enemyがいるなら、それを攻撃する。
                 {
                     body.Attack(enemy);

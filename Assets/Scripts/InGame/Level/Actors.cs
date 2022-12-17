@@ -5,7 +5,10 @@ using VContainer;
 
 namespace yumehiko.LOF.Model
 {
-    public class Entities
+    /// <summary>
+    /// Actorの実体のコレクション。
+    /// </summary>
+    public class Actors
     {
         public IActor Player => player;
         public IReadOnlyList<IActor> Enemies => enemies;

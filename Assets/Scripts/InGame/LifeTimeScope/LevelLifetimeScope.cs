@@ -15,7 +15,7 @@ public class LevelLifetimeScope : LifetimeScope
     [Space(10)]
     [SerializeField] private Camera mainCamera;
     [SerializeField] private DungeonView dungeonView;
-    [SerializeField] private EntityViews entityViews;
+    [SerializeField] private ActorViews actorViews;
 
     protected override void Configure(IContainerBuilder builder)
     {
@@ -26,8 +26,8 @@ public class LevelLifetimeScope : LifetimeScope
         builder.RegisterInstance(playerInformation);
         builder.RegisterInstance(enemyProfiles);
 
-        builder.RegisterComponent(entityViews);
-        builder.Register<Entities>(Lifetime.Singleton);
+        builder.RegisterComponent(actorViews);
+        builder.Register<Actors>(Lifetime.Singleton);
         builder.Register<ActorBrains>(Lifetime.Singleton);
 
         builder.RegisterComponent(mainCamera);

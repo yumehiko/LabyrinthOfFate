@@ -420,7 +420,7 @@ GameObject:
   - component: {fileID: 1019438511}
   - component: {fileID: 1019438512}
   m_Layer: 0
-  m_Name: Entities
+  m_Name: ActorViews
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -919,7 +919,7 @@ MonoBehaviour:
       ad: 2
   mainCamera: {fileID: 519420031}
   dungeonView: {fileID: 1868557874}
-  entityViews: {fileID: 1019438512}
+  actorViews: {fileID: 1019438512}
 --- !u!4 &1868557872
 Transform:
   m_ObjectHideFlags: 0

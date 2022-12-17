@@ -19,8 +19,8 @@ namespace yumehiko.LOF.Presenter
 
         private IActorBrain player;
         private readonly List<IActorBrain> enemies = new List<IActorBrain>();
-        private readonly EntityViews views;
-        private readonly Entities models;
+        private readonly ActorViews views;
+        private readonly Actors models;
 
         private readonly List<ActorProfile> enemyProfiles;
         private readonly Dungeon dungeon;
@@ -33,8 +33,8 @@ namespace yumehiko.LOF.Presenter
             Dungeon dungeon,
             PlayerInformation playerInformation,
             List<ActorProfile> enemyProfiles,
-            Entities models,
-            EntityViews views)
+            Actors models,
+            ActorViews views)
         {
             this.models = models;
             this.views = views;

@@ -14,14 +14,14 @@ namespace yumehiko.LOF.Presenter
     public class PathFindMelee : IActorBrain
     {
         private readonly Dungeon floor;
-        private readonly Entities entities;
+        private readonly Actors actors;
         private readonly Actor body;
         private readonly IActorView view;
 
-        public PathFindMelee(Dungeon floor, Entities entities, Actor body, IActorView view)
+        public PathFindMelee(Dungeon floor, Actors actors, Actor body, IActorView view)
         {
             this.floor = floor;
-            this.entities = entities;
+            this.actors = actors;
             this.body = body;
             this.view = view;
         }
@@ -32,7 +32,7 @@ namespace yumehiko.LOF.Presenter
         public async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
             var start = body.Position;
-            var end = entities.GetPlayerPosition();
+            var end = actors.GetPlayerPosition();
             var path = floor.FindPath(start, end);
             await UniTask.DelayFrame(1, cancellationToken: token);
 
@@ -44,15 +44,15 @@ namespace yumehiko.LOF.Presenter
             }
 
             //経路番号1がPlayerの位置なら、隣接しているので攻撃する。
-            if (path[1] == entities.GetPlayerPosition())
+            if (path[1] == actors.GetPlayerPosition())
             {
-                body.Attack(entities.Player);
+                body.Attack(actors.Player);
                 await view.AttackAnimation(path[1], animationSpeedFactor, token);
                 return;
             }
 
             //移動先にPlayer以外のActorがいる場合、単に停止する。
-            if (entities.GetEnemyAt(path[1]) != null)
+            if (actors.GetEnemyAt(path[1]) != null)
             {
                 await view.WaitAnimation(start, animationSpeedFactor, token);
                 return;

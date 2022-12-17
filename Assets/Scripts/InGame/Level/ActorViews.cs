@@ -5,7 +5,7 @@ using yumehiko.LOF.Model;
 
 namespace yumehiko.LOF.View
 {
-	public class EntityViews : MonoBehaviour
+	public class ActorViews : MonoBehaviour
 	{
 		[SerializeField] private Transform viewParent;
 		private List<IActorView> views = new List<IActorView>();

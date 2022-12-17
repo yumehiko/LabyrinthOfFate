@@ -14,14 +14,14 @@ namespace yumehiko.LOF.Presenter
 	public class RandomStepper : IActorBrain
     {
         private readonly Dungeon floor;
-        private readonly Entities entities;
+        private readonly Actors actors;
         private readonly Actor body;
         private readonly IActorView view;
 
-        public RandomStepper(Dungeon floor, Entities entities, Actor body, IActorView view)
+        public RandomStepper(Dungeon floor, Actors actors, Actor body, IActorView view)
         {
             this.floor = floor;
-            this.entities = entities;
+            this.actors = actors;
             this.body = body;
             this.view = view;
         }
@@ -49,10 +49,10 @@ namespace yumehiko.LOF.Presenter
                 }
 
                 //指定地点にActorがいるか確認する。
-                var actor = entities.GetActorAt(point);
+                var actor = actors.GetActorAt(point);
 
                 //それがプレイヤーなら攻撃する。
-                if (entities.IsPlayer(actor))
+                if (actors.IsPlayer(actor))
                 {
                     body.Attack(actor);
                     await view.AttackAnimation(point, animationSpeedFactor, token);
