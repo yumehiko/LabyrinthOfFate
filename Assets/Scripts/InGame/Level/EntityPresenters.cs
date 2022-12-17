@@ -23,7 +23,7 @@ namespace yumehiko.LOF.Presenter
         private readonly Entities models;
 
         private readonly List<ActorProfile> enemyProfiles;
-        private readonly Floor floor;
+        private readonly Dungeon dungeon;
         private readonly PlayerInformation playerInformation;
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -38,7 +38,7 @@ namespace yumehiko.LOF.Presenter
         {
             this.models = models;
             this.views = views;
-            this.floor = dungeon.Floor;
+            this.dungeon = dungeon;
             this.playerInformation = playerInformation;
             this.enemyProfiles = enemyProfiles;
         }
@@ -81,7 +81,7 @@ namespace yumehiko.LOF.Presenter
         {
             var body = models.SpawnPlayer(playerInformation.Status, spawnPoint.Position);
             var view = views.SpawnEntityView(spawnPoint, playerInformation.View);
-            var brain = new Player(floor, models, body, view);
+            var brain = new Player(dungeon.Floor, models, body, view);
             disposables.Add(brain);
             return brain;
 
@@ -108,7 +108,9 @@ namespace yumehiko.LOF.Presenter
             switch (type)
             {
                 case BrainType.RandomStep:
-                    return new RandomStepper(floor, models, body, view);
+                    return new RandomStepper(dungeon, models, body, view);
+                case BrainType.PathFindMelee:
+                    return new PathFindMelee(dungeon, models, body, view);
                 default: throw new Exception("未定義のBrainTypeが指定された。");
             }
         }

@@ -15,7 +15,7 @@ namespace yumehiko.LOF.View
     {
         public async UniTask AttackAnimation(Vector2Int point, float speedFactor, CancellationToken token)
         {
-            speedFactor *= 0.5f;
+            speedFactor *= 0.4f;
             Vector2 initPosition = transform.position;
             transform.localScale = new Vector3(1.0f, 1.5f, 1.0f);
             transform.position = (Vector2)point;
@@ -27,14 +27,14 @@ namespace yumehiko.LOF.View
 
         public async UniTask ItemAnimation(Vector2Int point, float speedFactor, CancellationToken token)
         {
-            speedFactor *= 0.5f;
+            speedFactor *= 0.4f;
             transform.localScale = new Vector3(1.0f, 1.5f, 1.0f);
             await transform.DOScaleY(1.0f, speedFactor).ToUniTask(cancellationToken: token);
         }
 
         public async UniTask StepAnimation(Vector2Int point, float speedFactor, CancellationToken token)
         {
-            speedFactor *= 0.5f;
+            speedFactor *= 0.4f;
             transform.localScale = new Vector3(1.0f, 0.75f, 1.0f);
             Sequence sequence = DOTween.Sequence()
                 .Append(transform.DOScaleY(1.25f, 0.25f * speedFactor))
@@ -45,7 +45,7 @@ namespace yumehiko.LOF.View
 
         public async UniTask WaitAnimation(Vector2Int point, float speedFactor, CancellationToken token)
         {
-            speedFactor *= 0.5f;
+            speedFactor *= 0.4f;
             transform.localScale = new Vector3(1.0f, 0.5f, 1.0f);
             await transform.DOScaleY(1.0f, speedFactor).ToUniTask(cancellationToken: token);
         }

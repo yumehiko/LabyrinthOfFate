@@ -8,5 +8,6 @@ namespace yumehiko.LOF.Model
 	{
 		None,
 		RandomStep,
+		PathFindMelee,
 	}
 }

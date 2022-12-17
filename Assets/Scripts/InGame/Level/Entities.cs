@@ -42,6 +42,15 @@ namespace yumehiko.LOF.Model
         }
 
         /// <summary>
+        /// プレイヤーのポジションを返す。
+        /// </summary>
+        /// <returns></returns>
+        public Vector2Int GetPlayerPosition()
+        {
+            return player.Position;
+        }
+
+        /// <summary>
         /// 指定地点にActorがいるか返す（プレイヤーも含む）。
         /// </summary>
         /// <param name="position"></param>

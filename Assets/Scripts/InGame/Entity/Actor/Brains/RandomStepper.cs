@@ -13,14 +13,14 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
 	public class RandomStepper : IActorBrain
     {
-        private readonly Floor floor;
+        private readonly Dungeon dungeon;
         private readonly Entities entities;
         private readonly ActorBody body;
         private readonly IActorView view;
 
-        public RandomStepper(Floor floor, Entities entities, ActorBody body, IActorView view)
+        public RandomStepper(Dungeon dungeon, Entities entities, ActorBody body, IActorView view)
         {
-            this.floor = floor;
+            this.dungeon = dungeon;
             this.entities = entities;
             this.body = body;
             this.view = view;
@@ -36,7 +36,6 @@ namespace yumehiko.LOF.Presenter
 
         private async UniTask RandomStep(float animationSpeedFactor, CancellationToken token)
         {
-            //このままだと攻撃はできない。
             while (true)
             {
                 ActorDirection direction = GetRandomDirection();
@@ -67,7 +66,7 @@ namespace yumehiko.LOF.Presenter
                 }
 
                 //Actorがいない上に、地形が空なら移動する。
-                if (floor.GetTerrainType(point) == FloorType.Empty)
+                if (dungeon.Floor.GetTerrainType(point) == FloorType.Empty)
                 {
                     body.StepTo(point);
                     await view.StepAnimation(point, animationSpeedFactor, token);

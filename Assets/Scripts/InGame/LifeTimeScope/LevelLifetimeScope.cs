@@ -20,6 +20,7 @@ public class LevelLifetimeScope : LifetimeScope
     protected override void Configure(IContainerBuilder builder)
     {
         var dungeon = JsonUtility.FromJson<Dungeon>(dungeonJson.ToString());
+        dungeon.MakePathFinder();
         builder.RegisterInstance(dungeon);
         builder.RegisterInstance(playerInformation);
         builder.RegisterInstance(enemyProfiles);

@@ -21,11 +21,20 @@ namespace yumehiko.LOF.Model
         public EntitySpawnPoints EntitySpawnPoints => entitySpawnPoints;
         public BoundsInt Bounds => bounds;
 
+        private DungeonPathFinder pathFinder;
+
         public Dungeon(Floor floor, EntitySpawnPoints entitySpawnPoints, BoundsInt bounds)
         {
             this.floor = floor;
             this.entitySpawnPoints = entitySpawnPoints;
             this.bounds = bounds;
         }
+
+        public void MakePathFinder()
+        {
+            pathFinder = new DungeonPathFinder(this);
+        }
+
+        public Vector2Int[] FindPath(Vector2Int start, Vector2Int end) => pathFinder.FindPath(start, end);
     }
 }
