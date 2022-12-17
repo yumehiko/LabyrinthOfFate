@@ -32,11 +32,11 @@ namespace yumehiko.LOF.View
         {
             switch (tile.Type)
             {
-                case FloorType.Empty: return;
-                case FloorType.Wall:
+                case TileType.Empty: return;
+                case TileType.Wall:
                     wallTileSetter.SetTile(tile);
                     return;
-                case FloorType.BorderWall:
+                case TileType.BorderWall:
                     borderWallTileSetter.SetTile(tile);
                     return;
                 default: throw new System.Exception("未定義の地形タイプ");

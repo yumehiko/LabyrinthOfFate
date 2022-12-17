@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace yumehiko.LOF.Model
 {
-	public enum FloorType
+	public enum TileType
 	{
 		None,
 		Empty,

@@ -66,7 +66,7 @@ namespace yumehiko.LOF.Presenter
                 }
 
                 //Actorがいない上に、地形が空なら移動する。
-                if (floor.GetTerrainType(point) == FloorType.Empty)
+                if (floor.GetTerrainType(point) == TileType.Empty)
                 {
                     body.StepTo(point);
                     await view.StepAnimation(point, animationSpeedFactor, token);

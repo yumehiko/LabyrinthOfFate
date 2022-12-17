@@ -12,12 +12,12 @@ namespace yumehiko.LOF.Model
     public struct DungeonTile
     {
         public Vector2Int Position => position;
-        public FloorType Type => type;
+        public TileType Type => type;
 
         [SerializeField] private Vector2Int position;
-        [SerializeField] private FloorType type;
+        [SerializeField] private TileType type;
 
-        public DungeonTile(Vector2Int position, FloorType type)
+        public DungeonTile(Vector2Int position, TileType type)
         {
             this.position = position;
             this.type = type;

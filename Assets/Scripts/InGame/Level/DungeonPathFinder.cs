@@ -46,14 +46,14 @@ namespace yumehiko.LOF.Model
             return tiles;
         }
 
-        private short GetTileNumber(FloorType type)
+        private short GetTileNumber(TileType type)
         {
             switch (type)
             {
-                case FloorType.None: return 0;
-                case FloorType.Empty: return 1;
-                case FloorType.Wall: return 0;
-                case FloorType.BorderWall: return 0;
+                case TileType.None: return 0;
+                case TileType.Empty: return 1;
+                case TileType.Wall: return 0;
+                case TileType.BorderWall: return 0;
                 default: throw new System.Exception("未定義のタイルタイプ。");
             }
         }

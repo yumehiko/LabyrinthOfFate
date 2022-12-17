@@ -46,7 +46,7 @@ namespace yumehiko.LOF.Editor
                 for (int x = 0; x < bounds.size.x; x++)
                 {
                     TileBase tileBase = allTiles[x + y * bounds.size.x]; //MEMO: allTilesは1次元配列なので、indexはこのように取得している。
-                    FloorType type = GetTerrainTypeFromTile(tileBase);
+                    TileType type = GetTerrainTypeFromTile(tileBase);
                     var dungeonTile = new DungeonTile(new Vector2Int(x, y), type);
                     dungeonTiles.Add(dungeonTile);
                 }
@@ -80,18 +80,18 @@ namespace yumehiko.LOF.Editor
             return spawnPoints;
         }
 
-        private FloorType GetTerrainTypeFromTile(TileBase tile)
+        private TileType GetTerrainTypeFromTile(TileBase tile)
         {
             if (tile == null)
             {
-                return FloorType.BorderWall;
+                return TileType.BorderWall;
             }
 
             switch (tile.name)
             {
-                case "Floor": return FloorType.Empty;
-                case "Wall": return FloorType.Wall;
-                case "BorderWall": return FloorType.BorderWall;
+                case "Floor": return TileType.Empty;
+                case "Wall": return TileType.Wall;
+                case "BorderWall": return TileType.BorderWall;
                 default: throw new System.Exception("未定義");
             }
         }

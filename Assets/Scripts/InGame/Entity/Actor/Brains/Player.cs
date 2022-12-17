@@ -85,7 +85,7 @@ namespace yumehiko.LOF.Presenter
 
                 //指定地点の地形をチェックする。
                 var floorType = floor.GetTerrainType(targetPoint);
-                if (floorType == FloorType.Empty)
+                if (floorType == TileType.Empty)
                 {
                     body.StepTo(targetPoint);
                     await view.StepAnimation(targetPoint, animationSpeedFactor, token);
