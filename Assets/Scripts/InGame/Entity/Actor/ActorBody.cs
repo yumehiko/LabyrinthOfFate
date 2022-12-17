@@ -17,7 +17,6 @@ namespace yumehiko.LOF.Model
         public IReadOnlyReactiveProperty<int> HP => hp;
         public Vector2Int Position { get; private set; }
         public ActorType ActorType { get; }
-        public EntityType EntityType => EntityType.Actor;
         public IReadOnlyReactiveProperty<bool> IsDied => isDied;
         public IObservable<Unit> OnStepStart => onStep;
         public IObservable<Unit> OnAttackStart => onAttack;

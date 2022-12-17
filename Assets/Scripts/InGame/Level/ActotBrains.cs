@@ -10,9 +10,9 @@ using System;
 namespace yumehiko.LOF.Presenter
 {
     /// <summary>
-    /// 実行中のゲームの、全てのEntityのPresenterのコレクション。
+    /// 実行中のゲームの、全てのActorBrainのコレクション。
     /// </summary>
-    public class EntityPresenters : IDisposable
+    public class ActorBrains : IDisposable
     {
         public IActorBrain Player => player;
         public IReadOnlyList<IActorBrain> Enemies => enemies;
@@ -29,7 +29,7 @@ namespace yumehiko.LOF.Presenter
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
         [Inject]
-        public EntityPresenters(
+        public ActorBrains(
             Dungeon dungeon,
             PlayerInformation playerInformation,
             List<ActorProfile> enemyProfiles,
@@ -48,7 +48,7 @@ namespace yumehiko.LOF.Presenter
             disposables.Dispose();
         }
 
-        public void SpawnEntities(EntitySpawnPoints spawnPoints)
+        public void SpawnEntities(ActorSpawnPoints spawnPoints)
         {
             foreach (var spawnPoint in spawnPoints)
             {
@@ -60,15 +60,12 @@ namespace yumehiko.LOF.Presenter
             }
         }
 
-        private void SpawnEntity(EntitySpawnPoint spawnPoint)
+        private void SpawnEntity(ActorSpawnPoint spawnPoint)
         {
             switch (spawnPoint.Type)
             {
                 case ActorType.Player:
-                    if (player != null)
-                    {
-                        return;
-                    }
+                    if (player != null) return;
                     player = SpawnPlayer(spawnPoint);
                     return;
                 case ActorType.Enemy:
@@ -77,17 +74,17 @@ namespace yumehiko.LOF.Presenter
             }
         }
 
-        private IActorBrain SpawnPlayer(EntitySpawnPoint spawnPoint)
+        private IActorBrain SpawnPlayer(ActorSpawnPoint spawnPoint)
         {
             var body = models.SpawnPlayer(playerInformation.Status, spawnPoint.Position);
             var view = views.SpawnEntityView(spawnPoint, playerInformation.View);
-            var brain = new Player(dungeon.Floor, models, body, view);
+            var brain = new Player(dungeon, models, body, view);
             disposables.Add(brain);
             return brain;
 
         }
 
-        private IActorBrain SpawnEnemy(EntitySpawnPoint spawnPoint)
+        private IActorBrain SpawnEnemy(ActorSpawnPoint spawnPoint)
         {
             var id = UnityEngine.Random.Range(0, enemyProfiles.Count);
             var profile = enemyProfiles[id];

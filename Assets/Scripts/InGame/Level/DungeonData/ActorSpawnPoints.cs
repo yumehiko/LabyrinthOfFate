@@ -10,18 +10,18 @@ namespace yumehiko.LOF.Model
     /// SpawnPointのコレクション。
     /// </summary>
     [Serializable]
-    public class EntitySpawnPoints : IReadOnlyCollection<EntitySpawnPoint>
+    public class ActorSpawnPoints : IReadOnlyCollection<ActorSpawnPoint>
     {
         public int Count => points.Count;
 
-        [SerializeField] private List<EntitySpawnPoint> points;
+        [SerializeField] private List<ActorSpawnPoint> points;
 
-        public EntitySpawnPoints(List<EntitySpawnPoint> points)
+        public ActorSpawnPoints(List<ActorSpawnPoint> points)
         {
             this.points = points;
         }
 
-        public IEnumerator<EntitySpawnPoint> GetEnumerator()
+        public IEnumerator<ActorSpawnPoint> GetEnumerator()
         {
             foreach (var point in points)
             {

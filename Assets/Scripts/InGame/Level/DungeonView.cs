@@ -11,16 +11,16 @@ namespace yumehiko.LOF.View
     /// </summary>
 	public class DungeonView : MonoBehaviour
     {
-        [SerializeField] private TileSetter wallTileSetter;
-        [SerializeField] private TileSetter borderWallTileSetter;
+        [SerializeField] private TileViewSetter wallTileSetter;
+        [SerializeField] private TileViewSetter borderWallTileSetter;
 
         [Inject]
         public void Construct(Dungeon dungeon)
         {
-            SetTiles(dungeon.Floor);
+            SetTiles(dungeon);
         }
 
-        private void SetTiles(Floor floor)
+        private void SetTiles(Dungeon floor)
         {
             foreach (var tile in floor)
             {
@@ -28,7 +28,7 @@ namespace yumehiko.LOF.View
             }
         }
 
-        private void SetTile(FloorTile tile)
+        private void SetTile(DungeonTile tile)
         {
             switch (tile.Type)
             {

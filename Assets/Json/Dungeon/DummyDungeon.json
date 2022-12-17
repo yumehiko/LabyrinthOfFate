@@ -1,5 +1,5 @@
 {
-    "floor": {
+    "dungeon": {
         "tiles": [
             {
                 "position": {
@@ -531,7 +531,7 @@
                     "x": 12,
                     "y": 3
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
@@ -678,7 +678,7 @@
                     "x": 12,
                     "y": 4
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
@@ -825,28 +825,28 @@
                     "x": 12,
                     "y": 5
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
                     "x": 13,
                     "y": 5
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
                     "x": 14,
                     "y": 5
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
                     "x": 15,
                     "y": 5
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
@@ -972,7 +972,7 @@
                     "x": 12,
                     "y": 6
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
@@ -1119,7 +1119,7 @@
                     "x": 12,
                     "y": 7
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
@@ -1217,7 +1217,7 @@
                     "x": 5,
                     "y": 8
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
@@ -1266,7 +1266,7 @@
                     "x": 12,
                     "y": 8
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
@@ -1364,7 +1364,7 @@
                     "x": 5,
                     "y": 9
                 },
-                "type": 1
+                "type": 2
             },
             {
                 "position": {
@@ -1912,9 +1912,21 @@
                 },
                 "type": 3
             }
-        ]
+        ],
+        "bounds": {
+            "m_Position": {
+                "x": -10,
+                "y": -6,
+                "z": 0
+            },
+            "m_Size": {
+                "x": 21,
+                "y": 13,
+                "z": 1
+            }
+        }
     },
-    "entitySpawnPoints": {
+    "actorSpawnPoints": {
         "points": [
             {
                 "position": {
@@ -1933,22 +1945,17 @@
             {
                 "position": {
                     "x": 14,
+                    "y": 4
+                },
+                "type": 2
+            },
+            {
+                "position": {
+                    "x": 14,
                     "y": 7
                 },
                 "type": 2
             }
         ]
-    },
-    "bounds": {
-        "m_Position": {
-            "x": -10,
-            "y": -6,
-            "z": 0
-        },
-        "m_Size": {
-            "x": 21,
-            "y": 13,
-            "z": 1
-        }
     }
 }

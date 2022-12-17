@@ -18,10 +18,10 @@ namespace yumehiko.LOF.Model
         private WorldGrid worldGrid;
         private PathFinder pathfinder;
 
-        public DungeonPathFinder(Dungeon dungeon)
+        public DungeonPathFinder(Dungeon floor)
         {
             var pathfinderOptions = new PathFinderOptions();
-            tiles = MakeTiles(dungeon);
+            tiles = MakeTiles(floor);
             worldGrid = new WorldGrid(tiles);
             pathfinder = new PathFinder(worldGrid, pathfinderOptions);
         }
@@ -33,11 +33,11 @@ namespace yumehiko.LOF.Model
 
         }
 
-        private short[,] MakeTiles(Dungeon dungeon)
+        private short[,] MakeTiles(Dungeon floor)
         {
-            var size = dungeon.Bounds.size;
+            var size = floor.Bounds.size;
             var tiles = new short[size.x, size.y];
-            foreach (var floorTile in dungeon.Floor)
+            foreach (var floorTile in floor)
             {
                 short tile = GetTileNumber(floorTile.Type);
                 tiles[floorTile.Position.x, floorTile.Position.y] = tile;

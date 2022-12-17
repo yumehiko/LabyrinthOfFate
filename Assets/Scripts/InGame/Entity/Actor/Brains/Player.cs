@@ -16,11 +16,10 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
     public class Player : IActorBrain, IDisposable
     {
-        public EntityType EntityType => EntityType.Actor;
         public ActorType ActorType => ActorType.Player;
         public ActorBody Body => body;
 
-        private readonly Floor floor;
+        private readonly Dungeon floor;
         private readonly Entities entities;
         private readonly ActorBody body;
         private readonly IActorView view;
@@ -28,7 +27,7 @@ namespace yumehiko.LOF.Presenter
         private readonly AsyncReactiveProperty<ActorDirection> inputDirection = new AsyncReactiveProperty<ActorDirection>(ActorDirection.None);
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-        public Player(Floor floor, Entities entities, ActorBody body, IActorView view)
+        public Player(Dungeon floor, Entities entities, ActorBody body, IActorView view)
         {
             this.floor = floor;
             this.entities = entities;

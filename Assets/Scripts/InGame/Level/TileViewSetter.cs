@@ -9,12 +9,12 @@ namespace yumehiko.LOF.View
 	/// <summary>
     /// タイルをセットする。
     /// </summary>
-	public class TileSetter : MonoBehaviour
+	public class TileViewSetter : MonoBehaviour
 	{
 		[SerializeField] private Tilemap tilemap;
 		[SerializeField] private List<TileBase> tiles;
 
-		public void SetTile(FloorTile tile)
+		public void SetTile(DungeonTile tile)
         {
 			var id = Random.Range(0, tiles.Count);
 			tilemap.SetTile((Vector3Int)tile.Position, tiles[id]);

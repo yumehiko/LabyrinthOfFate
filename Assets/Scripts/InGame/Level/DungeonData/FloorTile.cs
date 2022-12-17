@@ -9,7 +9,7 @@ namespace yumehiko.LOF.Model
     /// ダンジョンフロアのタイル1枚を表す。
     /// </summary>
     [Serializable]
-    public struct FloorTile
+    public struct DungeonTile
     {
         public Vector2Int Position => position;
         public FloorType Type => type;
@@ -17,7 +17,7 @@ namespace yumehiko.LOF.Model
         [SerializeField] private Vector2Int position;
         [SerializeField] private FloorType type;
 
-        public FloorTile(Vector2Int position, FloorType type)
+        public DungeonTile(Vector2Int position, FloorType type)
         {
             this.position = position;
             this.type = type;

@@ -6,10 +6,10 @@ using System;
 namespace yumehiko.LOF.Model
 {
     /// <summary>
-    /// エンティティが発生するポイント。
+    /// Actorが発生するポイント。
     /// </summary>
     [Serializable]
-    public struct EntitySpawnPoint
+    public struct ActorSpawnPoint
     {
         public Vector2Int Position => position;
         public ActorType Type => type;
@@ -17,13 +17,13 @@ namespace yumehiko.LOF.Model
         [SerializeField] Vector2Int position;
         [SerializeField] private ActorType type;
 
-        public EntitySpawnPoint(Vector2Int position, ActorType type)
+        public ActorSpawnPoint(Vector2Int position, ActorType type)
         {
             this.position = position;
             this.type = type;
         }
 
-        public EntitySpawnPoint(short x, short y, ActorType type)
+        public ActorSpawnPoint(short x, short y, ActorType type)
         {
             this.position = new Vector2Int(x, y);
             this.type = type;

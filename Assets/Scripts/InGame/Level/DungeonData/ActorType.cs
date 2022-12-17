@@ -10,7 +10,7 @@ namespace yumehiko.LOF.Model
 	public enum ActorType
 	{
 		None,
-		Player,
+		Player,  //プレイヤーの味方陣営みたいなのは（必要なら）、Playerとは別に定義する。
 		Enemy,
 	}
 }

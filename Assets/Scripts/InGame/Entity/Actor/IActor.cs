@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 
 namespace yumehiko.LOF.Model
 {
-	public interface IActor : IEntity, IDieable
+	public interface IActor : IDieable
 	{
 		Vector2Int Position { get; }
 

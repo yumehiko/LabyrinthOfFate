@@ -14,15 +14,15 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
 	public class Level : IStartable
     {
-        private readonly Dungeon dungeon;
-        private readonly EntityPresenters entitySpawner;
+        private readonly ActorSpawnPoints actorSpawnPoints;
+        private readonly ActorBrains actorBrains;
         private readonly Turn turn;
 
         [Inject]
-        public Level(Dungeon dungeon, EntityPresenters entitySpawner, Turn turn, Camera mainCamera)
+        public Level(Dungeon dungeon, ActorSpawnPoints actorSpawnPoints,  ActorBrains actorBrains, Turn turn, Camera mainCamera)
         {
-            this.dungeon = dungeon;
-            this.entitySpawner = entitySpawner;
+            this.actorSpawnPoints = actorSpawnPoints;
+            this.actorBrains = actorBrains;
             this.turn = turn;
             var cameraPosition = new Vector3(-dungeon.Bounds.position.x, -dungeon.Bounds.position.y, mainCamera.transform.position.z);
             mainCamera.transform.position = cameraPosition;
@@ -30,8 +30,8 @@ namespace yumehiko.LOF.Presenter
 
         public void Start()
         {
-            entitySpawner.SpawnEntities(dungeon.EntitySpawnPoints);
-            turn.StartTurnLoop(entitySpawner.Player, entitySpawner.Enemies).Forget();
+            actorBrains.SpawnEntities(actorSpawnPoints);
+            turn.StartTurnLoop(actorBrains.Player, actorBrains.Enemies).Forget();
         }
 
         public void EndLevel()

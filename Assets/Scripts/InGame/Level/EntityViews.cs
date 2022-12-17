@@ -10,7 +10,7 @@ namespace yumehiko.LOF.View
 		[SerializeField] private Transform viewParent;
 		private List<IActorView> views = new List<IActorView>();
 
-		public IActorView SpawnEntityView(EntitySpawnPoint spawnPoint, ActorView view)
+		public IActorView SpawnEntityView(ActorSpawnPoint spawnPoint, ActorView view)
         {
 			var instance = Instantiate(view, (Vector2)spawnPoint.Position, Quaternion.identity, viewParent);
 			views.Add(instance);

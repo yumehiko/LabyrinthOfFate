@@ -16,30 +16,30 @@ namespace yumehiko.LOF.Editor
 
         public void WriteJson()
         {
-            var dungeon = GetDungeonInstance();
-            string rawJson = JsonUtility.ToJson(dungeon, true);
+            var dungeonAsset = GenerateDungeonAsset();
+            string rawJson = JsonUtility.ToJson(dungeonAsset, true);
             using (StreamWriter writer = new StreamWriter(Application.dataPath + $"/Json/Dungeon/{jsonName}.json", false))
             {
                 writer.Write(rawJson);
             }
         }
 
-        private Dungeon GetDungeonInstance()
+        private DungeonAsset GenerateDungeonAsset()
         {
             terrainMap.CompressBounds();
             BoundsInt bounds = terrainMap.cellBounds;
-            var floor = GetFloor(bounds);
-            var spawnPoints = GetEntitySpawnPoints(bounds);
-            var dungeon = new Dungeon(floor, spawnPoints, bounds);
-            return dungeon;
+            var dungeon = GetDungeon(bounds);
+            var spawnPoints = GetActorSpawnPoints(bounds);
+            var dungeonAsset = new DungeonAsset(dungeon, spawnPoints);
+            return dungeonAsset;
         }
 
-        private Floor GetFloor(BoundsInt bounds)
+        private Dungeon GetDungeon(BoundsInt bounds)
         {
             //TODO: 外周にひとまわりBorderWallを敷けば安全
             //bounds.size += new Vector3Int(2, 2, 0);
             TileBase[] allTiles = terrainMap.GetTilesBlock(bounds);
-            List<FloorTile> dungeonTiles = new List<FloorTile>();
+            List<DungeonTile> dungeonTiles = new List<DungeonTile>();
 
             for (int y = 0; y < bounds.size.y; y++)
             {
@@ -47,19 +47,19 @@ namespace yumehiko.LOF.Editor
                 {
                     TileBase tileBase = allTiles[x + y * bounds.size.x]; //MEMO: allTilesは1次元配列なので、indexはこのように取得している。
                     FloorType type = GetTerrainTypeFromTile(tileBase);
-                    var dungeonTile = new FloorTile(new Vector2Int(x, y), type);
+                    var dungeonTile = new DungeonTile(new Vector2Int(x, y), type);
                     dungeonTiles.Add(dungeonTile);
                 }
             }
 
-            var floor = new Floor(dungeonTiles);
+            var floor = new Dungeon(dungeonTiles, bounds);
             return floor;
         }
 
-        private EntitySpawnPoints GetEntitySpawnPoints(BoundsInt bounds)
+        private ActorSpawnPoints GetActorSpawnPoints(BoundsInt bounds)
         {
             TileBase[] allTiles = spawnPointMap.GetTilesBlock(bounds);
-            var spawnPointList = new List<EntitySpawnPoint>();
+            var spawnPointList = new List<ActorSpawnPoint>();
 
             for (short x = 0; x < bounds.size.x; x++)
             {
@@ -70,13 +70,13 @@ namespace yumehiko.LOF.Editor
                     {
                         continue;
                     }
-                    var type = GetEntitySpawnPointType(tileBase);
-                    var point = new EntitySpawnPoint(x, y, type);
+                    var type = GetActorSpawnPointType(tileBase);
+                    var point = new ActorSpawnPoint(x, y, type);
                     spawnPointList.Add(point);
                 }
             }
 
-            var spawnPoints = new EntitySpawnPoints(spawnPointList);
+            var spawnPoints = new ActorSpawnPoints(spawnPointList);
             return spawnPoints;
         }
 
@@ -96,7 +96,7 @@ namespace yumehiko.LOF.Editor
             }
         }
 
-        private ActorType GetEntitySpawnPointType(TileBase tile)
+        private ActorType GetActorSpawnPointType(TileBase tile)
         {
             switch(tile.name)
             {
