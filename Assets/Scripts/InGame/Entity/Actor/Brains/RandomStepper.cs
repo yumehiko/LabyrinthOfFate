@@ -15,10 +15,10 @@ namespace yumehiko.LOF.Presenter
     {
         private readonly Dungeon floor;
         private readonly Entities entities;
-        private readonly ActorBody body;
+        private readonly Actor body;
         private readonly IActorView view;
 
-        public RandomStepper(Dungeon floor, Entities entities, ActorBody body, IActorView view)
+        public RandomStepper(Dungeon floor, Entities entities, Actor body, IActorView view)
         {
             this.floor = floor;
             this.entities = entities;

@@ -100,7 +100,7 @@ namespace yumehiko.LOF.Presenter
             return brain;
         }
 
-        private IActorBrain SpawnBrain(BrainType type, ActorBody body, IActorView view)
+        private IActorBrain SpawnBrain(BrainType type, Actor body, IActorView view)
         {
             switch (type)
             {

@@ -13,16 +13,16 @@ namespace yumehiko.LOF.Model
         private IActor player;
         private readonly List<IActor> enemies = new List<IActor>();
 
-        public ActorBody SpawnPlayer(ActorStatus status, Vector2Int position)
+        public Actor SpawnPlayer(ActorStatus status, Vector2Int position)
         {
-            var body = new ActorBody(status, position);
+            var body = new Actor(status, position);
             player = body;
             return body;
         }
 
-        public ActorBody SpawnEnemy(ActorStatus status, Vector2Int position)
+        public Actor SpawnEnemy(ActorStatus status, Vector2Int position)
         {
-            var enemy = new ActorBody(status, position);
+            var enemy = new Actor(status, position);
             enemies.Add(enemy);
             return enemy;
         }
