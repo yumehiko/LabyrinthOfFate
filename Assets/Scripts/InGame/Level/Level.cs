@@ -15,16 +15,17 @@ namespace yumehiko.LOF.Presenter
 	public class Level : IStartable
     {
         private readonly Dungeon dungeon;
-        private readonly EntitySpawner entitySpawner;
+        private readonly EntityPresenters entitySpawner;
         private readonly Turn turn;
 
         [Inject]
-        public Level(Dungeon dungeon, EntitySpawner entitySpawner, Turn turn)
+        public Level(Dungeon dungeon, EntityPresenters entitySpawner, Turn turn, Camera mainCamera)
         {
-            Debug.Log("level");
             this.dungeon = dungeon;
             this.entitySpawner = entitySpawner;
             this.turn = turn;
+            var cameraPosition = new Vector3(-dungeon.Bounds.position.x, -dungeon.Bounds.position.y, mainCamera.transform.position.z);
+            mainCamera.transform.position = cameraPosition;
         }
 
         public void Start()

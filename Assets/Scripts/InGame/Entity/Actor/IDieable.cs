@@ -8,7 +8,7 @@ namespace yumehiko.LOF
 {
 	public interface IDieable
 	{
-		IObservable<Unit> OnDie { get; }
+		IReadOnlyReactiveProperty<bool> IsDied { get; }
 
 		void Die();
 	}

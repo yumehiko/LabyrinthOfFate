@@ -73,23 +73,23 @@ namespace yumehiko.LOF.Presenter
             while (true)
             {
                 var direction = await inputDirection.WaitAsync(token);
-                var point = body.DirectionToVector(direction);
+                var targetPoint = body.GetPositionWithDirection(direction);
 
                 //指定地点にEnemyがいないかをチェックする。
-                IActor enemy = entities.GetEnemyAt(point);
+                IActor enemy = entities.GetEnemyAt(targetPoint);
                 if (enemy != null) //Enemyがいるなら、それを攻撃する。
                 {
                     body.Attack(enemy);
-                    await view.AttackAnimation(animationSpeedFactor, token);
+                    await view.AttackAnimation(targetPoint, animationSpeedFactor, token);
                     break;
                 }
 
                 //指定地点の地形をチェックする。
-                var floorType = floor.GetTerrainType(point);
+                var floorType = floor.GetTerrainType(targetPoint);
                 if (floorType == FloorType.Empty)
                 {
-                    body.StepTo(point);
-                    await view.StepAnimation(animationSpeedFactor, token);
+                    body.StepTo(targetPoint);
+                    await view.StepAnimation(targetPoint, animationSpeedFactor, token);
                     break;
                 }
             }

@@ -8,12 +8,12 @@ namespace yumehiko.LOF.View
 	public class EntityViews : MonoBehaviour
 	{
 		[SerializeField] private Transform viewParent;
-		private List<IActorView> views;
+		private List<IActorView> views = new List<IActorView>();
 
 		public IActorView SpawnEntityView(EntitySpawnPoint spawnPoint, ActorView view)
         {
-			Debug.Log("InstantiateEntity");
 			var instance = Instantiate(view, (Vector2)spawnPoint.Position, Quaternion.identity, viewParent);
+			views.Add(instance);
 			return instance;
         }
 

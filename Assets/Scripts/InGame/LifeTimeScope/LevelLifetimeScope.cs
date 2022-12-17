@@ -13,6 +13,7 @@ public class LevelLifetimeScope : LifetimeScope
     [SerializeField] private List<ActorProfile> enemyProfiles; //TODO: ここではなくゲーム管理側が渡す。
     [SerializeField] private PlayerInformation playerInformation; //TODO: ここではなくゲーム管理側が渡す。
     [Space(10)]
+    [SerializeField] private Camera mainCamera;
     [SerializeField] private DungeonView dungeonView;
     [SerializeField] private EntityViews entityViews;
 
@@ -25,8 +26,9 @@ public class LevelLifetimeScope : LifetimeScope
 
         builder.RegisterComponent(entityViews);
         builder.Register<Entities>(Lifetime.Singleton);
-        builder.Register<EntitySpawner>(Lifetime.Singleton);
+        builder.Register<EntityPresenters>(Lifetime.Singleton);
 
+        builder.RegisterComponent(mainCamera);
         builder.RegisterComponent(dungeonView);
         builder.Register<Turn>(Lifetime.Singleton);
         builder.RegisterEntryPoint<Level>(Lifetime.Singleton);

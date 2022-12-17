@@ -13,12 +13,6 @@ namespace yumehiko.LOF.Model
         private IActor player;
         private readonly List<IActor> enemies = new List<IActor>();
 
-        [Inject]
-        public Entities()
-        {
-            Debug.Log("Entities");
-        }
-
         public ActorBody SpawnPlayer(ActorStatus status, Vector2Int position)
         {
             var body = new ActorBody(status, position);
@@ -39,17 +33,12 @@ namespace yumehiko.LOF.Model
         }
 
         /// <summary>
-        /// 指定地点にPlayerがいるならPlayerを返す。
+        /// 指定したActorがプレイヤーかを返す。
         /// </summary>
-        /// <param name="position"></param>
         /// <returns></returns>
-        public IActor GetPlayerAt(Vector2Int position)
+        public bool IsPlayer(IActor actor)
         {
-            if (player.Position == position)
-            {
-                return player;
-            }
-            return null;
+            return actor == player;
         }
 
         /// <summary>

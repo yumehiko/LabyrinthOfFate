@@ -10,15 +10,15 @@ using System;
 namespace yumehiko.LOF.Presenter
 {
     /// <summary>
-    /// 実行中のゲームの、全てのエンティティを生成し、そのPresenter全てを保持する。
+    /// 実行中のゲームの、全てのEntityのPresenterのコレクション。
     /// </summary>
-    public class EntitySpawner : IDisposable
+    public class EntityPresenters : IDisposable
     {
         public IActorBrain Player => player;
         public IReadOnlyList<IActorBrain> Enemies => enemies;
 
         private IActorBrain player;
-        private readonly List<IActorBrain> enemies;
+        private readonly List<IActorBrain> enemies = new List<IActorBrain>();
         private readonly EntityViews views;
         private readonly Entities models;
 
@@ -29,14 +29,13 @@ namespace yumehiko.LOF.Presenter
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
         [Inject]
-        public EntitySpawner(
+        public EntityPresenters(
             Dungeon dungeon,
             PlayerInformation playerInformation,
             List<ActorProfile> enemyProfiles,
             Entities models,
             EntityViews views)
         {
-            Debug.Log("SpawnerSpawn");
             this.models = models;
             this.views = views;
             this.floor = dungeon.Floor;
@@ -53,7 +52,6 @@ namespace yumehiko.LOF.Presenter
         {
             foreach (var spawnPoint in spawnPoints)
             {
-                Debug.Log($"{spawnPoint.Type}");
                 SpawnEntity(spawnPoint);
             }
             if (player == null)
@@ -84,6 +82,7 @@ namespace yumehiko.LOF.Presenter
             var body = models.SpawnPlayer(playerInformation.Status, spawnPoint.Position);
             var view = views.SpawnEntityView(spawnPoint, playerInformation.View);
             var brain = new Player(floor, models, body, view);
+            disposables.Add(brain);
             return brain;
 
         }
@@ -92,14 +91,24 @@ namespace yumehiko.LOF.Presenter
         {
             var id = UnityEngine.Random.Range(0, enemyProfiles.Count);
             var profile = enemyProfiles[id];
-            switch (profile.Status.BrainType)
+            var body = models.SpawnEnemy(profile.Status, spawnPoint.Position);
+            var view = views.SpawnEntityView(spawnPoint, profile.View);
+            var brain = SpawnBrain(profile.Status.BrainType, body, view);
+            enemies.Add(brain);
+            body.IsDied
+                .Where(isTrue => isTrue)
+                .First()
+                .Subscribe(_ => RemoveEnemy(brain, body, view))
+                .AddTo(disposables);
+            return brain;
+        }
+
+        private IActorBrain SpawnBrain(BrainType type, ActorBody body, IActorView view)
+        {
+            switch (type)
             {
                 case BrainType.RandomStep:
-                    var body = models.SpawnEnemy(profile.Status, spawnPoint.Position);
-                    var view = views.SpawnEntityView(spawnPoint, profile.View);
-                    var brain = new RandomStepper(floor, models, body, view);
-                    body.OnDie.Subscribe(_ => RemoveEnemy(brain, body, view)).AddTo(disposables);
-                    return brain;
+                    return new RandomStepper(floor, models, body, view);
                 default: throw new Exception("未定義のBrainTypeが指定された。");
             }
         }

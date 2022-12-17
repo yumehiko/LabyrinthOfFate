@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4146136012864724973}
   - component: {fileID: 7473237139455401453}
+  - component: {fileID: 5681267762858681344}
   m_Layer: 0
   m_Name: PlayerView
   m_TagString: Untagged
@@ -44,6 +45,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb1038e920e4e4a4997bef81f730e51f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!210 &5681267762858681344
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4146136012864724971}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &4146136013574572443
 GameObject:
   m_ObjectHideFlags: 0

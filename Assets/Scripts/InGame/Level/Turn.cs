@@ -30,7 +30,7 @@ namespace yumehiko.LOF.Presenter
             {
                 await TurnLoop(player, enemies, token);
             }
-            catch
+            catch (OperationCanceledException)
             {
                 Debug.Log("ターンループ終了");
                 Dispose();

@@ -45,24 +45,32 @@ namespace yumehiko.LOF.Presenter
                 //方向指定がない場合は、その場で待機。
                 if (direction == ActorDirection.None)
                 {
-                    await view.WaitAnimation(animationSpeedFactor, token);
+                    await view.WaitAnimation(point, animationSpeedFactor, token);
                     return;
                 }
 
-                //Playerがいるなら攻撃する。
-                var player = entities.GetPlayerAt(point);
-                if (player != null)
+                //指定地点にActorがいるか確認する。
+                var actor = entities.GetActorAt(point);
+
+                //それがプレイヤーなら攻撃する。
+                if (entities.IsPlayer(actor))
                 {
-                    body.Attack(player);
-                    await view.AttackAnimation(animationSpeedFactor, token);
+                    body.Attack(actor);
+                    await view.AttackAnimation(point, animationSpeedFactor, token);
                     return;
                 }
 
-                //地形が空なら移動する。
+                //それがプレイヤー以外なら、行動入力へ戻る。
+                if(actor != null)
+                {
+                    continue;
+                }
+
+                //Actorがいない上に、地形が空なら移動する。
                 if (floor.GetTerrainType(point) == FloorType.Empty)
                 {
                     body.StepTo(point);
-                    await view.StepAnimation(animationSpeedFactor, token);
+                    await view.StepAnimation(point, animationSpeedFactor, token);
                     return;
                 }
             }

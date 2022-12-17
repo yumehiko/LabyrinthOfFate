@@ -9,9 +9,9 @@ namespace yumehiko.LOF.View
 	public interface IActorView
 	{
 		void DestroySelf();
-		UniTask WaitAnimation(float animationSpeedFactor, CancellationToken token);
-		UniTask StepAnimation(float animationSpeedFactor, CancellationToken token);
-		UniTask AttackAnimation(float animationSpeedFactor, CancellationToken token);
-		UniTask ItemAnimation(float animationSpeedFactor, CancellationToken token);
+		UniTask WaitAnimation(Vector2Int point, float speedFactor, CancellationToken token);
+		UniTask StepAnimation(Vector2Int point, float speedFactor, CancellationToken token);
+		UniTask AttackAnimation(Vector2Int point, float speedFactor, CancellationToken token);
+		UniTask ItemAnimation(Vector2Int point, float speedFactor, CancellationToken token);
 	}
 }

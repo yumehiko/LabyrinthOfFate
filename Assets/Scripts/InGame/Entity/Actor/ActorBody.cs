@@ -9,7 +9,8 @@ using System.Threading;
 namespace yumehiko.LOF.Model
 {
     /// <summary>
-    /// Actorの行動を実行する。
+    /// ActorのModel実体。
+    /// ステータスを管理し、行動を実行する。
     /// </summary>
     public class ActorBody : IActor
     {
@@ -17,13 +18,13 @@ namespace yumehiko.LOF.Model
         public Vector2Int Position { get; private set; }
         public ActorType ActorType { get; }
         public EntityType EntityType => EntityType.Actor;
-        public IObservable<Unit> OnDie => onDie;
+        public IReadOnlyReactiveProperty<bool> IsDied => isDied;
         public IObservable<Unit> OnStepStart => onStep;
         public IObservable<Unit> OnAttackStart => onAttack;
 
         private readonly ActorStatus status;
         private readonly IntReactiveProperty hp;
-        private readonly Subject<Unit> onDie;
+        private readonly BoolReactiveProperty isDied = new BoolReactiveProperty(false);
         private readonly Subject<Unit> onStep = new Subject<Unit>();
         private readonly Subject<Unit> onAttack = new Subject<Unit>();
 
@@ -31,11 +32,13 @@ namespace yumehiko.LOF.Model
         {
             this.status = status;
             hp = new IntReactiveProperty(status.HP);
-            onDie = new Subject<Unit>();
             Position = position;
         }
 
-        public void Die() => onDie.OnNext(Unit.Default);
+        public void Die()
+        {
+            isDied.Value = true;
+        }
 
         /// <summary>
         /// 指定したActorに攻撃する。
@@ -55,8 +58,17 @@ namespace yumehiko.LOF.Model
         /// <param name="ad"></param>
         public void GetDamage(IActor dealer, int ad)
         {
+            if(isDied.Value)
+            {
+                return;
+            }
+
             //MEMO: なんか跳ね返したりする場合もあるし、攻撃者はメモっておきたいが現状は使わない。
             hp.Value = Mathf.Max(hp.Value - ad, 0);
+            if(hp.Value <= 0)
+            {
+                Die();
+            }
         }
 
         /// <summary>
