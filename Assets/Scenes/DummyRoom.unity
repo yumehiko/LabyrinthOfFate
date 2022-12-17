@@ -188,7 +188,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.08, g: 0.08, b: 0.08, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -408,7 +408,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemap: {fileID: 780754805}
   tiles:
-  - {fileID: 11400000, guid: 087f12dd2ab0c43108d9200fe0ab6ef2, type: 2}
+  - {fileID: 11400000, guid: 2b9a98ff9b3184904ae4c3d42beab1ea, type: 2}
 --- !u!1 &1019438510
 GameObject:
   m_ObjectHideFlags: 0
@@ -630,7 +630,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilemap: {fileID: 1076533120}
   tiles:
-  - {fileID: 11400000, guid: f0aae9723c37c4193bb546e71dedf076, type: 2}
+  - {fileID: 11400000, guid: 0647c8c13dd2e45f4baba51661a9b756, type: 2}
+  - {fileID: 11400000, guid: d244b574bb6e84c55bbb7058298f260c, type: 2}
+  - {fileID: 11400000, guid: dfd379b5a53054665b759302d6f182a0, type: 2}
+  - {fileID: 11400000, guid: 305576826289a450f97ae6e7761f979c, type: 2}
+  - {fileID: 11400000, guid: ddcf63b8af8a14198b932a4c4835b666, type: 2}
 --- !u!1 &1805075359
 GameObject:
   m_ObjectHideFlags: 0
