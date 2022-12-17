@@ -11,7 +11,7 @@ namespace yumehiko.LOF.Editor
     {
         [ContextMenuItem("WriteJson", "WriteJson")]
         [SerializeField] private string jsonName;
-        [SerializeField] private Tilemap terrainMap;
+        [SerializeField] private Tilemap dungeonMap;
         [SerializeField] private Tilemap spawnPointMap;
 
         public void WriteJson()
@@ -26,8 +26,8 @@ namespace yumehiko.LOF.Editor
 
         private DungeonAsset GenerateDungeonAsset()
         {
-            terrainMap.CompressBounds();
-            BoundsInt bounds = terrainMap.cellBounds;
+            dungeonMap.CompressBounds();
+            BoundsInt bounds = dungeonMap.cellBounds;
             var dungeon = GetDungeon(bounds);
             var spawnPoints = GetActorSpawnPoints(bounds);
             var dungeonAsset = new DungeonAsset(dungeon, spawnPoints);
@@ -38,7 +38,7 @@ namespace yumehiko.LOF.Editor
         {
             //TODO: 外周にひとまわりBorderWallを敷けば安全
             //bounds.size += new Vector3Int(2, 2, 0);
-            TileBase[] allTiles = terrainMap.GetTilesBlock(bounds);
+            TileBase[] allTiles = dungeonMap.GetTilesBlock(bounds);
             List<DungeonTile> dungeonTiles = new List<DungeonTile>();
 
             for (int y = 0; y < bounds.size.y; y++)
@@ -46,14 +46,14 @@ namespace yumehiko.LOF.Editor
                 for (int x = 0; x < bounds.size.x; x++)
                 {
                     TileBase tileBase = allTiles[x + y * bounds.size.x]; //MEMO: allTilesは1次元配列なので、indexはこのように取得している。
-                    TileType type = GetTerrainTypeFromTile(tileBase);
+                    TileType type = GetTileType(tileBase);
                     var dungeonTile = new DungeonTile(new Vector2Int(x, y), type);
                     dungeonTiles.Add(dungeonTile);
                 }
             }
 
-            var floor = new Dungeon(dungeonTiles, bounds);
-            return floor;
+            var dungeon = new Dungeon(dungeonTiles, bounds);
+            return dungeon;
         }
 
         private ActorSpawnPoints GetActorSpawnPoints(BoundsInt bounds)
@@ -80,7 +80,7 @@ namespace yumehiko.LOF.Editor
             return spawnPoints;
         }
 
-        private TileType GetTerrainTypeFromTile(TileBase tile)
+        private TileType GetTileType(TileBase tile)
         {
             if (tile == null)
             {

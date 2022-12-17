@@ -19,7 +19,7 @@ namespace yumehiko.LOF.Presenter
         public ActorType ActorType => ActorType.Player;
         public Actor Body => body;
 
-        private readonly Dungeon floor;
+        private readonly Dungeon dungeon;
         private readonly Actors actors;
         private readonly Actor body;
         private readonly IActorView view;
@@ -27,9 +27,9 @@ namespace yumehiko.LOF.Presenter
         private readonly AsyncReactiveProperty<ActorDirection> inputDirection = new AsyncReactiveProperty<ActorDirection>(ActorDirection.None);
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-        public Player(Dungeon floor, Actors actors, Actor body, IActorView view)
+        public Player(Dungeon dungeon, Actors actors, Actor body, IActorView view)
         {
-            this.floor = floor;
+            this.dungeon = dungeon;
             this.actors = actors;
             this.body = body;
             this.view = view;
@@ -84,8 +84,8 @@ namespace yumehiko.LOF.Presenter
                 }
 
                 //指定地点の地形をチェックする。
-                var floorType = floor.GetTerrainType(targetPoint);
-                if (floorType == TileType.Empty)
+                var tileType = dungeon.GetTileType(targetPoint);
+                if (tileType == TileType.Empty)
                 {
                     body.StepTo(targetPoint);
                     await view.StepAnimation(targetPoint, animationSpeedFactor, token);

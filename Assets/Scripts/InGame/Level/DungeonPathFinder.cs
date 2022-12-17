@@ -18,29 +18,24 @@ namespace yumehiko.LOF.Model
         private WorldGrid worldGrid;
         private PathFinder pathfinder;
 
-        public DungeonPathFinder(Dungeon floor)
+        public DungeonPathFinder(Dungeon dungeon)
         {
             var pathfinderOptions = new PathFinderOptions();
-            tiles = MakeTiles(floor);
+            tiles = MakeTiles(dungeon);
             worldGrid = new WorldGrid(tiles);
             pathfinder = new PathFinder(worldGrid, pathfinderOptions);
         }
 
         public Vector2Int[] FindPath(Vector2Int start, Vector2Int end) => pathfinder.FindPath(start, end);
 
-        public void RefleshActorCollision(Vector2Int start, Vector2Int end)
+        private short[,] MakeTiles(Dungeon dungeon)
         {
-
-        }
-
-        private short[,] MakeTiles(Dungeon floor)
-        {
-            var size = floor.Bounds.size;
+            var size = dungeon.Bounds.size;
             var tiles = new short[size.x, size.y];
-            foreach (var floorTile in floor)
+            foreach (var dungeonTile in dungeon)
             {
-                short tile = GetTileNumber(floorTile.Type);
-                tiles[floorTile.Position.x, floorTile.Position.y] = tile;
+                short tile = GetTileNumber(dungeonTile.Type);
+                tiles[dungeonTile.Position.x, dungeonTile.Position.y] = tile;
             }
 
             return tiles;

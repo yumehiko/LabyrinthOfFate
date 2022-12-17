@@ -48,11 +48,11 @@ namespace yumehiko.LOF.Presenter
             disposables.Dispose();
         }
 
-        public void SpawnEntities(ActorSpawnPoints spawnPoints)
+        public void SpawnActors(ActorSpawnPoints spawnPoints)
         {
             foreach (var spawnPoint in spawnPoints)
             {
-                SpawnEntity(spawnPoint);
+                SpawnActor(spawnPoint);
             }
             if (player == null)
             {
@@ -60,7 +60,7 @@ namespace yumehiko.LOF.Presenter
             }
         }
 
-        private void SpawnEntity(ActorSpawnPoint spawnPoint)
+        private void SpawnActor(ActorSpawnPoint spawnPoint)
         {
             switch (spawnPoint.Type)
             {
@@ -77,7 +77,7 @@ namespace yumehiko.LOF.Presenter
         private IActorBrain SpawnPlayer(ActorSpawnPoint spawnPoint)
         {
             var body = models.SpawnPlayer(playerInformation.Status, spawnPoint.Position);
-            var view = views.SpawnEntityView(spawnPoint, playerInformation.View);
+            var view = views.SpawnActorView(spawnPoint, playerInformation.View);
             var brain = new Player(dungeon, models, body, view);
             disposables.Add(brain);
             return brain;
@@ -89,7 +89,7 @@ namespace yumehiko.LOF.Presenter
             var id = UnityEngine.Random.Range(0, enemyProfiles.Count);
             var profile = enemyProfiles[id];
             var body = models.SpawnEnemy(profile.Status, spawnPoint.Position);
-            var view = views.SpawnEntityView(spawnPoint, profile.View);
+            var view = views.SpawnActorView(spawnPoint, profile.View);
             var brain = SpawnBrain(profile.Status.BrainType, body, view);
             enemies.Add(brain);
             body.IsDied

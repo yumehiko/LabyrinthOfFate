@@ -30,7 +30,7 @@ namespace yumehiko.LOF.Presenter
 
         public void Start()
         {
-            actorBrains.SpawnEntities(actorSpawnPoints);
+            actorBrains.SpawnActors(actorSpawnPoints);
             turn.StartTurnLoop(actorBrains.Player, actorBrains.Enemies).Forget();
         }
 

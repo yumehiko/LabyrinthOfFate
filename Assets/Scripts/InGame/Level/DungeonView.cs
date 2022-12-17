@@ -20,9 +20,9 @@ namespace yumehiko.LOF.View
             SetTiles(dungeon);
         }
 
-        private void SetTiles(Dungeon floor)
+        private void SetTiles(Dungeon dungeon)
         {
-            foreach (var tile in floor)
+            foreach (var tile in dungeon)
             {
                 SetTile(tile);
             }

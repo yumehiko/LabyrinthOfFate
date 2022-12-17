@@ -13,14 +13,14 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
 	public class RandomStepper : IActorBrain
     {
-        private readonly Dungeon floor;
+        private readonly Dungeon dungeon;
         private readonly Actors actors;
         private readonly Actor body;
         private readonly IActorView view;
 
-        public RandomStepper(Dungeon floor, Actors actors, Actor body, IActorView view)
+        public RandomStepper(Dungeon dungeon, Actors actors, Actor body, IActorView view)
         {
-            this.floor = floor;
+            this.dungeon = dungeon;
             this.actors = actors;
             this.body = body;
             this.view = view;
@@ -66,7 +66,7 @@ namespace yumehiko.LOF.Presenter
                 }
 
                 //Actorがいない上に、地形が空なら移動する。
-                if (floor.GetTerrainType(point) == TileType.Empty)
+                if (dungeon.GetTileType(point) == TileType.Empty)
                 {
                     body.StepTo(point);
                     await view.StepAnimation(point, animationSpeedFactor, token);

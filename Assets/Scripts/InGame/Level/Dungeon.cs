@@ -36,7 +36,7 @@ namespace yumehiko.LOF.Model
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public TileType GetTerrainType(Vector2Int position)
+        public TileType GetTileType(Vector2Int position)
         {
             //MEMO:positionにtileがない場合は多分例外が飛ぶ
             var findResult = tiles.Find(tile => tile.Position == position);

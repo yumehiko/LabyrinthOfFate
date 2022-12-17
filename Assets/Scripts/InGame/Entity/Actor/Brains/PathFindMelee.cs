@@ -13,14 +13,14 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
     public class PathFindMelee : IActorBrain
     {
-        private readonly Dungeon floor;
+        private readonly Dungeon dungeon;
         private readonly Actors actors;
         private readonly Actor body;
         private readonly IActorView view;
 
-        public PathFindMelee(Dungeon floor, Actors actors, Actor body, IActorView view)
+        public PathFindMelee(Dungeon dungeon, Actors actors, Actor body, IActorView view)
         {
-            this.floor = floor;
+            this.dungeon = dungeon;
             this.actors = actors;
             this.body = body;
             this.view = view;
@@ -33,7 +33,7 @@ namespace yumehiko.LOF.Presenter
         {
             var start = body.Position;
             var end = actors.GetPlayerPosition();
-            var path = floor.FindPath(start, end);
+            var path = dungeon.FindPath(start, end);
             await UniTask.DelayFrame(1, cancellationToken: token);
 
             //経路がない場合は、その場で待機。
