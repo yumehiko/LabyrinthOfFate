@@ -27,6 +27,10 @@ namespace yumehiko.LOF.Presenter
             _ = cursor.Position
                 .Subscribe(position => CheckActorAt(position))
                 .AddTo(this);
+
+            level.Actors.Player.Status.HP
+                .Subscribe(_ => SetInfo(level.Actors.Player))
+                .AddTo(this);
         }
 
         /// <summary>
@@ -41,7 +45,7 @@ namespace yumehiko.LOF.Presenter
             }
 
             targetName.text = actor.Name;
-            targetHP.text = $"HP : {actor.Status.HP.Value} / {actor.Status.MaxHP.Value}";
+            targetHP.text = $"HP:{actor.Status.HP.Value}/{actor.Status.MaxHP.Value}";
         }
 
         private void CheckActorAt(Vector2Int position)
