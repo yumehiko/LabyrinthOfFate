@@ -883,6 +883,7 @@ GameObject:
   - component: {fileID: 1868557872}
   - component: {fileID: 1868557871}
   - component: {fileID: 1868557874}
+  - component: {fileID: 1868557873}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -908,15 +909,9 @@ MonoBehaviour:
   autoInjectGameObjects: []
   dungeonJson: {fileID: 4900000, guid: 16848846dac55451b913f44457f5e74b, type: 3}
   enemyProfiles:
-  - {fileID: 11400000, guid: 2a7b4b400046c4dcb9e35ab9cb9151b1, type: 2}
   - {fileID: 11400000, guid: e1bce574ab3bf49cca0cf6cc73d6b922, type: 2}
-  playerInformation:
-    view: {fileID: 7473237139455401453, guid: e8e27c5be133e440a901ef8256c1ef5b, type: 3}
-    status:
-      brainType: 1
-      name: Player
-      hp: 10
-      ad: 2
+  - {fileID: 11400000, guid: a84512a42b69740799c2b1c5c8398834, type: 2}
+  playerInformation: {fileID: 1868557873}
   mainCamera: {fileID: 519420031}
   dungeonView: {fileID: 1868557874}
   actorViews: {fileID: 1019438512}
@@ -934,6 +929,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1868557873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1868557870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19dc12982ff854852863bda9ee2febb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  brainType: 1
+  view: {fileID: 7473237139455401453, guid: e8e27c5be133e440a901ef8256c1ef5b, type: 3}
+  actorName: Player
+  baseHP: 10
+  weapon: {fileID: 11400000, guid: 6e36cfe2fc27e49448ea91b037ed2574, type: 2}
+  armor: {fileID: 11400000, guid: 6e36cfe2fc27e49448ea91b037ed2574, type: 2}
 --- !u!114 &1868557874
 MonoBehaviour:
   m_ObjectHideFlags: 0

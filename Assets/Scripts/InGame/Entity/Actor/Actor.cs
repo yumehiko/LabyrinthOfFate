@@ -14,32 +14,20 @@ namespace yumehiko.LOF.Model
     /// </summary>
     public class Actor : IActor
     {
-        public IReadOnlyReactiveProperty<int> HP => hp;
         public Vector2Int Position { get; private set; }
         public ActorType ActorType { get; }
-        public IReadOnlyReactiveProperty<bool> IsDied => isDied;
-        public IObservable<Unit> OnStepStart => onStep;
-        public IObservable<Unit> OnAttackStart => onAttack;
+        public IReadOnlyReactiveProperty<bool> IsDied => status.IsDied;
 
         private readonly ActorStatus status;
-        private readonly IntReactiveProperty hp;
-        private readonly BoolReactiveProperty isDied = new BoolReactiveProperty(false);
-        private readonly Subject<Unit> onStep = new Subject<Unit>();
-        private readonly Subject<Unit> onAttack = new Subject<Unit>();
 
-        //TODO:HPとかは別のクラスに移したい。
-        //ActorStatusAssetクラスと、それから生成するActorStatusクラスに分ける。
-        public Actor(ActorStatus status, Vector2Int position)
+        public Actor(IActorProfile profile, Vector2Int position)
         {
-            this.status = status;
-            hp = new IntReactiveProperty(status.HP);
+            status = new ActorStatus(profile);
             Position = position;
         }
 
-        public void Die()
-        {
-            isDied.Value = true;
-        }
+        public void Die() => status.Die();
+        public void GetDamage(IActor dealer, AttackStatus attack) => status.GetDamage(dealer, attack);
 
         /// <summary>
         /// 指定したActorに攻撃する。
@@ -48,29 +36,10 @@ namespace yumehiko.LOF.Model
         /// <param name="ad"></param>
         public void Attack(IActor target)
         {
-            target.GetDamage(this, status.AD);
-            onAttack.OnNext(Unit.Default);
+            var attack = status.PickAttackStatus();
+            target.GetDamage(this, attack);
         }
 
-        /// <summary>
-        /// ダメージを受ける。
-        /// </summary>
-        /// <param name="dealer"></param>
-        /// <param name="ad"></param>
-        public void GetDamage(IActor dealer, int ad)
-        {
-            if(isDied.Value)
-            {
-                return;
-            }
-
-            //MEMO: なんか跳ね返したりする場合もあるし、攻撃者はメモっておきたいが現状は使わない。
-            hp.Value = Mathf.Max(hp.Value - ad, 0);
-            if(hp.Value <= 0)
-            {
-                Die();
-            }
-        }
 
         /// <summary>
         /// 指定方向へ移動する。
@@ -80,7 +49,6 @@ namespace yumehiko.LOF.Model
         public void StepTo(Vector2Int position)
         {
             Position = position;
-            onStep.OnNext(Unit.Default);
         }
 
         /// <summary>

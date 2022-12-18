@@ -46,7 +46,8 @@ namespace yumehiko.LOF.Presenter
                 foreach (IActorBrain enemy in enemies)
                 {
                     token.ThrowIfCancellationRequested();
-                    await enemy.DoTurnAction(0.5f, token);
+                    enemy.DoTurnAction(0.5f, token).Forget();
+                    await UniTask.Delay(TimeSpan.FromSeconds(0.05f), cancellationToken: token);
                 }
             }
         }

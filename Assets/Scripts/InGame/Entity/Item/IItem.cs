@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace yumehiko.LOF.Model
 {
-	public enum BrainType
+	/// <summary>
+    /// アイテム。
+    /// </summary>
+	public interface IItem 
 	{
-		None,
-		Player,
-		RandomStep,
-		PathFindMelee,
+		
 	}
 }

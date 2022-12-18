@@ -11,7 +11,7 @@ public class LevelLifetimeScope : LifetimeScope
 {
     [SerializeField] private TextAsset dungeonJson; //TODO: ここではなくゲーム管理側が渡す。
     [SerializeField] private List<ActorProfile> enemyProfiles; //TODO: ここではなくゲーム管理側が渡す。
-    [SerializeField] private PlayerInformation playerInformation; //TODO: ここではなくゲーム管理側が渡す。
+    [SerializeField] private PlayerProfile playerInformation; //TODO: ここではなくゲーム管理側が渡す。
     [Space(10)]
     [SerializeField] private Camera mainCamera;
     [SerializeField] private DungeonView dungeonView;

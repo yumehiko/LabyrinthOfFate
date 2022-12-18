@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 874cb8f4ff81b4708b993b0c00f8503f, type: 3}
-  m_Name: PathFindMan
+  m_Name: RandomStepMan
   m_EditorClassIdentifier: 
-  brainType: 3
-  view: {fileID: 2031511874585273929, guid: 800e267098fe443c093f673696d789a6, type: 3}
-  actorName: PathFindMan
+  brainType: 2
+  view: {fileID: 2031511874585273929, guid: f2554523d04c4458fa2764fc54b5ba68, type: 3}
+  actorName: Random Step Man
   baseHP: 0
   attackStatuses:
+  - ad: 2
+  - ad: 2
   - ad: 1
   - ad: 1
-  - ad: 1
-  - ad: 1
-  - ad: 1
-  - ad: 1
+  - ad: 0
+  - ad: 0
   defenceStatus:
     hp: 2

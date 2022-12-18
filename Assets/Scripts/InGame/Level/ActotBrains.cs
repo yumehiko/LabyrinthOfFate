@@ -24,14 +24,14 @@ namespace yumehiko.LOF.Presenter
 
         private readonly List<ActorProfile> enemyProfiles;
         private readonly Dungeon dungeon;
-        private readonly PlayerInformation playerInformation;
+        private readonly IActorProfile playerProfile;
 
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
         [Inject]
         public ActorBrains(
             Dungeon dungeon,
-            PlayerInformation playerInformation,
+            PlayerProfile playerProfile,
             List<ActorProfile> enemyProfiles,
             Actors models,
             ActorViews views)
@@ -39,7 +39,7 @@ namespace yumehiko.LOF.Presenter
             this.models = models;
             this.views = views;
             this.dungeon = dungeon;
-            this.playerInformation = playerInformation;
+            this.playerProfile = playerProfile;
             this.enemyProfiles = enemyProfiles;
         }
 
@@ -76,8 +76,8 @@ namespace yumehiko.LOF.Presenter
 
         private IActorBrain SpawnPlayer(ActorSpawnPoint spawnPoint)
         {
-            var body = models.SpawnPlayer(playerInformation.Status, spawnPoint.Position);
-            var view = views.SpawnActorView(spawnPoint, playerInformation.View);
+            var body = models.SpawnPlayer(playerProfile, spawnPoint.Position);
+            var view = views.SpawnActorView(spawnPoint, playerProfile.View);
             var brain = new Player(dungeon, models, body, view);
             disposables.Add(brain);
             return brain;
@@ -88,9 +88,9 @@ namespace yumehiko.LOF.Presenter
         {
             var id = UnityEngine.Random.Range(0, enemyProfiles.Count);
             var profile = enemyProfiles[id];
-            var body = models.SpawnEnemy(profile.Status, spawnPoint.Position);
+            var body = models.SpawnEnemy(profile, spawnPoint.Position);
             var view = views.SpawnActorView(spawnPoint, profile.View);
-            var brain = SpawnBrain(profile.Status.BrainType, body, view);
+            var brain = SpawnBrain(profile.BrainType, body, view);
             enemies.Add(brain);
             body.IsDied
                 .Where(isTrue => isTrue)

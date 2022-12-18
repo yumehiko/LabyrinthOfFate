@@ -20,6 +20,6 @@ namespace yumehiko.LOF.Model
         /// </summary>
         /// <param name="dealer"></param>
         /// <param name="ad"></param>
-		void GetDamage(IActor dealer, int ad);
+		void GetDamage(IActor dealer, AttackStatus attack);
 	}
 }

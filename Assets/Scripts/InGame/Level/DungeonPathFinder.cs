@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using AStar.Options;
 using AStar;
-using AStar.Collections;
-using AStar.Heuristics;
+using System.Linq;
 
 namespace yumehiko.LOF.Model
 {
@@ -14,9 +13,9 @@ namespace yumehiko.LOF.Model
     /// </summary>
     public class DungeonPathFinder
     {
-        private short[,] tiles;
-        private WorldGrid worldGrid;
-        private PathFinder pathfinder;
+        private readonly short[,] tiles;
+        private readonly WorldGrid worldGrid;
+        private readonly PathFinder pathfinder;
 
         public DungeonPathFinder(Dungeon dungeon)
         {
@@ -26,7 +25,12 @@ namespace yumehiko.LOF.Model
             pathfinder = new PathFinder(worldGrid, pathfinderOptions);
         }
 
-        public Vector2Int[] FindPath(Vector2Int start, Vector2Int end) => pathfinder.FindPath(start, end);
+        public Vector2Int[] FindPath(Vector2Int start, Vector2Int end)
+        {
+            return pathfinder.FindPath(new Position(start.x, start.y), new Position(end.x, end.y))
+                .Select(position => new Vector2Int(position.Row, position.Column))
+                .ToArray();
+        }
 
         private short[,] MakeTiles(Dungeon dungeon)
         {

@@ -8,7 +8,7 @@ using AStar.Options;
 
 namespace AStar
 {
-    public partial class PathFinder : IFindAPath
+    public class PathFinder : IFindAPath
     {
         private const int ClosedValue = 0;
         private const int DistanceBetweenNodes = 1;
