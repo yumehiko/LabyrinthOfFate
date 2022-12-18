@@ -15,9 +15,9 @@ namespace yumehiko.LOF.View
         [SerializeField] private TileViewSetter borderWallTileSetter;
 
         [Inject]
-        public void Construct(Dungeon dungeon)
+        public void Construct(DungeonAsset dungeonAsset)
         {
-            SetTiles(dungeon);
+            SetTiles(dungeonAsset.Dungeon);
         }
 
         private void SetTiles(Dungeon dungeon)

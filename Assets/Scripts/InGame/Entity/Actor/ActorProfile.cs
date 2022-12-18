@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using yumehiko.LOF.Presenter;
+using yumehiko.LOF.Model;
 using yumehiko.LOF.View;
 
-namespace yumehiko.LOF.Model
+namespace yumehiko.LOF.Presenter
 {
 	/// <summary>
 	/// あるレベルに登場できるActorのプロフィール。

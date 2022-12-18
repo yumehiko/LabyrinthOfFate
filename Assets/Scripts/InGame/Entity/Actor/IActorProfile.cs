@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using yumehiko.LOF.Presenter;
 using yumehiko.LOF.View;
+using yumehiko.LOF.Presenter;
 
 namespace yumehiko.LOF.Model
 {

@@ -94,7 +94,7 @@ namespace yumehiko.Input
             inputActions.Player.Peke.started += context => onPeke.Value = true;
             inputActions.Player.Peke.canceled += context => onPeke.Value = false;
 
-            inputActions.Player.Pointer.performed += context => onPointer.Value = AxisInputNormalize(context.ReadValue<Vector2>());
+            inputActions.Player.Pointer.performed += context => onPointer.Value = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
 
             inputActions.Player.RightStick.performed += context => onRightStick.Value = context.ReadValue<Vector2>();
             inputActions.Player.RightStick.canceled += context => onRightStick.Value = context.ReadValue<Vector2>();

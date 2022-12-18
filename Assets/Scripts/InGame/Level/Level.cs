@@ -12,25 +12,22 @@ namespace yumehiko.LOF.Presenter
     /// レベル。攻略が要求される1つの単位。
     /// ダンジョン、プレイヤー、敵などのエンティティから成る。
     /// </summary>
-	public class Level : IStartable
+	public class Level
     {
-        private readonly ActorSpawnPoints actorSpawnPoints;
-        private readonly ActorBrains actorBrains;
+        public Dungeon Dungeon { get; }
+        public Actors Actors { get; }
         private readonly Turn turn;
 
         [Inject]
-        public Level(Dungeon dungeon, ActorSpawnPoints actorSpawnPoints,  ActorBrains actorBrains, Turn turn, Camera mainCamera)
+        public Level(DungeonAsset dungeonAsset, Actors actors, Turn turn, ActorBrains actorBrains, Camera mainCamera)
         {
-            this.actorSpawnPoints = actorSpawnPoints;
-            this.actorBrains = actorBrains;
+            Dungeon = dungeonAsset.Dungeon;
+            Actors = actors;
             this.turn = turn;
-            var cameraPosition = new Vector3(-dungeon.Bounds.position.x, -dungeon.Bounds.position.y, mainCamera.transform.position.z);
-            mainCamera.transform.position = cameraPosition;
-        }
 
-        public void Start()
-        {
-            actorBrains.SpawnActors(actorSpawnPoints);
+            var cameraPosition = new Vector3(-Dungeon.Bounds.position.x, -Dungeon.Bounds.position.y, mainCamera.transform.position.z);
+            mainCamera.transform.position = cameraPosition;
+
             turn.StartTurnLoop(actorBrains.Player, actorBrains.Enemies).Forget();
         }
 

@@ -14,20 +14,21 @@ namespace yumehiko.LOF.Model
     /// </summary>
     public class Actor : IActor
     {
+        public string Name { get; }
         public Vector2Int Position { get; private set; }
         public ActorType ActorType { get; }
-        public IReadOnlyReactiveProperty<bool> IsDied => status.IsDied;
-
-        private readonly ActorStatus status;
+        public IReadOnlyReactiveProperty<bool> IsDied => Status.IsDied;
+        public ActorStatus Status { get; }
 
         public Actor(IActorProfile profile, Vector2Int position)
         {
-            status = new ActorStatus(profile);
+            Status = new ActorStatus(profile);
+            Name = profile.ActorName;
             Position = position;
         }
 
-        public void Die() => status.Die();
-        public void GetDamage(IActor dealer, AttackStatus attack) => status.GetDamage(dealer, attack);
+        public void Die() => Status.Die();
+        public void GetDamage(IActor dealer, AttackStatus attack) => Status.GetDamage(dealer, attack);
 
         /// <summary>
         /// 指定したActorに攻撃する。
@@ -36,7 +37,7 @@ namespace yumehiko.LOF.Model
         /// <param name="ad"></param>
         public void Attack(IActor target)
         {
-            var attack = status.PickAttackStatus();
+            var attack = Status.PickAttackStatus();
             target.GetDamage(this, attack);
         }
 

@@ -17,6 +17,9 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
     public class Turn : IDisposable
     {
+        public IObservable<Unit> OnPlayerActEnd => onPlayerActEnd;
+
+        private Subject<Unit> onPlayerActEnd = new Subject<Unit>();
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         /// <summary>
@@ -41,8 +44,12 @@ namespace yumehiko.LOF.Presenter
         {
             while (true)
             {
+                //プレイヤーターン
                 token.ThrowIfCancellationRequested();
                 await player.DoTurnAction(1.0f, token);
+                onPlayerActEnd.OnNext(Unit.Default);
+
+                //エネミーターン
                 foreach (IActorBrain enemy in enemies)
                 {
                     token.ThrowIfCancellationRequested();

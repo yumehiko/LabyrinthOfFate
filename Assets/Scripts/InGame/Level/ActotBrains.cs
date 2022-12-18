@@ -30,7 +30,7 @@ namespace yumehiko.LOF.Presenter
 
         [Inject]
         public ActorBrains(
-            Dungeon dungeon,
+            DungeonAsset dungeonAsset,
             PlayerProfile playerProfile,
             List<ActorProfile> enemyProfiles,
             Actors models,
@@ -38,9 +38,10 @@ namespace yumehiko.LOF.Presenter
         {
             this.models = models;
             this.views = views;
-            this.dungeon = dungeon;
+            this.dungeon = dungeonAsset.Dungeon;
             this.playerProfile = playerProfile;
             this.enemyProfiles = enemyProfiles;
+            SpawnActors(dungeonAsset.ActorSpawnPoints);
         }
 
         public void Dispose()

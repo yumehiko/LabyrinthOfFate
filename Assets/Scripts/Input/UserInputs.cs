@@ -331,11 +331,11 @@ namespace yumehiko.Input
                 },
                 {
                     ""name"": """",
-                    ""id"": ""b4a99e52-e0aa-4665-baab-13ebfc9c3205"",
-                    ""path"": ""<Pointer>/delta"",
+                    ""id"": ""a04da37b-e636-440f-a811-5801a6529411"",
+                    ""path"": ""<Mouse>/position"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Touch"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Pointer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false

@@ -21,8 +21,7 @@ public class LevelLifetimeScope : LifetimeScope
     {
         var dungeonAsset = JsonUtility.FromJson<DungeonAsset>(dungeonJson.ToString());
         dungeonAsset.Dungeon.MakePathFinder();
-        builder.RegisterInstance(dungeonAsset.ActorSpawnPoints);
-        builder.RegisterInstance(dungeonAsset.Dungeon);
+        builder.RegisterInstance(dungeonAsset);
         builder.RegisterInstance(playerInformation);
         builder.RegisterInstance(enemyProfiles);
 
@@ -33,6 +32,6 @@ public class LevelLifetimeScope : LifetimeScope
         builder.RegisterComponent(mainCamera);
         builder.RegisterComponent(dungeonView);
         builder.Register<Turn>(Lifetime.Singleton);
-        builder.RegisterEntryPoint<Level>(Lifetime.Singleton);
+        builder.Register<Level>(Lifetime.Singleton);
     }
 }
