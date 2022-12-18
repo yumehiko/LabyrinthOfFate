@@ -34,8 +34,9 @@ namespace yumehiko.LOF.View
 
         private void OnMovePointer(Vector2 point)
         {
-            var pointToVInt = new Vector2Int((int)(point.x + 0.5f), (int)(point.y + 0.5f));
-            position.Value = pointToVInt;
+            var x = Mathf.RoundToInt(point.x);
+            var y = Mathf.RoundToInt(point.y);
+            position.Value = new Vector2Int(x, y);
         }
 
         private void ActiveRenderer()
