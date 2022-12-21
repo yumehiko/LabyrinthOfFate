@@ -15,6 +15,8 @@ namespace yumehiko.LOF.Model
         public IReadOnlyReactiveProperty<int> MaxHP => maxHP;
         public IReadOnlyReactiveProperty<int> HP => hp;
         public IReadOnlyReactiveProperty<bool> IsDied => isDied;
+        public IReadOnlyList<AttackStatus> Weapons => equipSlot.Weapon.AttackStatuses;
+        public DefenceStatus armor => equipSlot.Armor.DefenceStatus;
 
         private readonly IntReactiveProperty maxHP;
         private readonly IntReactiveProperty hp;

@@ -6,7 +6,7 @@ using System;
 namespace yumehiko.LOF.Model
 {
     /// <summary>
-    /// アイテムの攻撃側が持つ性能。
+    /// アイテムの攻撃側が持つステータス。
     /// </summary>
     [Serializable]
     public class AttackStatus
@@ -22,6 +22,15 @@ namespace yumehiko.LOF.Model
         public AttackStatus(AttackStatus status)
         {
             this.ad = status.ad;
+        }
+
+        /// <summary>
+        /// このステータスがミスに相当するかを返す。
+        /// </summary>
+        /// <returns></returns>
+        public bool IsMiss()
+        {
+            return ad == 0;
         }
     }
 }

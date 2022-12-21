@@ -25,7 +25,9 @@ namespace yumehiko.LOF.Presenter
         private readonly IActorView view;
 
         private readonly AsyncReactiveProperty<ActorDirection> inputDirection = new AsyncReactiveProperty<ActorDirection>(ActorDirection.None);
+        private readonly Subject<Unit> inputWait = new Subject<Unit>();
         private readonly CompositeDisposable disposables = new CompositeDisposable();
+        private bool canControl = false;
 
         public Player(Dungeon dungeon, Actors actors, Actor body, IActorView view)
         {
@@ -35,7 +37,14 @@ namespace yumehiko.LOF.Presenter
             this.view = view;
 
             ReactiveInput.OnMove
+                .Where(_ => canControl)
                 .Subscribe(value => inputDirection.Value = value)
+                .AddTo(disposables);
+
+            ReactiveInput.OnWait
+                .Where(_ => canControl)
+                .Where(isTrue => isTrue)
+                .Subscribe(_ => inputWait.OnNext(Unit.Default))
                 .AddTo(disposables);
         }
 
@@ -49,10 +58,12 @@ namespace yumehiko.LOF.Presenter
         /// </summary>
         public async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
+            canControl = true;
             //移動入力・UI入力を待つ。
             var inputs = new List<UniTask>
             {
                 InputDirection(animationSpeedFactor, token),
+                InputWait(animationSpeedFactor, token),
             };
 
             //いずれかのターン消費行動が確定したら、行動終了。
@@ -78,6 +89,7 @@ namespace yumehiko.LOF.Presenter
                 IActor enemy = actors.GetEnemyAt(targetPoint);
                 if (enemy != null) //Enemyがいるなら、それを攻撃する。
                 {
+                    canControl = false;
                     body.Attack(enemy);
                     await view.AttackAnimation(targetPoint, animationSpeedFactor, token);
                     break;
@@ -87,11 +99,19 @@ namespace yumehiko.LOF.Presenter
                 var tileType = dungeon.GetTileType(targetPoint);
                 if (tileType == TileType.Empty)
                 {
+                    canControl = false;
                     body.StepTo(targetPoint);
                     await view.StepAnimation(targetPoint, animationSpeedFactor, token);
                     break;
                 }
             }
+        }
+
+        private async UniTask InputWait(float animationSpeedFactor, CancellationToken token)
+        {
+            await inputWait.ToUniTask(true, token);
+            canControl = false;
+            await view.WaitAnimation(body.Position, animationSpeedFactor, token);
         }
     }
 }

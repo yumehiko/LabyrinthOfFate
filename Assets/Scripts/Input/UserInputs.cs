@@ -172,6 +172,15 @@ namespace yumehiko.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Wait"",
+                    ""type"": ""Button"",
+                    ""id"": ""857e5c02-bd69-415b-a111-09ac59d829e1"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -645,6 +654,17 @@ namespace yumehiko.Input
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""MoveDownRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""19d95bda-cc86-47d0-8084-bd955448d25a"",
+                    ""path"": ""<Keyboard>/numpad5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Wait"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1259,6 +1279,7 @@ namespace yumehiko.Input
             m_Player_MoveUpLeft = m_Player.FindAction("MoveUpLeft", throwIfNotFound: true);
             m_Player_MoveDownRight = m_Player.FindAction("MoveDownRight", throwIfNotFound: true);
             m_Player_MoveDownLeft = m_Player.FindAction("MoveDownLeft", throwIfNotFound: true);
+            m_Player_Wait = m_Player.FindAction("Wait", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1346,6 +1367,7 @@ namespace yumehiko.Input
         private readonly InputAction m_Player_MoveUpLeft;
         private readonly InputAction m_Player_MoveDownRight;
         private readonly InputAction m_Player_MoveDownLeft;
+        private readonly InputAction m_Player_Wait;
         public struct PlayerActions
         {
             private @UserInputs m_Wrapper;
@@ -1366,6 +1388,7 @@ namespace yumehiko.Input
             public InputAction @MoveUpLeft => m_Wrapper.m_Player_MoveUpLeft;
             public InputAction @MoveDownRight => m_Wrapper.m_Player_MoveDownRight;
             public InputAction @MoveDownLeft => m_Wrapper.m_Player_MoveDownLeft;
+            public InputAction @Wait => m_Wrapper.m_Player_Wait;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1423,6 +1446,9 @@ namespace yumehiko.Input
                     @MoveDownLeft.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveDownLeft;
                     @MoveDownLeft.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveDownLeft;
                     @MoveDownLeft.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMoveDownLeft;
+                    @Wait.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnWait;
+                    @Wait.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnWait;
+                    @Wait.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnWait;
                 }
                 m_Wrapper.m_PlayerActionsCallbackInterface = instance;
                 if (instance != null)
@@ -1475,6 +1501,9 @@ namespace yumehiko.Input
                     @MoveDownLeft.started += instance.OnMoveDownLeft;
                     @MoveDownLeft.performed += instance.OnMoveDownLeft;
                     @MoveDownLeft.canceled += instance.OnMoveDownLeft;
+                    @Wait.started += instance.OnWait;
+                    @Wait.performed += instance.OnWait;
+                    @Wait.canceled += instance.OnWait;
                 }
             }
         }
@@ -1647,6 +1676,7 @@ namespace yumehiko.Input
             void OnMoveUpLeft(InputAction.CallbackContext context);
             void OnMoveDownRight(InputAction.CallbackContext context);
             void OnMoveDownLeft(InputAction.CallbackContext context);
+            void OnWait(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {

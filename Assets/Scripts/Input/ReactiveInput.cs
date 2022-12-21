@@ -29,6 +29,11 @@ namespace yumehiko.Input
         public static IReadOnlyReactiveProperty<ActorDirection> OnMove => onMove;
 
         /// <summary>
+        /// 待機入力。
+        /// </summary>
+        public static IReadOnlyReactiveProperty<bool> OnWait => onWait;
+
+        /// <summary>
         /// ポインター（マウス）操作の入力。
         /// </summary>
         public static IReadOnlyReactiveProperty<Vector2> OnPointer => onPointer;
@@ -72,6 +77,7 @@ namespace yumehiko.Input
         private static BoolReactiveProperty onRestart = new BoolReactiveProperty();
         private static BoolReactiveProperty onInventory = new BoolReactiveProperty();
         private static ActorDirectionReactiveProperty onMove = new ActorDirectionReactiveProperty();
+        private static BoolReactiveProperty onWait = new BoolReactiveProperty();
 
 
 
@@ -117,6 +123,11 @@ namespace yumehiko.Input
             inputActions.Player.MoveUpRight.started += context => onMove.Value = ActorDirection.UpRight;
             inputActions.Player.MoveDownLeft.started += context => onMove.Value = ActorDirection.DownLeft;
             inputActions.Player.MoveDownRight.started += context => onMove.Value = ActorDirection.DownRight;
+
+            //待機入力
+            inputActions.Player.Wait.started += context => onWait.Value = true;
+            inputActions.Player.Wait.canceled += context => onWait.Value = false;
+
         }
 
         public static void ClearDirection()

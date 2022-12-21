@@ -15,62 +15,55 @@ namespace yumehiko.LOF.Presenter
     /// <summary>
     /// このゲームにおけるターンを表す。
     /// </summary>
-    public class Turn : IDisposable
+    public class Turn
     {
         public IObservable<Unit> OnPlayerActEnd => onPlayerActEnd;
 
         private Subject<Unit> onPlayerActEnd = new Subject<Unit>();
-        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource turnTokenSource;
 
         /// <summary>
         /// ターンループを開始する。
         /// </summary>
-        public async UniTaskVoid StartTurnLoop(IActorBrain player, IReadOnlyList<IActorBrain> enemies)
+        public async UniTaskVoid StartTurnLoop(IActorBrain player, IReadOnlyList<IActorBrain> enemies, CancellationToken levelCancellToken)
         {
-            var token = cancellationTokenSource.Token;
-
             try
             {
-                await TurnLoop(player, enemies, token);
+                await TurnLoop(player, enemies, levelCancellToken);
             }
             catch (OperationCanceledException)
             {
+                turnTokenSource?.Cancel();
+                turnTokenSource?.Dispose();
                 Debug.Log("ターンループ終了");
-                Dispose();
             }
         }
 
-        private async UniTask TurnLoop(IActorBrain player, IReadOnlyList<IActorBrain> enemies, CancellationToken token)
+        private async UniTask TurnLoop(IActorBrain player, IReadOnlyList<IActorBrain> enemies, CancellationToken turnCancelToken)
         {
             while (true)
             {
+                turnTokenSource = new CancellationTokenSource();
                 //プレイヤーターン
-                token.ThrowIfCancellationRequested();
-                await player.DoTurnAction(1.0f, token);
+                turnCancelToken.ThrowIfCancellationRequested();
+                await player.DoTurnAction(1.0f, turnTokenSource.Token);
                 onPlayerActEnd.OnNext(Unit.Default);
 
+                List<UniTask> enemyTasks = new List<UniTask>();
                 //エネミーターン
+                //TODO:アニメーション用のキャンセルトークンを作っておくと、アニメーション動作だけほっといてプレイヤーターンへ移れるかもしれん。
+                //あと、挙動によってはアニメーションの終わりを待つべき重要なアクションはあるかもしれん。
                 foreach (IActorBrain enemy in enemies)
                 {
-                    token.ThrowIfCancellationRequested();
-                    enemy.DoTurnAction(0.5f, token).Forget();
-                    await UniTask.Delay(TimeSpan.FromSeconds(0.05f), cancellationToken: token);
+                    turnCancelToken.ThrowIfCancellationRequested();
+                    enemyTasks.Add(enemy.DoTurnAction(0.5f, turnTokenSource.Token));
+                    await UniTask.DelayFrame(2, cancellationToken: turnTokenSource.Token);
                 }
+                await UniTask.WhenAll(enemyTasks);
+
+                turnTokenSource.Cancel();
+                turnTokenSource.Dispose();
             }
-        }
-
-        /// <summary>
-        /// ターンループを終了する。
-        /// </summary>
-        public void EndTurnLoop()
-        {
-            cancellationTokenSource.Cancel();
-        }
-
-        public void Dispose()
-        {
-            cancellationTokenSource?.Cancel();
-            cancellationTokenSource?.Dispose();
         }
     }
 }

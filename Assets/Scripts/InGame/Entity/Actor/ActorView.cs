@@ -23,7 +23,7 @@ namespace yumehiko.LOF.View
                 .Append(transform.DOScaleY(1.0f, speedFactor))
                 .Insert(0, transform.DOMove(initPosition, speedFactor))
                 .SetLink(gameObject);
-            await sequence.Play().ToUniTask(cancellationToken: token);
+            await sequence.Play().ToUniTask(TweenCancelBehaviour.Complete, token);
         }
 
         public async UniTask ItemAnimation(Vector2Int point, float speedFactor, CancellationToken token)
@@ -32,7 +32,7 @@ namespace yumehiko.LOF.View
             transform.localScale = new Vector3(1.0f, 1.5f, 1.0f);
             await transform.DOScaleY(1.0f, speedFactor)
                 .SetLink(gameObject)
-                .ToUniTask(cancellationToken: token);
+                .ToUniTask(TweenCancelBehaviour.Complete, token);
         }
 
         public async UniTask StepAnimation(Vector2Int point, float speedFactor, CancellationToken token)
@@ -44,7 +44,7 @@ namespace yumehiko.LOF.View
                 .Append(transform.DOScaleY(1.0f, 0.75f * speedFactor))
                 .Insert(0, transform.DOMove((Vector2)point, speedFactor))
                 .SetLink(gameObject);
-            await sequence.Play().ToUniTask(cancellationToken: token);
+            await sequence.Play().ToUniTask(TweenCancelBehaviour.Complete, token);
         }
 
         public async UniTask WaitAnimation(Vector2Int point, float speedFactor, CancellationToken token)
@@ -53,7 +53,7 @@ namespace yumehiko.LOF.View
             transform.localScale = new Vector3(1.0f, 0.5f, 1.0f);
             await transform.DOScaleY(1.0f, speedFactor)
                 .SetLink(gameObject)
-                .ToUniTask(cancellationToken: token);
+                .ToUniTask(TweenCancelBehaviour.Complete, token);
         }
 
         public void DestroySelf()

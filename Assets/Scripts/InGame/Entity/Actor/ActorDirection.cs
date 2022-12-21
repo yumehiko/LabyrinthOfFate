@@ -6,7 +6,7 @@ using UniRx;
 namespace yumehiko.LOF
 {
     /// <summary>
-    /// Actorの概念的な上下左右4方向を示す。
+    /// Actorの概念的な8方向を示す。
     /// </summary>
     public enum ActorDirection
     {

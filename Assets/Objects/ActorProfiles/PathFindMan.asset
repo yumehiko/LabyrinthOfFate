@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brainType: 3
   view: {fileID: 2031511874585273929, guid: 800e267098fe443c093f673696d789a6, type: 3}
-  actorName: PathFindMan
+  actorName: PATH FIND MAN
   baseHP: 0
   attackStatuses:
   - ad: 1

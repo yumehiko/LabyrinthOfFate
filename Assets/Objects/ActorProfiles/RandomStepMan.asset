@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brainType: 2
   view: {fileID: 2031511874585273929, guid: f2554523d04c4458fa2764fc54b5ba68, type: 3}
-  actorName: Random Step Man
+  actorName: RANDOM STEP MAN
   baseHP: 0
   attackStatuses:
   - ad: 2
