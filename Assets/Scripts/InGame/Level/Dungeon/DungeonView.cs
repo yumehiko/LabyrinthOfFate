@@ -14,6 +14,7 @@ namespace yumehiko.LOF.View
 	public class DungeonView : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer hider;
+        [SerializeField] private Color hiderColor;
         [SerializeField] private TileViewSetter wallTileSetter;
         [SerializeField] private TileViewSetter borderWallTileSetter;
         [SerializeField] private Camera mainCamera;
@@ -32,6 +33,8 @@ namespace yumehiko.LOF.View
         public Sequence Show()
         {
             Sequence sequence = DOTween.Sequence()
+                .AppendCallback(() => hider.color = hiderColor)
+                .AppendCallback(() => hider.enabled = true)
                 .Append(hider.DOFade(0.0f, 1.0f))
                 .AppendCallback(() => hider.enabled = false);
             return sequence.Play();

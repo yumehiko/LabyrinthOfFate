@@ -21,6 +21,7 @@ namespace yumehiko.LOF.Presenter
 		public DefenceStatus DefenceStatus => defenceStatus;
 		public ICardProfile Weapon => this;
 		public ICardProfile Armor => this;
+		public Sprite FrameSprite => frameSPrite;
 
 		[SerializeField] private BrainType brainType;
 		[SerializeField] private ActorView view;
@@ -29,6 +30,7 @@ namespace yumehiko.LOF.Presenter
 		[Space(10)]
 		[SerializeField] private List<AttackStatus> attackStatuses;
 		[SerializeField] private DefenceStatus defenceStatus;
+		[SerializeField] private Sprite frameSPrite;
 
 		/// <summary>
         /// このプロファイルを元にカードを生成する。

@@ -7,6 +7,8 @@ using VContainer;
 using VContainer.Unity;
 using yumehiko.LOF.Model;
 using yumehiko.LOF.View;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 namespace yumehiko.LOF.Presenter
 {
@@ -19,64 +21,68 @@ namespace yumehiko.LOF.Presenter
 
         private readonly DungeonView dungeonView;
         private readonly ActorPresenters actorPresenters;
-        private readonly CompositeDisposable disposables = new CompositeDisposable();
         private readonly InfoUI infoUI;
+        private readonly AdventureProgress progress;
+        private IActorBrain player => actorPresenters.Player;
 
-        private readonly DungeonAsset asset;
-        private readonly PlayerProfile playerProfile;
-        private readonly List<ActorProfile> enemyProfiles;
+        private readonly CancellationTokenSource adventureCanncelation = new CancellationTokenSource();
+        private readonly CompositeDisposable adventureDisposable = new CompositeDisposable();
+        private IDisposable levelDisposable;
 
         [Inject]
         public Adventure(
-            DungeonAsset firstDungeonAsset,
-            PlayerProfile playerProfile,
-            List<ActorProfile> enemyProfiles,
             ActorPresenters actorPresenters,
             DungeonView dungeonView,
-            InfoUI infoUI)
+            InfoUI infoUI,
+            AdventureProgress progress)
         {
-            this.asset = firstDungeonAsset;
-            this.playerProfile = playerProfile;
-            this.enemyProfiles = enemyProfiles;
-
             this.actorPresenters = actorPresenters;
             this.dungeonView = dungeonView;
             this.infoUI = infoUI;
+            this.progress = progress;
         }
 
         public void Initialize()
         {
-            StartAdventure(asset, playerProfile, enemyProfiles);
+            actorPresenters.SpawnPlayer(progress.PlayerProfile, this);
+            _ = actorPresenters.Models.Player.IsDied
+                .Where(isTrue => isTrue)
+                .Subscribe(_ => CurrentLevel.LoseLevel(adventureCanncelation.Token).Forget())
+                .AddTo(adventureDisposable);
+            infoUI.Initialize(actorPresenters.Models.Player);
+
+            StartNewLevel();
         }
 
         public void Dispose()
         {
-            disposables.Dispose();
-        }
-
-        /// <summary>
-        /// 一連の冒険を開始する。
-        /// </summary>
-        public void StartAdventure(DungeonAsset firstLevel, PlayerProfile playerProfile, List<ActorProfile> enemyProfiles)
-        {
-            actorPresenters.SpawnPlayer(playerProfile, this);
-            actorPresenters.Models.Player.IsDied
-                .Where(isTrue => isTrue)
-                .Subscribe(_ => CurrentLevel.EndLevel())
-                .AddTo(disposables);
-
-            infoUI.Initialize(actorPresenters.Models.Player);
-            StartNewLevel(firstLevel, enemyProfiles);
+            adventureDisposable.Dispose();
+            levelDisposable?.Dispose();
+            CurrentLevel?.Dispose();
         }
 
         /// <summary>
         /// 新たなレベルを開始。
         /// </summary>
-        public void StartNewLevel(DungeonAsset asset, List<ActorProfile> enemyProfiles)
+        public void StartNewLevel()
         {
-            CurrentLevel = new Level(asset, dungeonView, actorPresenters, enemyProfiles);
+            levelDisposable?.Dispose();
+            CurrentLevel?.Dispose();
+            var levelAsset = progress.PickNextLevelAssets();
+            CurrentLevel = new Level(levelAsset.DungeonAsset, dungeonView, actorPresenters, levelAsset.EnemyProfiles);
             infoUI.SetLevel(CurrentLevel);
-            CurrentLevel.StartLevel();
+            levelDisposable = CurrentLevel.OnBeatLevel
+                .First().Subscribe(_ => BeatLevel().Forget());
+            CurrentLevel.StartLevel(adventureCanncelation.Token).Forget();
+        }
+
+        private async UniTaskVoid BeatLevel()
+        {
+            await CurrentLevel.BeatLevel(adventureCanncelation.Token);
+            player.Heal(1000);
+            //TODO:ここでリワードを与えたりする
+            //TODO:レベルを打ち倒さずに逃げたRunDownLevel()関数も欲しい。
+            StartNewLevel();
         }
     }
 }

@@ -19,7 +19,8 @@ namespace yumehiko.LOF.Presenter
     {
         public IObservable<Unit> OnPlayerActEnd => onPlayerActEnd;
 
-        private Subject<Unit> onPlayerActEnd = new Subject<Unit>();
+        private readonly Subject<Unit> onPlayerActEnd = new Subject<Unit>();
+        private readonly List<UniTask> enemyTasks = new List<UniTask>();
         private CancellationTokenSource turnTokenSource;
 
         /// <summary>
@@ -33,9 +34,9 @@ namespace yumehiko.LOF.Presenter
             }
             catch (OperationCanceledException)
             {
+                await UniTask.WhenAll(enemyTasks);
                 turnTokenSource?.Cancel();
                 turnTokenSource?.Dispose();
-                Debug.Log("ターンループ終了");
             }
         }
 
@@ -50,11 +51,12 @@ namespace yumehiko.LOF.Presenter
                 levelCancelToken.ThrowIfCancellationRequested();
                 onPlayerActEnd.OnNext(Unit.Default);
 
-                List<UniTask> enemyTasks = new List<UniTask>();
                 //エネミーターン
                 //TODO:アニメーション用のキャンセルトークンを作っておくと、アニメーション動作だけほっといてプレイヤーターンへ移れるかもしれん。
                 //あと、挙動によってはアニメーションの終わりを待つべき重要なアクションはあるかもしれん。
-                //TODO:途中で敵が自爆したりするとInvaild
+                //Brainからは指令だけもらって、ActorPresenterを分割して、Presenterにmodel指令とview指令を別個に送り、view指令だけwhenAllする？
+                //指令によっては待つとかできる。
+                //TODO:途中で敵が自爆したりするとInvaildするかも？
                 foreach (IActorBrain enemy in enemies)
                 {
                     enemyTasks.Add(enemy.DoTurnAction(0.5f, turnTokenSource.Token));
@@ -62,6 +64,7 @@ namespace yumehiko.LOF.Presenter
                     levelCancelToken.ThrowIfCancellationRequested();
                 }
                 await UniTask.WhenAll(enemyTasks);
+                enemyTasks.Clear();
 
                 turnTokenSource.Cancel();
                 turnTokenSource.Dispose();

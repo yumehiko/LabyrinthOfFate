@@ -9,6 +9,7 @@ namespace yumehiko.LOF.Model
         string CardName { get; }
         IReadOnlyList<AttackStatus> AttackStatuses { get; }
         DefenceStatus DefenceStatus { get; }
+        Sprite FrameSprite { get; }
         Card MakeCard();
     }
 }

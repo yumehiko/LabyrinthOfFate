@@ -26,8 +26,10 @@ namespace yumehiko.LOF.Model
             Position = position;
         }
 
-        public void Die() => Status.Die();
+        public void WarpTo(Vector2Int position) => Position = position;
         public void GetDamage(IActor dealer, AttackStatus attack) => Status.GetDamage(dealer, attack);
+        public void Heal(int amount) => Status.Heal(amount);
+        public void Die() => Status.Die();
 
         /// <summary>
         /// 指定したActorに攻撃する。
@@ -80,11 +82,6 @@ namespace yumehiko.LOF.Model
                 case ActorDirection.DownLeft: return new Vector2Int(-1, -1);
                 default: throw new InvalidOperationException();
             }
-        }
-
-        public void WarpTo(Vector2Int position)
-        {
-            Position = position;
         }
     }
 }

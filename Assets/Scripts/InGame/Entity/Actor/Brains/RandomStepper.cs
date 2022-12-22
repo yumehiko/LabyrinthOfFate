@@ -11,10 +11,10 @@ namespace yumehiko.LOF.Presenter
     /// <summary>
     /// 毎ターンランダムに移動する。
     /// </summary>
-	public class RandomStepper : IActorBrain
+	public class RandomStepper : ActorBrainBase
     {
-        public IActor Model => model;
-        public IActorView View => view;
+        public override IActor Model => model;
+        public override IActorView View => view;
 
         private readonly Level level;
         private readonly IActor model;
@@ -30,15 +30,9 @@ namespace yumehiko.LOF.Presenter
         /// <summary>
         /// ターンアクションを実行する。
         /// </summary>
-        public async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
+        public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
             await RandomStep(animationSpeedFactor, token);
-        }
-
-        public void WarpTo(Vector2Int position)
-        {
-            model.WarpTo(position);
-            view.WarpTo(position);
         }
 
         private async UniTask RandomStep(float animationSpeedFactor, CancellationToken token)

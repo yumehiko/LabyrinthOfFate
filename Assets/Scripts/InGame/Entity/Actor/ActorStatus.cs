@@ -71,6 +71,11 @@ namespace yumehiko.LOF.Model
             }
         }
 
+        public void Heal(int amount)
+        {
+            hp.Value = Mathf.Min(hp.Value + amount, maxHP.Value);
+        }
+
         public void Die()
         {
             isDied.Value = true;

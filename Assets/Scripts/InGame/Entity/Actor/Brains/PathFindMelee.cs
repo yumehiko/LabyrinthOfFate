@@ -11,10 +11,10 @@ namespace yumehiko.LOF.Presenter
     /// <summary>
     /// 経路を探索し、Playerに向かって進む。
     /// </summary>
-    public class PathFindMelee : IActorBrain
+    public class PathFindMelee : ActorBrainBase
     {
-        public IActor Model => model;
-        public IActorView View => view;
+        public override IActor Model => model;
+        public override IActorView View => view;
 
         private readonly Level level;
         private readonly IActor model;
@@ -30,12 +30,11 @@ namespace yumehiko.LOF.Presenter
         /// <summary>
         /// ターンアクションを実行する。
         /// </summary>
-        public async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
+        public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
             var start = model.Position;
             var end = level.Actors.GetPlayerPosition();
             var path = level.Dungeon.FindPath(start, end);
-            await UniTask.DelayFrame(1, cancellationToken: token);
 
             //経路がない場合は、その場で待機。
             if (path.Length <= 1)
@@ -62,12 +61,6 @@ namespace yumehiko.LOF.Presenter
             //それ以外の場合、経路1へ移動する。
             model.StepTo(path[1]);
             await view.StepAnimation(path[1], animationSpeedFactor, token);
-        }
-
-        public void WarpTo(Vector2Int position)
-        {
-            model.WarpTo(position);
-            view.WarpTo(position);
         }
     }
 }

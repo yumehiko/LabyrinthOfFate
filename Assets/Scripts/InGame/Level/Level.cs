@@ -16,12 +16,13 @@ namespace yumehiko.LOF.Presenter
     /// レベル。攻略が要求される1つの単位。
     /// ダンジョン、プレイヤー、敵などのエンティティから成る。
     /// </summary>
-	public class Level
+	public class Level : IDisposable
     {
         public Dungeon Dungeon { get; }
         public Turn Turn { get; }
         public ActorModels Actors { get; }
         public IReadOnlyList<ActorProfile> EnemyProfiles { get; }
+        public IObservable<Unit> OnBeatLevel => actorPresenters.OnDefeatAllEnemy;
 
         private readonly DungeonView view;
         private readonly ActorPresenters actorPresenters;
@@ -42,17 +43,38 @@ namespace yumehiko.LOF.Presenter
             actorPresenters.SpawnActors(asset.ActorSpawnPoints, this);
         }
 
-        public void StartLevel()
+        public void Dispose()
         {
+            levelCancellationTokenSource?.Dispose();
+        }
+
+        public async UniTask StartLevel(CancellationToken adventureCancelToken)
+        {
+            await view.Show().ToUniTask(TweenCancelBehaviour.Complete, adventureCancelToken);
             Turn.StartTurnLoop(actorPresenters.Player, actorPresenters.Enemies, levelCancellationTokenSource.Token).Forget();
         }
 
-        public void EndLevel()
+        /// <summary>
+        /// このレベルに敗北する。
+        /// </summary>
+        public async UniTask LoseLevel(CancellationToken adventureCancelToken)
         {
             levelCancellationTokenSource.Cancel();
             levelCancellationTokenSource.Dispose();
+            await view.Hide().ToUniTask(cancellationToken: adventureCancelToken);
             actorPresenters.ClearActorsWithoutPlayer();
-            view.Hide();
+        }
+
+        /// <summary>
+        /// このレベルに勝利する。
+        /// レベルを片付けて、破棄処理をする。
+        /// </summary>
+        public async UniTask BeatLevel(CancellationToken adventureCancelToken)
+        {
+            levelCancellationTokenSource.Cancel();
+            levelCancellationTokenSource.Dispose();
+            await view.Hide().ToUniTask(cancellationToken: adventureCancelToken);
+            actorPresenters.ClearActorsWithoutPlayer();
         }
     }
 }

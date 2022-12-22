@@ -14,11 +14,11 @@ namespace yumehiko.LOF.Presenter
     /// <summary>
     /// プレイヤーキャラクターのゲーム中の実体。その操作処理。
     /// </summary>
-    public class Player : IActorBrain, IDisposable
+    public class Player : ActorBrainBase, IDisposable
     {
         public ActorType ActorType => ActorType.Player;
-        public IActor Model => model;
-        public IActorView View => view;
+        public override IActor Model => model;
+        public override IActorView View => view;
 
         private readonly Adventure adventure;
         private readonly IActor model;
@@ -55,7 +55,7 @@ namespace yumehiko.LOF.Presenter
         /// <summary>
         /// ターンアクションを実行する。
         /// </summary>
-        public async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
+        public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
             canControl = true;
             //移動入力・UI入力を待つ。
@@ -67,12 +67,6 @@ namespace yumehiko.LOF.Presenter
 
             //いずれかのターン消費行動が確定したら、行動終了。
             await UniTask.WhenAny(inputs);
-        }
-
-        public void WarpTo(Vector2Int position)
-        {
-            model.WarpTo(position);
-            view.WarpTo(position);
         }
 
         /// <summary>

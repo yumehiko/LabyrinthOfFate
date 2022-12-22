@@ -17,7 +17,9 @@ namespace yumehiko.LOF.Presenter
         public IActorBrain Player { get; private set; }
         public IReadOnlyList<IActorBrain> Enemies => enemies;
         public ActorModels Models => models;
+        public IObservable<Unit> OnDefeatAllEnemy => onDefeatAllEnemy;
 
+        private readonly Subject<Unit> onDefeatAllEnemy = new Subject<Unit>();
         private readonly List<IActorBrain> enemies = new List<IActorBrain>();
         private readonly ActorViews views;
         private readonly ActorModels models;
@@ -91,7 +93,7 @@ namespace yumehiko.LOF.Presenter
             model.IsDied
                 .Where(isTrue => isTrue)
                 .First()
-                .Subscribe(_ => RemoveEnemy(brain))
+                .Subscribe(_ => DefeatEnemy(brain))
                 .AddTo(disposables);
             return brain;
         }
@@ -105,6 +107,15 @@ namespace yumehiko.LOF.Presenter
                 case BrainType.PathFindMelee:
                     return new PathFindMelee(level, body, view);
                 default: throw new Exception("未定義のBrainTypeが指定された。");
+            }
+        }
+
+        private void DefeatEnemy(IActorBrain brain)
+        {
+            RemoveEnemy(brain);
+            if(enemies.Count == 0)
+            {
+                onDefeatAllEnemy.OnNext(Unit.Default);
             }
         }
 

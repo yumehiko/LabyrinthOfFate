@@ -18,5 +18,6 @@ namespace yumehiko.LOF.Model
 		void StepTo(Vector2Int position);
 		Vector2Int GetPositionWithDirection(ActorDirection direction);
 		void WarpTo(Vector2Int position);
+		void Heal(int amount);
 	}
 }

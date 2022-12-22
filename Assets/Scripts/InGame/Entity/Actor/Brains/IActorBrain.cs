@@ -20,5 +20,6 @@ namespace yumehiko.LOF.Presenter
         IActorView View { get; }
         UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
         void WarpTo(Vector2Int position);
+        void Heal(int amount);
     }
 }
