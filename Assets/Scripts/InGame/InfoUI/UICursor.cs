@@ -17,10 +17,9 @@ namespace yumehiko.LOF.View
         private readonly ReactiveProperty<Vector2Int> position = new ReactiveProperty<Vector2Int>();
         private Sequence cursorFadeSequence;
 
-        [Inject]
-        public void Construct()
+        private void Awake()
         {
-            ReactiveInput.OnPointer
+            _ = ReactiveInput.OnPointer
                 .Subscribe(point => OnMovePointer(point))
                 .AddTo(this);
 

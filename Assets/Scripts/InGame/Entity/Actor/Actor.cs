@@ -14,7 +14,7 @@ namespace yumehiko.LOF.Model
     /// </summary>
     public class Actor : IActor
     {
-        public string Name { get; }
+        public string Name => Status.Name;
         public Vector2Int Position { get; private set; }
         public ActorType ActorType { get; }
         public IReadOnlyReactiveProperty<bool> IsDied => Status.IsDied;
@@ -23,7 +23,6 @@ namespace yumehiko.LOF.Model
         public Actor(IActorProfile profile, Vector2Int position)
         {
             Status = new ActorStatus(profile);
-            Name = profile.ActorName;
             Position = position;
         }
 
@@ -40,7 +39,6 @@ namespace yumehiko.LOF.Model
             var attack = Status.PickAttackStatus();
             target.GetDamage(this, attack);
         }
-
 
         /// <summary>
         /// 指定方向へ移動する。
@@ -82,6 +80,11 @@ namespace yumehiko.LOF.Model
                 case ActorDirection.DownLeft: return new Vector2Int(-1, -1);
                 default: throw new InvalidOperationException();
             }
+        }
+
+        public void WarpTo(Vector2Int position)
+        {
+            Position = position;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace yumehiko.LOF.Model
         public DungeonPathFinder(Dungeon dungeon)
         {
             var pathfinderOptions = new PathFinderOptions();
-            tiles = MakeTiles(dungeon);
+            tiles = MakePathTiles(dungeon);
             worldGrid = new WorldGrid(tiles);
             pathfinder = new PathFinder(worldGrid, pathfinderOptions);
         }
@@ -32,7 +32,7 @@ namespace yumehiko.LOF.Model
                 .ToArray();
         }
 
-        private short[,] MakeTiles(Dungeon dungeon)
+        private short[,] MakePathTiles(Dungeon dungeon)
         {
             var size = dungeon.Bounds.size;
             var tiles = new short[size.x, size.y];

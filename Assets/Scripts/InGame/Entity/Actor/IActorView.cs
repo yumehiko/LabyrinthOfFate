@@ -13,5 +13,6 @@ namespace yumehiko.LOF.View
 		UniTask StepAnimation(Vector2Int point, float speedFactor, CancellationToken token);
 		UniTask AttackAnimation(Vector2Int point, float speedFactor, CancellationToken token);
 		UniTask ItemAnimation(Vector2Int point, float speedFactor, CancellationToken token);
+		void WarpTo(Vector2Int position);
 	}
 }

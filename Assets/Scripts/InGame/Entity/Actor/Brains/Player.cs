@@ -17,11 +17,11 @@ namespace yumehiko.LOF.Presenter
     public class Player : IActorBrain, IDisposable
     {
         public ActorType ActorType => ActorType.Player;
-        public Actor Body => body;
+        public IActor Model => model;
+        public IActorView View => view;
 
-        private readonly Dungeon dungeon;
-        private readonly Actors actors;
-        private readonly Actor body;
+        private readonly Adventure adventure;
+        private readonly IActor model;
         private readonly IActorView view;
 
         private readonly AsyncReactiveProperty<ActorDirection> inputDirection = new AsyncReactiveProperty<ActorDirection>(ActorDirection.None);
@@ -29,11 +29,10 @@ namespace yumehiko.LOF.Presenter
         private readonly CompositeDisposable disposables = new CompositeDisposable();
         private bool canControl = false;
 
-        public Player(Dungeon dungeon, Actors actors, Actor body, IActorView view)
+        public Player(Adventure adventure, IActor model, IActorView view)
         {
-            this.dungeon = dungeon;
-            this.actors = actors;
-            this.body = body;
+            this.adventure = adventure;
+            this.model = model;
             this.view = view;
 
             ReactiveInput.OnMove
@@ -70,6 +69,12 @@ namespace yumehiko.LOF.Presenter
             await UniTask.WhenAny(inputs);
         }
 
+        public void WarpTo(Vector2Int position)
+        {
+            model.WarpTo(position);
+            view.WarpTo(position);
+        }
+
         /// <summary>
         /// 方向入力による行動。
         /// </summary>
@@ -83,24 +88,24 @@ namespace yumehiko.LOF.Presenter
             while (true)
             {
                 var direction = await inputDirection.WaitAsync(token);
-                var targetPoint = body.GetPositionWithDirection(direction);
+                var targetPoint = model.GetPositionWithDirection(direction);
 
                 //指定地点にEnemyがいないかをチェックする。
-                IActor enemy = actors.GetEnemyAt(targetPoint);
+                IActor enemy = adventure.CurrentLevel.Actors.GetEnemyAt(targetPoint);
                 if (enemy != null) //Enemyがいるなら、それを攻撃する。
                 {
                     canControl = false;
-                    body.Attack(enemy);
+                    model.Attack(enemy);
                     await view.AttackAnimation(targetPoint, animationSpeedFactor, token);
                     break;
                 }
 
                 //指定地点の地形をチェックする。
-                var tileType = dungeon.GetTileType(targetPoint);
+                var tileType = adventure.CurrentLevel.Dungeon.GetTileType(targetPoint);
                 if (tileType == TileType.Empty)
                 {
                     canControl = false;
-                    body.StepTo(targetPoint);
+                    model.StepTo(targetPoint);
                     await view.StepAnimation(targetPoint, animationSpeedFactor, token);
                     break;
                 }
@@ -111,7 +116,7 @@ namespace yumehiko.LOF.Presenter
         {
             await inputWait.ToUniTask(true, token);
             canControl = false;
-            await view.WaitAnimation(body.Position, animationSpeedFactor, token);
+            await view.WaitAnimation(model.Position, animationSpeedFactor, token);
         }
     }
 }

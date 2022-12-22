@@ -13,16 +13,17 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
 	public class RandomStepper : IActorBrain
     {
-        private readonly Dungeon dungeon;
-        private readonly Actors actors;
-        private readonly Actor body;
+        public IActor Model => model;
+        public IActorView View => view;
+
+        private readonly Level level;
+        private readonly IActor model;
         private readonly IActorView view;
 
-        public RandomStepper(Dungeon dungeon, Actors actors, Actor body, IActorView view)
+        public RandomStepper(Level level, IActor model, IActorView view)
         {
-            this.dungeon = dungeon;
-            this.actors = actors;
-            this.body = body;
+            this.level = level;
+            this.model = model;
             this.view = view;
         }
 
@@ -34,12 +35,18 @@ namespace yumehiko.LOF.Presenter
             await RandomStep(animationSpeedFactor, token);
         }
 
+        public void WarpTo(Vector2Int position)
+        {
+            model.WarpTo(position);
+            view.WarpTo(position);
+        }
+
         private async UniTask RandomStep(float animationSpeedFactor, CancellationToken token)
         {
             while (true)
             {
                 ActorDirection direction = GetRandomDirection();
-                var point = body.GetPositionWithDirection(direction);
+                var point = model.GetPositionWithDirection(direction);
 
                 //方向指定がない場合は、その場で待機。
                 if (direction == ActorDirection.None)
@@ -49,12 +56,12 @@ namespace yumehiko.LOF.Presenter
                 }
 
                 //指定地点にActorがいるか確認する。
-                var actor = actors.GetActorAt(point);
+                var actor = level.Actors.GetActorAt(point);
 
                 //それがプレイヤーなら攻撃する。
-                if (actors.IsPlayer(actor))
+                if (level.Actors.IsPlayer(actor))
                 {
-                    body.Attack(actor);
+                    model.Attack(actor);
                     await view.AttackAnimation(point, animationSpeedFactor, token);
                     return;
                 }
@@ -66,9 +73,9 @@ namespace yumehiko.LOF.Presenter
                 }
 
                 //Actorがいない上に、地形が空なら移動する。
-                if (dungeon.GetTileType(point) == TileType.Empty)
+                if (level.Dungeon.GetTileType(point) == TileType.Empty)
                 {
-                    body.StepTo(point);
+                    model.StepTo(point);
                     await view.StepAnimation(point, animationSpeedFactor, token);
                     return;
                 }

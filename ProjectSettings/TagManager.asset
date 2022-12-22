@@ -41,3 +41,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Dungeon
+    uniqueID: 3004442869
+    locked: 0
+  - name: Actors
+    uniqueID: 2379500561
+    locked: 0
+  - name: Hider
+    uniqueID: 2129074185
+    locked: 0
+  - name: Player
+    uniqueID: 3715534671
+    locked: 0
+  - name: WroldUI
+    uniqueID: 3658166953
+    locked: 0

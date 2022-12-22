@@ -13,16 +13,17 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
     public class PathFindMelee : IActorBrain
     {
-        private readonly Dungeon dungeon;
-        private readonly Actors actors;
-        private readonly Actor body;
+        public IActor Model => model;
+        public IActorView View => view;
+
+        private readonly Level level;
+        private readonly IActor model;
         private readonly IActorView view;
 
-        public PathFindMelee(Dungeon dungeon, Actors actors, Actor body, IActorView view)
+        public PathFindMelee(Level level, IActor model, IActorView view)
         {
-            this.dungeon = dungeon;
-            this.actors = actors;
-            this.body = body;
+            this.level = level;
+            this.model = model;
             this.view = view;
         }
 
@@ -31,9 +32,9 @@ namespace yumehiko.LOF.Presenter
         /// </summary>
         public async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
-            var start = body.Position;
-            var end = actors.GetPlayerPosition();
-            var path = dungeon.FindPath(start, end);
+            var start = model.Position;
+            var end = level.Actors.GetPlayerPosition();
+            var path = level.Dungeon.FindPath(start, end);
             await UniTask.DelayFrame(1, cancellationToken: token);
 
             //経路がない場合は、その場で待機。
@@ -44,23 +45,29 @@ namespace yumehiko.LOF.Presenter
             }
 
             //経路番号1がPlayerの位置なら、隣接しているので攻撃する。
-            if (path[1] == actors.GetPlayerPosition())
+            if (path[1] == level.Actors.GetPlayerPosition())
             {
-                body.Attack(actors.Player);
+                model.Attack(level.Actors.Player);
                 await view.AttackAnimation(path[1], animationSpeedFactor, token);
                 return;
             }
 
             //移動先にPlayer以外のActorがいる場合、単に停止する。
-            if (actors.GetEnemyAt(path[1]) != null)
+            if (level.Actors.GetEnemyAt(path[1]) != null)
             {
                 await view.WaitAnimation(start, animationSpeedFactor, token);
                 return;
             }
 
             //それ以外の場合、経路1へ移動する。
-            body.StepTo(path[1]);
+            model.StepTo(path[1]);
             await view.StepAnimation(path[1], animationSpeedFactor, token);
+        }
+
+        public void WarpTo(Vector2Int position)
+        {
+            model.WarpTo(position);
+            view.WarpTo(position);
         }
     }
 }

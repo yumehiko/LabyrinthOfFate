@@ -8,7 +8,7 @@ namespace yumehiko.LOF.Model
     /// <summary>
     /// Actorの実体のコレクション。
     /// </summary>
-    public class Actors
+    public class ActorModels
     {
         public IActor Player => player;
         public IReadOnlyList<IActor> Enemies => enemies;
@@ -16,14 +16,14 @@ namespace yumehiko.LOF.Model
         private IActor player;
         private readonly List<IActor> enemies = new List<IActor>();
 
-        public Actor SpawnPlayer(IActorProfile profile, Vector2Int position)
+        public IActor SpawnPlayer(IActorProfile profile, Vector2Int position)
         {
             var body = new Actor(profile, position);
             player = body;
             return body;
         }
 
-        public Actor SpawnEnemy(IActorProfile profile, Vector2Int position)
+        public IActor SpawnEnemy(IActorProfile profile, Vector2Int position)
         {
             var enemy = new Actor(profile, position);
             enemies.Add(enemy);

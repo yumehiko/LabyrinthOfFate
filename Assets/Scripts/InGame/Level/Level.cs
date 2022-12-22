@@ -5,6 +5,7 @@ using VContainer;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using yumehiko.LOF.Model;
+using yumehiko.LOF.View;
 using VContainer.Unity;
 using UniRx;
 using System;
@@ -15,41 +16,43 @@ namespace yumehiko.LOF.Presenter
     /// レベル。攻略が要求される1つの単位。
     /// ダンジョン、プレイヤー、敵などのエンティティから成る。
     /// </summary>
-	public class Level : IDisposable
+	public class Level
     {
         public Dungeon Dungeon { get; }
-        public Actors Actors { get; }
+        public Turn Turn { get; }
+        public ActorModels Actors { get; }
+        public IReadOnlyList<ActorProfile> EnemyProfiles { get; }
 
-        private readonly Turn turn;
+        private readonly DungeonView view;
+        private readonly ActorPresenters actorPresenters;
         private readonly CancellationTokenSource levelCancellationTokenSource = new CancellationTokenSource();
-        private readonly CompositeDisposable disposables = new CompositeDisposable();
 
-        [Inject]
-        public Level(DungeonAsset dungeonAsset, Actors actors, Turn turn, ActorBrains actorBrains, Camera mainCamera)
+        public Level(DungeonAsset asset, DungeonView view, ActorPresenters actorPresenters, IReadOnlyList<ActorProfile> enemyProfiles)
         {
-            Dungeon = dungeonAsset.Dungeon;
-            Actors = actors;
-            this.turn = turn;
+            Dungeon = asset.Dungeon;
+            Actors = actorPresenters.Models;
+            this.actorPresenters = actorPresenters;
+            this.EnemyProfiles = enemyProfiles;
+            this.view = view;
+            this.Turn = new Turn();
 
-            var cameraPosition = new Vector3(-Dungeon.Bounds.position.x, -Dungeon.Bounds.position.y, mainCamera.transform.position.z);
-            mainCamera.transform.position = cameraPosition;
-
-            turn.StartTurnLoop(actorBrains.Player, actorBrains.Enemies, levelCancellationTokenSource.Token).Forget();
-            actors.Player.IsDied
-                .Where(isTrue => isTrue)
-                .Subscribe(_ => EndLevel())
-                .AddTo(disposables);
+            //ダンジョンの見かけや経路を生成
+            Dungeon.MakePathFinder();
+            view.SetTiles(Dungeon);
+            actorPresenters.SpawnActors(asset.ActorSpawnPoints, this);
         }
 
-        public void Dispose()
+        public void StartLevel()
         {
-            disposables.Dispose();
+            Turn.StartTurnLoop(actorPresenters.Player, actorPresenters.Enemies, levelCancellationTokenSource.Token).Forget();
         }
 
         public void EndLevel()
         {
             levelCancellationTokenSource.Cancel();
             levelCancellationTokenSource.Dispose();
+            actorPresenters.ClearActorsWithoutPlayer();
+            view.Hide();
         }
     }
 }

@@ -39,25 +39,27 @@ namespace yumehiko.LOF.Presenter
             }
         }
 
-        private async UniTask TurnLoop(IActorBrain player, IReadOnlyList<IActorBrain> enemies, CancellationToken turnCancelToken)
+        private async UniTask TurnLoop(IActorBrain player, IReadOnlyList<IActorBrain> enemies, CancellationToken levelCancelToken)
         {
             while (true)
             {
+                levelCancelToken.ThrowIfCancellationRequested();
                 turnTokenSource = new CancellationTokenSource();
                 //プレイヤーターン
-                turnCancelToken.ThrowIfCancellationRequested();
                 await player.DoTurnAction(1.0f, turnTokenSource.Token);
+                levelCancelToken.ThrowIfCancellationRequested();
                 onPlayerActEnd.OnNext(Unit.Default);
 
                 List<UniTask> enemyTasks = new List<UniTask>();
                 //エネミーターン
                 //TODO:アニメーション用のキャンセルトークンを作っておくと、アニメーション動作だけほっといてプレイヤーターンへ移れるかもしれん。
                 //あと、挙動によってはアニメーションの終わりを待つべき重要なアクションはあるかもしれん。
+                //TODO:途中で敵が自爆したりするとInvaild
                 foreach (IActorBrain enemy in enemies)
                 {
-                    turnCancelToken.ThrowIfCancellationRequested();
                     enemyTasks.Add(enemy.DoTurnAction(0.5f, turnTokenSource.Token));
                     await UniTask.DelayFrame(2, cancellationToken: turnTokenSource.Token);
+                    levelCancelToken.ThrowIfCancellationRequested();
                 }
                 await UniTask.WhenAll(enemyTasks);
 

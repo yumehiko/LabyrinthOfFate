@@ -60,5 +60,10 @@ namespace yumehiko.LOF.View
         {
             Destroy(gameObject);
         }
+
+        public void WarpTo(Vector2Int position)
+        {
+            transform.position = (Vector2)position;
+        }
     }
 }

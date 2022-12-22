@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
 using VContainer;
+using System;
 using yumehiko.LOF.View;
 using yumehiko.LOF.Model;
 using TMPro;
@@ -12,29 +13,43 @@ namespace yumehiko.LOF.Presenter
 {
     public class InfoUI : MonoBehaviour
     {
+        [SerializeField] private UICursor cursor;
         [SerializeField] private TextMeshProUGUI nameUI;
         [SerializeField] private TextMeshProUGUI hpUI;
         [SerializeField] private TextMeshProUGUI weaponUI;
         [SerializeField] private TextMeshProUGUI armorUI;
 
-
         private Level level;
+        private IActor player;
+        private CompositeDisposable levelDisposables;
 
-        [Inject]
-        public void Construct(Level level, Turn turn, UICursor cursor)
+        public void Initialize(IActor player)
+        {
+            _ = player.Status.HP
+                .Subscribe(_ => SetInfo(player))
+                .AddTo(this);
+
+            this.player = player;
+        }
+
+        public void SetLevel(Level level)
         {
             this.level = level;
-            _ = turn.OnPlayerActEnd
-                .Subscribe(_ => SetInfo(level.Actors.Player))
-                .AddTo(this);
+            levelDisposables?.Dispose();
+            levelDisposables = new CompositeDisposable();
+
+            _ = level.Turn.OnPlayerActEnd
+                .Subscribe(_ => SetInfo(player))
+                .AddTo(levelDisposables);
 
             _ = cursor.Position
                 .Subscribe(position => CheckActorAt(position))
-                .AddTo(this);
+                .AddTo(levelDisposables);
+        }
 
-            level.Actors.Player.Status.HP
-                .Subscribe(_ => SetInfo(level.Actors.Player))
-                .AddTo(this);
+        private void OnDestroy()
+        {
+            levelDisposables?.Dispose();
         }
 
         /// <summary>
@@ -48,8 +63,8 @@ namespace yumehiko.LOF.Presenter
                 return;
             }
 
-            const int nameToHPMargin = -3;
-            const int HPtoWeaponMargin = -4;
+            const int nameToHPMargin = -2;
+            const int HPtoWeaponMargin = -3;
             const int x = 0;
 
             nameUI.text = actor.Name;
@@ -67,11 +82,11 @@ namespace yumehiko.LOF.Presenter
 
         private string GetAttackInfo(IReadOnlyList<AttackStatus> attacks)
         {
-            const string diceChars = "\uE000\uE001\uE002\uE003\uE004\uE005";
+            const string diceChars = "\u2680\u2681\u2682\u2683\u2684\u2685";
             var info = "";
             for (int i = 0; i < 6; i++)
             {
-                info += i != 0 ? System.Environment.NewLine : string.Empty; //1行目以外はまず改行を追加
+                info += i != 0 ? Environment.NewLine : string.Empty; //1行目以外はまず改行を追加
                 if (attacks[i].IsMiss())
                 {
                     info += $"{diceChars[i]} MISS";
@@ -79,7 +94,7 @@ namespace yumehiko.LOF.Presenter
                 }
 
                 //属性攻撃とかあったらたす。
-                info += $"{diceChars[i]} \uE006{attacks[i].AD}";
+                info += $"{diceChars[i]} \u2694{attacks[i].AD}";
             }
             return info;
         }

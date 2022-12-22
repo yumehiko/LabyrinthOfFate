@@ -14,5 +14,9 @@ namespace yumehiko.LOF.Model
 		ActorType ActorType { get; }
 
 		void GetDamage(IActor dealer, AttackStatus attack);
+		void Attack(IActor target);
+		void StepTo(Vector2Int position);
+		Vector2Int GetPositionWithDirection(ActorDirection direction);
+		void WarpTo(Vector2Int position);
 	}
 }

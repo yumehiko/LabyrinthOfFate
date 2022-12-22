@@ -8,11 +8,11 @@ namespace yumehiko.LOF.View
 	public class ActorViews : MonoBehaviour
 	{
 		[SerializeField] private Transform viewParent;
-		private List<IActorView> views = new List<IActorView>();
+		private readonly List<IActorView> views = new List<IActorView>();
 
-		public IActorView SpawnActorView(ActorSpawnPoint spawnPoint, ActorView view)
+		public IActorView SpawnActorView(Vector2Int position, ActorView view)
         {
-			var instance = Instantiate(view, (Vector2)spawnPoint.Position, Quaternion.identity, viewParent);
+			var instance = Instantiate(view, (Vector2)position, Quaternion.identity, viewParent);
 			views.Add(instance);
 			return instance;
         }

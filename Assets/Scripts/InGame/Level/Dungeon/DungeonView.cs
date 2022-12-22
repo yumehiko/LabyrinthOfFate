@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using yumehiko.LOF.Model;
 using VContainer;
+using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 namespace yumehiko.LOF.View
 {
@@ -11,21 +13,34 @@ namespace yumehiko.LOF.View
     /// </summary>
 	public class DungeonView : MonoBehaviour
     {
+        [SerializeField] private SpriteRenderer hider;
         [SerializeField] private TileViewSetter wallTileSetter;
         [SerializeField] private TileViewSetter borderWallTileSetter;
+        [SerializeField] private Camera mainCamera;
 
-        [Inject]
-        public void Construct(DungeonAsset dungeonAsset)
-        {
-            SetTiles(dungeonAsset.Dungeon);
-        }
-
-        private void SetTiles(Dungeon dungeon)
+        public void SetTiles(Dungeon dungeon)
         {
             foreach (var tile in dungeon)
             {
                 SetTile(tile);
             }
+
+            var cameraPosition = new Vector3(-dungeon.Bounds.position.x, -dungeon.Bounds.position.y, mainCamera.transform.position.z);
+            mainCamera.transform.position = cameraPosition;
+        }
+
+        public Sequence Show()
+        {
+            Sequence sequence = DOTween.Sequence()
+                .Append(hider.DOFade(0.0f, 1.0f))
+                .AppendCallback(() => hider.enabled = false);
+            return sequence.Play();
+        }
+
+        public Tweener Hide()
+        {
+            hider.enabled = true;
+            return hider.DOFade(1.0f, 1.0f).SetLink(gameObject);
         }
 
         private void SetTile(DungeonTile tile)

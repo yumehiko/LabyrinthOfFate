@@ -5,14 +5,20 @@ using UnityEngine;
 using System.Threading;
 using System;
 using UniRx;
+using yumehiko.LOF.Model;
+using yumehiko.LOF.View;
 
 namespace yumehiko.LOF.Presenter
 {
     /// <summary>
     /// Actorのターン挙動を決める。
+    /// MEMO:現状、プレゼンターの役割もしているが分割すべきかどうか。
     /// </summary>
     public interface IActorBrain
     {
+        IActor Model { get; }
+        IActorView View { get; }
         UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
+        void WarpTo(Vector2Int position);
     }
 }
