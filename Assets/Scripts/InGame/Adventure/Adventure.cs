@@ -84,7 +84,7 @@ namespace yumehiko.LOF.Presenter
             //TODO:ここでリワードを与えたりする
             if (endStat == LevelEndStat.Beat)
             {
-                await rewards.WaitUntilePickReward(actorPresenters.Player, adventureCanncelation.Token);
+                await rewards.WaitUntilePickReward(actorPresenters.Player.Inventory, adventureCanncelation.Token);
             }
             StartNewLevel();
         }

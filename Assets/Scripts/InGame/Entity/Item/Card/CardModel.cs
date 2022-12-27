@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using UniRx;
 
+
 namespace yumehiko.LOF.Model
 {
     /// <summary>
@@ -12,14 +13,15 @@ namespace yumehiko.LOF.Model
     /// </summary>
     [Serializable]
 	[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/Card")]
-    public class Card : ScriptableObject, ICard
+    public class CardModel : ScriptableObject, ICardModel
     {
         public ITemType Type => ITemType.Card;
-        public string CardName => cardName;
+        public string Name => cardName;
         public Sprite Frame => frame;
+        public string InvokeEffect => invokeEffect;
+        public string StatsInfo => GetInfo();
         public AttackStatuses AttackStatuses => attackStatuses;
         public DefenceStatus DefenceStatus => defenceStatus;
-        public string InvokeEffect => invokeEffect;
 
         public IObservable<Unit> OnRemove => onRemove;
 
@@ -27,9 +29,9 @@ namespace yumehiko.LOF.Model
 
         [SerializeField] private string cardName;
         [SerializeField] private Sprite frame;
+        [SerializeField] private string invokeEffect;
         [SerializeField] private AttackStatuses attackStatuses;
         [SerializeField] private DefenceStatus defenceStatus;
-        [SerializeField] private string invokeEffect;
 
         /// <summary>
         /// 装備されているなら、これを外す。
@@ -43,9 +45,9 @@ namespace yumehiko.LOF.Model
         /// このカードに指定したカードの情報を全てディープコピーする。
         /// </summary>
         /// <param name="target"></param>
-        public void SetCopyParameter(Card target)
+        public void SetCopyParameter(CardModel target)
         {
-            cardName = target.CardName;
+            cardName = target.Name;
             frame = target.Frame;
             invokeEffect = target.InvokeEffect;
             attackStatuses = new AttackStatuses(target.AttackStatuses);
@@ -56,11 +58,19 @@ namespace yumehiko.LOF.Model
         /// このカードのコピーを作る。
         /// </summary>
         /// <returns></returns>
-        public Card MakeCopy()
+        public CardModel MakeCopy()
         {
-            var copy = CreateInstance<Card>();
+            var copy = CreateInstance<CardModel>();
             copy.SetCopyParameter(this);
             return copy;
+        }
+
+        private string GetInfo()
+        {
+            var stats = AttackStatuses.GetInfo();
+            stats += Environment.NewLine;
+            stats += DefenceStatus.GetInfo();
+            return stats;
         }
     }
 }

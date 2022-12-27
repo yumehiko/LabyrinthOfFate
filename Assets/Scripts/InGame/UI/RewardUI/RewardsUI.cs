@@ -23,8 +23,9 @@ namespace yumehiko.LOF.View
         {
             for (int i = 0; i < 3; i++)
             {
+                var id = i;
                 views[i].OnClick
-                    .Subscribe(_ => onPick.OnNext(i))
+                    .Subscribe(_ => onPick.OnNext(id))
                     .AddTo(this);
             }
         }
@@ -52,11 +53,11 @@ namespace yumehiko.LOF.View
             await group.DOFade(0.0f, 0.5f).SetLink(gameObject).ToUniTask(cancellationToken: token);
         }
 
-        public void SetRewardsInfo(List<CardInfo> cardInfos)
+        public void SetRewardsInfo(IReadOnlyList<IItemView> itemViews)
         {
             for (int i = 0; i < 3; i++)
             {
-                views[i].SetRewardInfo(cardInfos[i]);
+                views[i].SetRewardInfo(itemViews[i]);
             }
         }
     }

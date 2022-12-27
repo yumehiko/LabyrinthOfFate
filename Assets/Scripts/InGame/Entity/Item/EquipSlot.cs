@@ -11,19 +11,19 @@ namespace yumehiko.LOF.Model
     /// </summary>
     public class EquipSlot
     {
-        public Card Weapon => weapon;
-        public Card Armor => armor;
+        public CardModel Weapon => weapon;
+        public CardModel Armor => armor;
         public int AdditionalHP => armor.DefenceStatus.HP;
 
-        private Card weapon;
-        private Card armor;
+        private CardModel weapon;
+        private CardModel armor;
 
-        public void EquipWeapon(Card card)
+        public void EquipWeapon(CardModel card)
         {
             weapon = card;
         }
 
-        public void EquipArmor(Card card)
+        public void EquipArmor(CardModel card)
         {
             armor = card;
         }

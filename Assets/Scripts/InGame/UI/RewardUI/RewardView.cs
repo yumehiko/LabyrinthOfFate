@@ -56,12 +56,12 @@ namespace yumehiko.LOF.View
             await group.DOFade(0.0f, duration).SetLink(gameObject).ToUniTask(cancellationToken: token);
         }
 
-        public void SetRewardInfo(CardInfo info)
+        public void SetRewardInfo(IItemView itemView)
         {
-            cardName.text = info.Name;
-            stats.text = info.Stats;
-            invokeEffect.text = info.InvokeEffect;
-            cardFrame.sprite = info.Frame;
+            cardName.text = itemView.Name;
+            stats.text = itemView.StatsInfo;
+            invokeEffect.text = itemView.InvokeEffect;
+            cardFrame.sprite = itemView.Frame;
         }
 
         private void CursorEnterButton()

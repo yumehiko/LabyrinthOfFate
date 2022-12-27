@@ -4,7 +4,7 @@ using UnityEngine;
 using yumehiko.LOF.Model;
 using yumehiko.LOF.View;
 
-namespace yumehiko.LOF.Model
+namespace yumehiko.LOF.Presenter
 {
     [System.Serializable]
     public class PlayerProfile : MonoBehaviour, IActorProfile
@@ -13,14 +13,14 @@ namespace yumehiko.LOF.Model
 		public ActorView View => view;
 		public string ActorName => actorName;
 		public int BaseHP => baseHP;
-		public ICard Weapon => weapon;
-		public ICard Armor => armor;
+		public ICardModel Weapon => weapon;
+		public ICardModel Armor => armor;
 
 		[SerializeField] private BrainType brainType;
 		[SerializeField] private ActorView view;
 		[SerializeField] private string actorName;
 		[SerializeField] int baseHP;
-		[SerializeField] private Card weapon;
-		[SerializeField] private Card armor;
+		[SerializeField] private CardModel weapon;
+		[SerializeField] private CardModel armor;
 	}
 }

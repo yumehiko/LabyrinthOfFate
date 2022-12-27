@@ -7,9 +7,13 @@ namespace yumehiko.LOF.Model
 	/// <summary>
     /// アイテム。
     /// </summary>
-	public interface IItem 
+	public interface IItemModel 
 	{
 		ITemType Type { get; }
+		string Name { get; }
+		Sprite Frame { get; }
+		string StatsInfo { get; }
+		string InvokeEffect { get; }
 	}
 
 	public enum ITemType

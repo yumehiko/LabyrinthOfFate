@@ -18,8 +18,8 @@ namespace yumehiko.LOF
 
         protected override void Configure(IContainerBuilder builder)
         {
+            builder.Register<InventoryModel>(Lifetime.Singleton);
             builder.Register<Inventory>(Lifetime.Singleton);
-            builder.Register<InventoryPresenter>(Lifetime.Singleton);
             builder.RegisterComponent(inventoryUI);
 
             builder.RegisterComponent(infoUI);

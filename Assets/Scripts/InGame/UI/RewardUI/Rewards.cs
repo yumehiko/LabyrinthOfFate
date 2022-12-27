@@ -17,9 +17,9 @@ namespace yumehiko.LOF.Presenter
     public class Rewards : MonoBehaviour
     {
         private RewardsUI ui;
-        [SerializeField] private List<Card> candiateCards;
+        [SerializeField] private List<CardModel> candiateCards;
 
-        private List<Card> currentCandiates = new List<Card>();
+        private List<CardModel> currentCandiates = new List<CardModel>();
 
         [Inject]
         public void Construct(RewardsUI ui)
@@ -27,10 +27,10 @@ namespace yumehiko.LOF.Presenter
             this.ui = ui;
         }
 
-        public async UniTask WaitUntilePickReward(Player player, CancellationToken token)
+        public async UniTask WaitUntilePickReward(Inventory inventory, CancellationToken token)
         {
             currentCandiates.Clear();
-            for(int i = 0; i<3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 currentCandiates.Add(PickRandomCard());
             }
@@ -40,29 +40,25 @@ namespace yumehiko.LOF.Presenter
 
             await ui.EnableUI(token);
             await UniTask.WaitUntil(() => pickID > -1);
-            Debug.Log($"決めたアイテムをインベントリに追加する。");
+            var pick = currentCandiates[pickID];
+            Debug.Log($"追加できるかどうかを確認しておく。");
+            inventory.AddItem(pick);
             await ui.DisableUI(token);
             disposable.Dispose();
         }
 
         private void SetupUI()
         {
-            var cardInfos = new List<CardInfo>();
+            var views = new List<IItemView>();
             for (int i = 0; i < 3; i++)
             {
-                var name = currentCandiates[i].CardName;
-                var stats = currentCandiates[i].AttackStatuses.GetInfo();
-                stats += Environment.NewLine;
-                stats += currentCandiates[i].DefenceStatus.GetInfo();
-                var invokeEffect = currentCandiates[i].InvokeEffect;
-                var frame = currentCandiates[i].Frame;
-                var cardInfo = new CardInfo(name, stats, invokeEffect, frame);
-                cardInfos.Add(cardInfo);
+                var view = Inventory.MakeView(currentCandiates[i]);
+                views.Add(view);
             }
-            ui.SetRewardsInfo(cardInfos);
+            ui.SetRewardsInfo(views);
         }
 
-        private Card PickRandomCard()
+        private CardModel PickRandomCard()
         {
             var id = UnityEngine.Random.Range(0, candiateCards.Count);
             return candiateCards[id];

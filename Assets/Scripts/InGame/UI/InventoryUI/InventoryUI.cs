@@ -7,10 +7,23 @@ namespace yumehiko.LOF.View
 {
 	public class InventoryUI : MonoBehaviour
 	{
-		[SerializeField] private ItemView weaponSlot;
-		[SerializeField] private ItemView armorSlot;
-		[SerializeField] private List<ItemView> items;
+		[SerializeField] private InventorySlot weaponSlot;
+		[SerializeField] private InventorySlot armorSlot;
+		[SerializeField] private List<InventorySlot> items;
 
+		public void SetWeapon(IItemView view)
+        {
+			weaponSlot.SetView(view);
+        }
 
+		public void SetArmor(IItemView view)
+        {
+			armorSlot.SetView(view);
+        }
+
+		public void SetItem(IItemView view, int id)
+        {
+			items[id].SetView(view);
+        }
 	}
 }

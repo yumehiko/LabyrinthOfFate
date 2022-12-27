@@ -6,11 +6,13 @@ using TMPro;
 
 namespace yumehiko.LOF.View
 {
-	public class ItemView : MonoBehaviour
+	public class InventorySlot : MonoBehaviour
 	{
 		[SerializeField] private CanvasGroup group;
 		[SerializeField] private TextMeshProUGUI cardName;
 		[SerializeField] private Image frame;
+
+		private IItemView currentInfo;
 
 		public void EnableView()
         {
@@ -26,10 +28,11 @@ namespace yumehiko.LOF.View
 			group.blocksRaycasts = false;
         }
 
-		public void SetView(string cardName, Sprite frameSprite)
+		public void SetView(IItemView info)
         {
-			this.cardName.text = cardName;
-			this.frame.sprite = frameSprite;
+			currentInfo = info;
+			this.cardName.text = info.Name;
+			this.frame.sprite = info.Frame;
         }
 	}
 }

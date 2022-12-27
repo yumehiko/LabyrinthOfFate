@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfd048dccecb04e178db05f34272cd5b, type: 3}
+  m_Script: {fileID: 11500000, guid: dc9ff713a31224827b01fee5ee03b9ef, type: 3}
   m_Name: _MonsterBase
   m_EditorClassIdentifier: 
   cardName: DUMMY MONSTER
   frame: {fileID: 21300000, guid: bd785822424f143f2a003278978c0a41, type: 3}
+  invokeEffect: Delete this card.
   attackStatuses:
     list:
     - ad: 1
@@ -23,5 +24,4 @@ MonoBehaviour:
     - ad: 1
     - ad: 1
   defenceStatus:
-    hp: 1
-  invokeEffect: Delete this card.
+    hp: 2

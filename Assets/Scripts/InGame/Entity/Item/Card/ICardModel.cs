@@ -4,15 +4,12 @@ using UnityEngine;
 
 namespace yumehiko.LOF.Model
 {
-    public interface ICard : IItem
+    public interface ICardModel : IItemModel
     {
-        string CardName { get; }
-        Sprite Frame { get; }
         AttackStatuses AttackStatuses { get; }
         DefenceStatus DefenceStatus { get; }
-        string InvokeEffect { get; }
 
-        void SetCopyParameter(Card target);
-        Card MakeCopy();
+        void SetCopyParameter(CardModel target);
+        CardModel MakeCopy();
     }
 }

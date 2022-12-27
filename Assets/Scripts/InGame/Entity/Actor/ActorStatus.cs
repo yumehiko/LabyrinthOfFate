@@ -34,8 +34,8 @@ namespace yumehiko.LOF.Model
             hp = new IntReactiveProperty(profile.BaseHP + equipSlot.AdditionalHP);
         }
 
-        public void EquipWeapon(Card weapon) => equipSlot.EquipWeapon(weapon);
-        public void EquipArmor(Card armor)
+        public void EquipWeapon(CardModel weapon) => equipSlot.EquipWeapon(weapon);
+        public void EquipArmor(CardModel armor)
         {
             int hpDiff = armor.DefenceStatus.HP - equipSlot.Armor.DefenceStatus.HP;
             maxHP.Value += hpDiff;
