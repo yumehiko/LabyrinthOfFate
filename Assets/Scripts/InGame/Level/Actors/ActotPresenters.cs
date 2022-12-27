@@ -14,7 +14,7 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
     public class ActorPresenters : IDisposable
     {
-        public IActorBrain Player { get; private set; }
+        public Player Player { get; private set; }
         public IReadOnlyList<IActorBrain> Enemies => enemies;
         public ActorModels Models => models;
         public IObservable<Unit> OnDefeatAllEnemy => onDefeatAllEnemy;
@@ -68,13 +68,12 @@ namespace yumehiko.LOF.Presenter
             }
         }
 
-        public void SpawnPlayer(PlayerProfile playerProfile, Adventure adventure)
+        public void AddPlayer(Player player, IActor model, IActorView view)
         {
-            var body = models.SpawnPlayer(playerProfile, Vector2Int.zero);
-            var view = views.SpawnActorView(Vector2Int.zero, playerProfile.View);
-            var brain = new Player(adventure, body, view);
-            Player = brain;
-            disposables.Add(brain);
+            models.AddPlayer(model);
+            views.AddView(view);
+            Player = player;
+            disposables.Add(player);
         }
 
         private void SetPlayerPosition(ActorSpawnPoint spawnPoint)
@@ -113,7 +112,7 @@ namespace yumehiko.LOF.Presenter
         private void DefeatEnemy(IActorBrain brain)
         {
             RemoveEnemy(brain);
-            if(enemies.Count == 0)
+            if (enemies.Count == 0)
             {
                 onDefeatAllEnemy.OnNext(Unit.Default);
             }

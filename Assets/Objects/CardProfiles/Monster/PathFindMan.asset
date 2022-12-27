@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bfd048dccecb04e178db05f34272cd5b, type: 3}
-  m_Name: Barehand
+  m_Name: PathFindMan
   m_EditorClassIdentifier: 
-  cardName: BAREHAND
+  cardName: PATH FIND MAN
   frame: {fileID: 21300000, guid: bd785822424f143f2a003278978c0a41, type: 3}
   attackStatuses:
     list:
@@ -23,5 +23,5 @@ MonoBehaviour:
     - ad: 1
     - ad: 1
   defenceStatus:
-    hp: 1
-  invokeEffect: Nothing.
+    hp: 2
+  invokeEffect: Delete this card.

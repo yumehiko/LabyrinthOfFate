@@ -21,5 +21,11 @@ namespace yumehiko.LOF.Model
             this.hp = status.hp;
         }
 
+        public string GetInfo()
+        {
+            const char heart = '♥';
+            return $"{heart} {hp}";
+        }
+
     }
 }

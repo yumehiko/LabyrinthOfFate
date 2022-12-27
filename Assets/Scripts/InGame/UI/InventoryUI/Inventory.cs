@@ -10,6 +10,13 @@ namespace yumehiko.LOF.Model
     public class Inventory
     {
         private readonly List<IItem> items = new List<IItem>();
+
+        public readonly int Capacity = 5;
         public IEnumerator<IItem> GetEnumerator() => items.GetEnumerator();
+
+        public void Add(IItem item)
+        {
+            items.Add(item);
+        }
     }
 }

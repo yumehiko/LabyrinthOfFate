@@ -17,6 +17,11 @@ namespace yumehiko.LOF.View
 			return instance;
         }
 
+		public void AddView(IActorView view)
+        {
+			views.Add(view);
+		}
+
 		public void Remove(IActorView view)
 		{
 			views.Remove(view);

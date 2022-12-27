@@ -23,6 +23,11 @@ namespace yumehiko.LOF.Model
             return body;
         }
 
+        public void AddPlayer(IActor player)
+        {
+            this.player = player;
+        }
+
         public IActor SpawnEnemy(IActorProfile profile, Vector2Int position)
         {
             var enemy = new Actor(profile, position);

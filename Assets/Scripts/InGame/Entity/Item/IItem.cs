@@ -9,6 +9,12 @@ namespace yumehiko.LOF.Model
     /// </summary>
 	public interface IItem 
 	{
-		
+		ITemType Type { get; }
 	}
+
+	public enum ITemType
+    {
+		None,
+		Card,
+    }
 }

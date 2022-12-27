@@ -11,25 +11,25 @@ namespace yumehiko.LOF.Model
     /// このゲームにおけるほとんど全てのアイテム。
     /// </summary>
     [Serializable]
-    public class Card : IItem
+	[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/Card")]
+    public class Card : ScriptableObject, ICard
     {
+        public ITemType Type => ITemType.Card;
         public string CardName => cardName;
-        public IReadOnlyList<AttackStatus> AttackStatuses => attackStatuses;
+        public Sprite Frame => frame;
+        public AttackStatuses AttackStatuses => attackStatuses;
         public DefenceStatus DefenceStatus => defenceStatus;
+        public string InvokeEffect => invokeEffect;
+
         public IObservable<Unit> OnRemove => onRemove;
 
         private readonly Subject<Unit> onRemove = new Subject<Unit>();
 
         [SerializeField] private string cardName;
-        [SerializeField] private List<AttackStatus> attackStatuses;
+        [SerializeField] private Sprite frame;
+        [SerializeField] private AttackStatuses attackStatuses;
         [SerializeField] private DefenceStatus defenceStatus;
-
-        public Card(string cardName, List<AttackStatus> attackStatuses, DefenceStatus defenceStatus)
-        {
-            this.cardName = cardName;
-            this.attackStatuses = attackStatuses;
-            this.defenceStatus = defenceStatus;
-        }
+        [SerializeField] private string invokeEffect;
 
         /// <summary>
         /// 装備されているなら、これを外す。
@@ -39,17 +39,28 @@ namespace yumehiko.LOF.Model
             onRemove.OnNext(Unit.Default);
         }
 
-        public static Card GetBareHand()
+        /// <summary>
+        /// このカードに指定したカードの情報を全てディープコピーする。
+        /// </summary>
+        /// <param name="target"></param>
+        public void SetCopyParameter(Card target)
         {
-            var attackStatuses = new List<AttackStatus>();
-            for (int i = 0; i < 6; i++)
-            {
-                var bareHandAttack = new AttackStatus(1);
-                attackStatuses.Add(bareHandAttack);
-            }
-            var defenceStatus = new DefenceStatus(0);
-            var card = new Card("BareHand", attackStatuses, defenceStatus);
-            return card;
+            cardName = target.CardName;
+            frame = target.Frame;
+            invokeEffect = target.InvokeEffect;
+            attackStatuses = new AttackStatuses(target.AttackStatuses);
+            defenceStatus = new DefenceStatus(target.DefenceStatus);
+        }
+
+        /// <summary>
+        /// このカードのコピーを作る。
+        /// </summary>
+        /// <returns></returns>
+        public Card MakeCopy()
+        {
+            var copy = CreateInstance<Card>();
+            copy.SetCopyParameter(this);
+            return copy;
         }
     }
 }

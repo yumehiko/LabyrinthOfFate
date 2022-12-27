@@ -14,15 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   brainType: 2
   view: {fileID: 2031511874585273929, guid: f2554523d04c4458fa2764fc54b5ba68, type: 3}
-  actorName: RANDOM STEP MAN
   baseHP: 0
-  attackStatuses:
-  - ad: 2
-  - ad: 2
-  - ad: 1
-  - ad: 1
-  - ad: 0
-  - ad: 0
-  defenceStatus:
-    hp: 2
-  frameSPrite: {fileID: 21300000, guid: bd785822424f143f2a003278978c0a41, type: 3}
+  card: {fileID: 11400000, guid: 93959504df75c4376b7619e7e30b845c, type: 2}

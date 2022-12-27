@@ -22,13 +22,20 @@ namespace yumehiko.LOF.Presenter
         public Turn Turn { get; }
         public ActorModels Actors { get; }
         public IReadOnlyList<ActorProfile> EnemyProfiles { get; }
-        public IObservable<Unit> OnBeatLevel => actorPresenters.OnDefeatAllEnemy;
+        public IObservable<LevelEndStat> OnEnd => onEnd;
 
+        private readonly Subject<LevelEndStat> onEnd = new Subject<LevelEndStat>();
+        private readonly CancellationTokenSource levelCancellationTokenSource = new CancellationTokenSource();
+        private readonly CompositeDisposable disposables = new CompositeDisposable();
         private readonly DungeonView view;
         private readonly ActorPresenters actorPresenters;
-        private readonly CancellationTokenSource levelCancellationTokenSource = new CancellationTokenSource();
 
-        public Level(DungeonAsset asset, DungeonView view, ActorPresenters actorPresenters, IReadOnlyList<ActorProfile> enemyProfiles)
+        public Level(
+            DungeonAsset asset,
+            DungeonView view,
+            ActorPresenters actorPresenters,
+            IReadOnlyList<ActorProfile> enemyProfiles,
+            CancellationToken adventureCancelToken)
         {
             Dungeon = asset.Dungeon;
             Actors = actorPresenters.Models;
@@ -41,11 +48,24 @@ namespace yumehiko.LOF.Presenter
             Dungeon.MakePathFinder();
             view.SetTiles(Dungeon);
             actorPresenters.SpawnActors(asset.ActorSpawnPoints, this);
+
+            //レベルの終了処理を登録
+            _ = actorPresenters.OnDefeatAllEnemy
+                .First()
+                .Subscribe(_ => EndLevel(LevelEndStat.Beat, adventureCancelToken).Forget())
+                .AddTo(disposables);
+
+            _ = actorPresenters.Player.Model.IsDied
+                .Where(isTrue => isTrue)
+                .First()
+                .Subscribe(_ => EndLevel(LevelEndStat.Lose, adventureCancelToken).Forget())
+                .AddTo(disposables);
         }
 
         public void Dispose()
         {
             levelCancellationTokenSource?.Dispose();
+            disposables.Dispose();
         }
 
         public async UniTask StartLevel(CancellationToken adventureCancelToken)
@@ -55,26 +75,24 @@ namespace yumehiko.LOF.Presenter
         }
 
         /// <summary>
-        /// このレベルに敗北する。
-        /// </summary>
-        public async UniTask LoseLevel(CancellationToken adventureCancelToken)
-        {
-            levelCancellationTokenSource.Cancel();
-            levelCancellationTokenSource.Dispose();
-            await view.Hide().ToUniTask(cancellationToken: adventureCancelToken);
-            actorPresenters.ClearActorsWithoutPlayer();
-        }
-
-        /// <summary>
-        /// このレベルに勝利する。
+        /// このレベルを終了する。
         /// レベルを片付けて、破棄処理をする。
         /// </summary>
-        public async UniTask BeatLevel(CancellationToken adventureCancelToken)
+        private async UniTask EndLevel(LevelEndStat endStat, CancellationToken adventureCancelToken)
         {
             levelCancellationTokenSource.Cancel();
             levelCancellationTokenSource.Dispose();
             await view.Hide().ToUniTask(cancellationToken: adventureCancelToken);
             actorPresenters.ClearActorsWithoutPlayer();
+            onEnd.OnNext(endStat);
         }
+    }
+
+    public enum LevelEndStat
+    {
+        None,
+        Lose,
+        Beat,
+        Runaway,
     }
 }

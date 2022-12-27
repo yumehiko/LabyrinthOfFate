@@ -8,6 +8,7 @@ using Cysharp.Threading.Tasks;
 using yumehiko.Input;
 using yumehiko.LOF.Model;
 using yumehiko.LOF.View;
+using VContainer;
 
 namespace yumehiko.LOF.Presenter
 {
@@ -20,7 +21,9 @@ namespace yumehiko.LOF.Presenter
         public override IActor Model => model;
         public override IActorView View => view;
 
-        private readonly Adventure adventure;
+        public Inventory Inventory { get; }
+
+        private Adventure adventure;
         private readonly IActor model;
         private readonly IActorView view;
 
@@ -29,22 +32,29 @@ namespace yumehiko.LOF.Presenter
         private readonly CompositeDisposable disposables = new CompositeDisposable();
         private bool canControl = false;
 
-        public Player(Adventure adventure, IActor model, IActorView view)
+        [Inject]
+        public Player(Inventory inventory, PlayerProfile profile, ActorPresenters actorPresenters)
         {
-            this.adventure = adventure;
-            this.model = model;
-            this.view = view;
+            this.Inventory = inventory;
+            model = new Actor(profile, Vector2Int.zero);
+            view = UnityEngine.Object.Instantiate(profile.View);
+            actorPresenters.AddPlayer(this, model, view);
 
-            ReactiveInput.OnMove
-                .Where(_ => canControl)
-                .Subscribe(value => inputDirection.Value = value)
-                .AddTo(disposables);
+            _ = ReactiveInput.OnMove
+                 .Where(_ => canControl)
+                 .Subscribe(value => inputDirection.Value = value)
+                 .AddTo(disposables);
 
-            ReactiveInput.OnWait
+            _ = ReactiveInput.OnWait
                 .Where(_ => canControl)
                 .Where(isTrue => isTrue)
                 .Subscribe(_ => inputWait.OnNext(Unit.Default))
                 .AddTo(disposables);
+        }
+
+        public void Initialize(Adventure adventure)
+        {
+            this.adventure = adventure;
         }
 
         public void Dispose()

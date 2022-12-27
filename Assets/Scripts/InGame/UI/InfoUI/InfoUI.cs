@@ -77,26 +77,7 @@ namespace yumehiko.LOF.Presenter
 
             y = HPtoWeaponMargin + (int)hpUI.rectTransform.anchoredPosition.y - (int)hpUI.rectTransform.sizeDelta.y;
             weaponUI.rectTransform.anchoredPosition = new Vector2Int(x, y);
-            weaponUI.text = GetAttackInfo(actor.Status.Weapons);
-        }
-
-        private string GetAttackInfo(IReadOnlyList<AttackStatus> attacks)
-        {
-            const string diceChars = "\u2680\u2681\u2682\u2683\u2684\u2685";
-            var info = "";
-            for (int i = 0; i < 6; i++)
-            {
-                info += i != 0 ? Environment.NewLine : string.Empty; //1行目以外はまず改行を追加
-                if (attacks[i].IsMiss())
-                {
-                    info += $"{diceChars[i]} MISS";
-                    continue;
-                }
-
-                //属性攻撃とかあったらたす。
-                info += $"{diceChars[i]} \u2694{attacks[i].AD}";
-            }
-            return info;
+            weaponUI.text = actor.Status.AttackStatuses.GetInfo();
         }
 
         private void CheckActorAt(Vector2Int position)

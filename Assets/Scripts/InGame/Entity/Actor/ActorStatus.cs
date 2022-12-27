@@ -15,8 +15,8 @@ namespace yumehiko.LOF.Model
         public IReadOnlyReactiveProperty<int> MaxHP => maxHP;
         public IReadOnlyReactiveProperty<int> HP => hp;
         public IReadOnlyReactiveProperty<bool> IsDied => isDied;
-        public IReadOnlyList<AttackStatus> Weapons => equipSlot.Weapon.AttackStatuses;
-        public DefenceStatus armor => equipSlot.Armor.DefenceStatus;
+        public AttackStatuses AttackStatuses => equipSlot.Weapon.AttackStatuses;
+        public DefenceStatus DefenceStatus => equipSlot.Armor.DefenceStatus;
 
         private readonly IntReactiveProperty maxHP;
         private readonly IntReactiveProperty hp;
@@ -26,8 +26,8 @@ namespace yumehiko.LOF.Model
         public ActorStatus(IActorProfile profile)
         {
             Name = profile.ActorName;
-            var weapon = profile.Weapon.MakeCard();
-            var armor = profile.Armor.MakeCard();
+            var weapon = profile.Weapon.MakeCopy();
+            var armor = profile.Armor.MakeCopy();
             equipSlot.EquipWeapon(weapon);
             equipSlot.EquipArmor(armor);
             maxHP = new IntReactiveProperty(profile.BaseHP + equipSlot.AdditionalHP);
@@ -37,18 +37,12 @@ namespace yumehiko.LOF.Model
         public void EquipWeapon(Card weapon) => equipSlot.EquipWeapon(weapon);
         public void EquipArmor(Card armor)
         {
-            //8-10
             int hpDiff = armor.DefenceStatus.HP - equipSlot.Armor.DefenceStatus.HP;
             maxHP.Value += hpDiff;
             hp.Value = Mathf.Min(hp.Value, maxHP.Value);
             equipSlot.EquipArmor(armor);
         }
 
-        /// <summary>
-        /// 指定したActorに攻撃する。
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="ad"></param>
         public AttackStatus PickAttackStatus() => equipSlot.PickRandomAttackStatus();
 
         /// <summary>

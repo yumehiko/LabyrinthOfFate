@@ -56,7 +56,7 @@ namespace yumehiko.LOF.Presenter
                 //あと、挙動によってはアニメーションの終わりを待つべき重要なアクションはあるかもしれん。
                 //Brainからは指令だけもらって、ActorPresenterを分割して、Presenterにmodel指令とview指令を別個に送り、view指令だけwhenAllする？
                 //指令によっては待つとかできる。
-                //TODO:途中で敵が自爆したりするとInvaildするかも？
+                //TODO:途中で敵が自爆したりするとInvaildするかも？　新たにリストを作ってみたいな処理がいるか？
                 foreach (IActorBrain enemy in enemies)
                 {
                     enemyTasks.Add(enemy.DoTurnAction(0.5f, turnTokenSource.Token));

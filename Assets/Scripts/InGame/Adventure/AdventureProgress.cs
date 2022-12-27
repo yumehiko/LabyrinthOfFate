@@ -30,7 +30,7 @@ namespace yumehiko.LOF.Presenter
             firstLevel = new LevelAsset(firstDungeon, firstEnemys);
         }
 
-        public IReadOnlyList<ICardProfile> PickRewards()
+        public IReadOnlyList<ICard> PickRewards()
         {
 
 

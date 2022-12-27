@@ -32,5 +32,15 @@ namespace yumehiko.LOF.Model
         {
             return ad == 0;
         }
+
+        /// <summary>
+        /// ステータス情報をstringで取得。
+        /// </summary>
+        /// <returns></returns>
+        public string GetInfo()
+        {
+            //TODO:属性ダメージとかもいる
+            return $"\u2694{ad}";
+        }
     }
 }

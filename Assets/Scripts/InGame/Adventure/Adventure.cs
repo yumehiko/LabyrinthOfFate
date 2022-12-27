@@ -18,12 +18,13 @@ namespace yumehiko.LOF.Presenter
     public class Adventure : IDisposable, IInitializable
     {
         public Level CurrentLevel { get; private set; }
+        public Player Player { get; }
 
         private readonly DungeonView dungeonView;
         private readonly ActorPresenters actorPresenters;
         private readonly InfoUI infoUI;
         private readonly AdventureProgress progress;
-        private IActorBrain player => actorPresenters.Player;
+        private readonly Rewards rewards;
 
         private readonly CancellationTokenSource adventureCanncelation = new CancellationTokenSource();
         private readonly CompositeDisposable adventureDisposable = new CompositeDisposable();
@@ -31,25 +32,25 @@ namespace yumehiko.LOF.Presenter
 
         [Inject]
         public Adventure(
+            Player player,
             ActorPresenters actorPresenters,
             DungeonView dungeonView,
+            Rewards rewards,
             InfoUI infoUI,
             AdventureProgress progress)
         {
+            Player = player;
             this.actorPresenters = actorPresenters;
             this.dungeonView = dungeonView;
+            this.rewards = rewards;
             this.infoUI = infoUI;
             this.progress = progress;
         }
 
         public void Initialize()
         {
-            actorPresenters.SpawnPlayer(progress.PlayerProfile, this);
-            _ = actorPresenters.Models.Player.IsDied
-                .Where(isTrue => isTrue)
-                .Subscribe(_ => CurrentLevel.LoseLevel(adventureCanncelation.Token).Forget())
-                .AddTo(adventureDisposable);
-            infoUI.Initialize(actorPresenters.Models.Player);
+            Player.Initialize(this);
+            infoUI.Initialize(Player.Model);
 
             StartNewLevel();
         }
@@ -69,19 +70,22 @@ namespace yumehiko.LOF.Presenter
             levelDisposable?.Dispose();
             CurrentLevel?.Dispose();
             var levelAsset = progress.PickNextLevelAssets();
-            CurrentLevel = new Level(levelAsset.DungeonAsset, dungeonView, actorPresenters, levelAsset.EnemyProfiles);
+            CurrentLevel = new Level(levelAsset.DungeonAsset, dungeonView, actorPresenters, levelAsset.EnemyProfiles, adventureCanncelation.Token);
             infoUI.SetLevel(CurrentLevel);
-            levelDisposable = CurrentLevel.OnBeatLevel
-                .First().Subscribe(_ => BeatLevel().Forget());
+            levelDisposable = CurrentLevel.OnEnd
+                .First()
+                .Subscribe(endStat => EndLevel(endStat).Forget());
             CurrentLevel.StartLevel(adventureCanncelation.Token).Forget();
         }
 
-        private async UniTaskVoid BeatLevel()
+        private async UniTaskVoid EndLevel(LevelEndStat endStat)
         {
-            await CurrentLevel.BeatLevel(adventureCanncelation.Token);
-            player.Heal(1000);
+            actorPresenters.Player.Heal(1000);
             //TODO:ここでリワードを与えたりする
-            //TODO:レベルを打ち倒さずに逃げたRunDownLevel()関数も欲しい。
+            if (endStat == LevelEndStat.Beat)
+            {
+                await rewards.WaitUntilePickReward(actorPresenters.Player, adventureCanncelation.Token);
+            }
             StartNewLevel();
         }
     }

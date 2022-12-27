@@ -3,8 +3,9 @@ using VContainer.Unity;
 using UnityEngine;
 using yumehiko.LOF.Model;
 using yumehiko.LOF.View;
+using yumehiko.LOF.Presenter;
 
-namespace yumehiko.LOF.Presenter
+namespace yumehiko.LOF
 {
     public class ActorsLifetimeScope : LifetimeScope
     {
