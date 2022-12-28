@@ -9,38 +9,40 @@ namespace yumehiko.LOF.Model
     /// <summary>
     /// あるActorの持つゲーム上のステータス。
     /// </summary>
-	public class ActorStatus
+	public class ActorStatus : IDisposable
     {
         public string Name { get; }
         public IReadOnlyReactiveProperty<int> MaxHP => maxHP;
         public IReadOnlyReactiveProperty<int> HP => hp;
         public IReadOnlyReactiveProperty<bool> IsDied => isDied;
+        public EquipSlot EquipSlot => equipSlot;
         public AttackStatuses AttackStatuses => equipSlot.Weapon.AttackStatuses;
         public DefenceStatus DefenceStatus => equipSlot.Armor.DefenceStatus;
 
         private readonly IntReactiveProperty maxHP;
         private readonly IntReactiveProperty hp;
+        private readonly int baseHP;
         private readonly EquipSlot equipSlot = new EquipSlot();
         private readonly BoolReactiveProperty isDied = new BoolReactiveProperty(false);
+        private readonly IDisposable hpDisposable;
 
         public ActorStatus(IActorProfile profile)
         {
             Name = profile.ActorName;
+            baseHP = profile.BaseHP;
             var weapon = profile.Weapon.MakeCopy();
             var armor = profile.Armor.MakeCopy();
             equipSlot.EquipWeapon(weapon);
             equipSlot.EquipArmor(armor);
-            maxHP = new IntReactiveProperty(profile.BaseHP + equipSlot.AdditionalHP);
-            hp = new IntReactiveProperty(profile.BaseHP + equipSlot.AdditionalHP);
+            maxHP = new IntReactiveProperty(baseHP + equipSlot.AdditionalHP.Value);
+            hp = new IntReactiveProperty(baseHP + equipSlot.AdditionalHP.Value);
+
+            hpDisposable = equipSlot.AdditionalHP.Subscribe(amount => ResetMaxHP(amount));
         }
 
-        public void EquipWeapon(CardModel weapon) => equipSlot.EquipWeapon(weapon);
-        public void EquipArmor(CardModel armor)
+        public void Dispose()
         {
-            int hpDiff = armor.DefenceStatus.HP - equipSlot.Armor.DefenceStatus.HP;
-            maxHP.Value += hpDiff;
-            hp.Value = Mathf.Min(hp.Value, maxHP.Value);
-            equipSlot.EquipArmor(armor);
+            hpDisposable.Dispose();
         }
 
         public AttackStatus PickAttackStatus() => equipSlot.PickRandomAttackStatus();
@@ -73,6 +75,12 @@ namespace yumehiko.LOF.Model
         public void Die()
         {
             isDied.Value = true;
+        }
+
+        private void ResetMaxHP(int amount)
+        {
+            maxHP.Value = baseHP + amount;
+            hp.Value = Mathf.Min(hp.Value, maxHP.Value);
         }
     }
 }

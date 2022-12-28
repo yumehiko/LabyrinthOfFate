@@ -35,7 +35,7 @@ namespace yumehiko.LOF.View
                 .Subscribe(_ => CursorExitButton())
                 .AddTo(this);
 
-            _ = pickFrame.OnPointerDownAsObservable()
+            _ = pickFrame.OnPointerClickAsObservable()
                 .Subscribe(_ => onClick.OnNext(Unit.Default))
                 .AddTo(this);
         }

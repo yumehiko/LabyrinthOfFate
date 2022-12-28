@@ -18,37 +18,47 @@ namespace yumehiko.LOF.Presenter
     public class Player : ActorBrainBase, IDisposable
     {
         public ActorType ActorType => ActorType.Player;
-        public override IActor Model => model;
-        public override IActorView View => view;
-
+        public override IActor Model { get; }
+        public override IActorView View { get; }
         public Inventory Inventory { get; }
 
         private Adventure adventure;
-        private readonly IActor model;
-        private readonly IActorView view;
 
         private readonly AsyncReactiveProperty<ActorDirection> inputDirection = new AsyncReactiveProperty<ActorDirection>(ActorDirection.None);
         private readonly Subject<Unit> inputWait = new Subject<Unit>();
         private readonly CompositeDisposable disposables = new CompositeDisposable();
-        private bool canControl = false;
+        private bool canTurnControl = false;
 
         [Inject]
         public Player(Inventory inventory, PlayerProfile profile, ActorPresenters actorPresenters)
         {
-            this.Inventory = inventory;
-            model = new Actor(profile, Vector2Int.zero);
-            view = UnityEngine.Object.Instantiate(profile.View);
-            actorPresenters.AddPlayer(this, model, view);
+            Inventory = inventory;
+            Model = new ActorModel(profile, Vector2Int.zero);
+            View = UnityEngine.Object.Instantiate(profile.View);
+            actorPresenters.AddPlayer(this, Model, View);
+            inventory.InitializeEquips(Model.Status.EquipSlot);
 
             _ = ReactiveInput.OnMove
-                 .Where(_ => canControl)
+                 .Where(_ => canTurnControl)
                  .Subscribe(value => inputDirection.Value = value)
                  .AddTo(disposables);
 
             _ = ReactiveInput.OnWait
-                .Where(_ => canControl)
+                .Where(_ => canTurnControl)
                 .Where(isTrue => isTrue)
                 .Subscribe(_ => inputWait.OnNext(Unit.Default))
+                .AddTo(disposables);
+
+            _ = ReactiveInput.OnInventory
+                .Where(_ => canTurnControl)
+                .Where(isTrue => isTrue)
+                .Subscribe(_ => inventory.SwitchOpen())
+                .AddTo(disposables);
+
+            _ = Model.IsDied
+                .Where(isTrue => isTrue)
+                .First()
+                .Subscribe(_ => OnDied())
                 .AddTo(disposables);
         }
 
@@ -67,12 +77,13 @@ namespace yumehiko.LOF.Presenter
         /// </summary>
         public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
-            canControl = true;
+            canTurnControl = true;
             //移動入力・UI入力を待つ。
             var inputs = new List<UniTask>
             {
                 InputDirection(animationSpeedFactor, token),
                 InputWait(animationSpeedFactor, token),
+                Inventory.OnCommand.ToUniTask(true, token),
             };
 
             //いずれかのターン消費行動が確定したら、行動終了。
@@ -92,15 +103,15 @@ namespace yumehiko.LOF.Presenter
             while (true)
             {
                 var direction = await inputDirection.WaitAsync(token);
-                var targetPoint = model.GetPositionWithDirection(direction);
+                var targetPoint = Model.GetPositionWithDirection(direction);
 
                 //指定地点にEnemyがいないかをチェックする。
                 IActor enemy = adventure.CurrentLevel.Actors.GetEnemyAt(targetPoint);
                 if (enemy != null) //Enemyがいるなら、それを攻撃する。
                 {
-                    canControl = false;
-                    model.Attack(enemy);
-                    await view.AttackAnimation(targetPoint, animationSpeedFactor, token);
+                    TurnInputConfirm();
+                    Model.Attack(enemy);
+                    await View.AttackAnimation(targetPoint, animationSpeedFactor, token);
                     break;
                 }
 
@@ -108,9 +119,9 @@ namespace yumehiko.LOF.Presenter
                 var tileType = adventure.CurrentLevel.Dungeon.GetTileType(targetPoint);
                 if (tileType == TileType.Empty)
                 {
-                    canControl = false;
-                    model.StepTo(targetPoint);
-                    await view.StepAnimation(targetPoint, animationSpeedFactor, token);
+                    TurnInputConfirm();
+                    Model.StepTo(targetPoint);
+                    await View.StepAnimation(targetPoint, animationSpeedFactor, token);
                     break;
                 }
             }
@@ -119,8 +130,26 @@ namespace yumehiko.LOF.Presenter
         private async UniTask InputWait(float animationSpeedFactor, CancellationToken token)
         {
             await inputWait.ToUniTask(true, token);
-            canControl = false;
-            await view.WaitAnimation(model.Position, animationSpeedFactor, token);
+            TurnInputConfirm();
+            await View.WaitAnimation(Model.Position, animationSpeedFactor, token);
+        }
+
+        /// <summary>
+        /// ターン入力が確定したので、他の行動を入力できないようにする。
+        /// </summary>
+        private void TurnInputConfirm()
+        {
+            canTurnControl = false;
+            Inventory.Close();
+        }
+
+        /// <summary>
+        /// 死亡時処理。
+        /// </summary>
+        private void OnDied()
+        {
+            canTurnControl = false;
+            Inventory.Close();
         }
     }
 }

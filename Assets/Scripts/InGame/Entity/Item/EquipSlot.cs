@@ -11,21 +11,23 @@ namespace yumehiko.LOF.Model
     /// </summary>
     public class EquipSlot
     {
-        public CardModel Weapon => weapon;
-        public CardModel Armor => armor;
-        public int AdditionalHP => armor.DefenceStatus.HP;
+        public ICardModel Weapon => weapon;
+        public ICardModel Armor => armor;
+        public IReadOnlyReactiveProperty<int> AdditionalHP => additionalHP;
 
-        private CardModel weapon;
-        private CardModel armor;
+        private readonly IntReactiveProperty additionalHP = new IntReactiveProperty();
+        private ICardModel weapon;
+        private ICardModel armor;
 
-        public void EquipWeapon(CardModel card)
+        public void EquipWeapon(ICardModel card)
         {
             weapon = card;
         }
 
-        public void EquipArmor(CardModel card)
+        public void EquipArmor(ICardModel card)
         {
             armor = card;
+            additionalHP.Value = armor.DefenceStatus.HP;
         }
 
         public AttackStatus PickRandomAttackStatus()

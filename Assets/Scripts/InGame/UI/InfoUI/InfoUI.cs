@@ -20,16 +20,19 @@ namespace yumehiko.LOF.Presenter
         [SerializeField] private TextMeshProUGUI armorUI;
 
         private Level level;
-        private IActor player;
+        private Player player;
         private CompositeDisposable levelDisposables;
 
-        public void Initialize(IActor player)
+        public void Initialize(Player player)
         {
-            _ = player.Status.HP
-                .Subscribe(_ => SetInfo(player))
+            this.player = player;
+            _ = player.Model.Status.HP
+                .Subscribe(_ => SetInfo(player.Model))
                 .AddTo(this);
 
-            this.player = player;
+            _ = player.Inventory.IsOpen
+                .Subscribe(isOpen => cursor.SetEnable(!isOpen))
+                .AddTo(this);
         }
 
         public void SetLevel(Level level)
@@ -39,7 +42,7 @@ namespace yumehiko.LOF.Presenter
             levelDisposables = new CompositeDisposable();
 
             _ = level.Turn.OnPlayerActEnd
-                .Subscribe(_ => SetInfo(player))
+                .Subscribe(_ => SetInfo(player.Model))
                 .AddTo(levelDisposables);
 
             _ = cursor.Position

@@ -14,12 +14,14 @@ namespace yumehiko.LOF.View
 
         public IReadOnlyReactiveProperty<Vector2Int> Position => position;
 
+        private bool isActive = true;
         private readonly ReactiveProperty<Vector2Int> position = new ReactiveProperty<Vector2Int>();
         private Sequence cursorFadeSequence;
 
         private void Awake()
         {
             _ = ReactiveInput.OnPointer
+                .Where(_ => isActive)
                 .Subscribe(point => OnMovePointer(point))
                 .AddTo(this);
 
@@ -53,6 +55,17 @@ namespace yumehiko.LOF.View
             _ = cursorFadeSequence.Play();
         }
 
-
+        public void SetEnable(bool isEnable)
+        {
+            isActive = isEnable;
+            if(isActive)
+            {
+                return;
+            }
+            if (cursorFadeSequence.IsActive())
+            {
+                cursorFadeSequence.Complete();
+            }
+        }
     }
 }

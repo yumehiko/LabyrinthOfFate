@@ -50,7 +50,7 @@ namespace yumehiko.LOF.Presenter
         public void Initialize()
         {
             Player.Initialize(this);
-            infoUI.Initialize(Player.Model);
+            infoUI.Initialize(Player);
 
             StartNewLevel();
         }
@@ -80,6 +80,12 @@ namespace yumehiko.LOF.Presenter
 
         private async UniTaskVoid EndLevel(LevelEndStat endStat)
         {
+            if(endStat == LevelEndStat.Lose)
+            {
+                Debug.Log($"プレイヤー敗北時の処理を入れる");
+                return;
+            }
+
             actorPresenters.Player.Heal(1000);
             //TODO:ここでリワードを与えたりする
             if (endStat == LevelEndStat.Beat)

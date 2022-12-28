@@ -8,15 +8,15 @@ namespace yumehiko.LOF.Model
     /// <summary>
     /// アイテムのコレクション。
     /// </summary>
-    public class InventoryModel
+    public class InventoryModel : IReadOnlyList<IItemModel>
     {
+        public ICardModel Weapon => equipSlot.Weapon;
+        public ICardModel Armor => equipSlot.Armor;
         public int Count => items.Count;
-        public readonly int Capacity = 5;
-        public IEnumerator<IItemModel> GetEnumerator() => items.GetEnumerator();
-
-        private IItemModel weaponSlot;
-        private IItemModel armorSlot;
+        public IItemModel this[int index] => items[index];
+    
         private readonly List<IItemModel> items = new List<IItemModel>();
+        private EquipSlot equipSlot;
 
         /// <summary>
         /// アイテムを追加する。
@@ -26,7 +26,7 @@ namespace yumehiko.LOF.Model
         /// <returns></returns>
         public int Add(IItemModel item)
         {
-            if(items.Count >= 5)
+            if (items.Count >= 5)
             {
                 throw new Exception("インベントリの容量を超えてしまう");
             }
@@ -35,15 +35,21 @@ namespace yumehiko.LOF.Model
             return id;
         }
 
-        public void SetWeapon(IItemModel card)
+        /// <summary>
+        /// スロットを指定してアイテムをセット。
+        /// </summary>
+        /// <param name="slotID"></param>
+        /// <param name="item"></param>
+        public void SetItemToSlot(IItemModel item, int slotID)
         {
-            //TODO:ITEMのタイプをチェックする必要がある
-            weaponSlot = card;
+            items[slotID] = item;
         }
 
-        public void SetArmor(IItemModel card)
-        {
-            armorSlot = card;
-        }
+        public void InitializeEquipSlot(EquipSlot equipSlot) => this.equipSlot = equipSlot;
+        public void EquipWeapon(ICardModel card) => equipSlot.EquipWeapon(card);
+        public void EquipArmor(ICardModel card) => equipSlot.EquipArmor(card);
+
+        public IEnumerator<IItemModel> GetEnumerator() => items.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
     }
 }

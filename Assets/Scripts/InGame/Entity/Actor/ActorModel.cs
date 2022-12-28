@@ -12,7 +12,7 @@ namespace yumehiko.LOF.Model
     /// ActorのModel。ゲーム上の実体。
     /// ステータスを管理し、行動を実行する。
     /// </summary>
-    public class Actor : IActor
+    public class ActorModel : IActor
     {
         public string Name => Status.Name;
         public Vector2Int Position { get; private set; }
@@ -20,7 +20,7 @@ namespace yumehiko.LOF.Model
         public IReadOnlyReactiveProperty<bool> IsDied => Status.IsDied;
         public ActorStatus Status { get; }
 
-        public Actor(IActorProfile profile, Vector2Int position)
+        public ActorModel(IActorProfile profile, Vector2Int position)
         {
             Status = new ActorStatus(profile);
             Position = position;

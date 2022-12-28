@@ -18,7 +18,7 @@ namespace yumehiko.LOF.Model
 
         public IActor SpawnPlayer(IActorProfile profile, Vector2Int position)
         {
-            var body = new Actor(profile, position);
+            var body = new ActorModel(profile, position);
             player = body;
             return body;
         }
@@ -30,7 +30,7 @@ namespace yumehiko.LOF.Model
 
         public IActor SpawnEnemy(IActorProfile profile, Vector2Int position)
         {
-            var enemy = new Actor(profile, position);
+            var enemy = new ActorModel(profile, position);
             enemies.Add(enemy);
             return enemy;
         }

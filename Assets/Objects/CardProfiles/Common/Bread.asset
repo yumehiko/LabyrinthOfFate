@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc9ff713a31224827b01fee5ee03b9ef, type: 3}
-  m_Name: Sword
+  m_Name: Bread
   m_EditorClassIdentifier: 
-  cardName: Sword
+  cardName: Bread
   frame: {fileID: 21300000, guid: bd785822424f143f2a003278978c0a41, type: 3}
   invokeEffect: Delete this card.
   attackStatuses:
     list:
-    - ad: 6
-    - ad: 2
-    - ad: 2
-    - ad: 2
-    - ad: 2
+    - ad: 0
+    - ad: 0
+    - ad: 0
+    - ad: 0
+    - ad: 0
     - ad: 0
   defenceStatus:
-    hp: 2
+    hp: 1
