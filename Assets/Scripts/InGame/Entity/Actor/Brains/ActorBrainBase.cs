@@ -10,7 +10,7 @@ namespace yumehiko.LOF.Presenter
 {
     public abstract class ActorBrainBase : IActorBrain
     {
-        public abstract IActor Model { get; }
+        public abstract IActorModel Model { get; }
         public abstract IActorView View { get; }
         public abstract UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
 

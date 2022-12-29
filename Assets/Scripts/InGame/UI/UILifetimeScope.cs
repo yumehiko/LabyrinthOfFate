@@ -15,17 +15,21 @@ namespace yumehiko.LOF
         [SerializeField] private InfoUI infoUI;
         [SerializeField] private RewardsUI rewardsUI;
         [SerializeField] private InventoryUI inventoryUI;
+        [SerializeField] private ResultMessageUIView resultMessageUIView;
 
         protected override void Configure(IContainerBuilder builder)
         {
             builder.Register<InventoryModel>(Lifetime.Singleton);
-            builder.Register<Inventory>(Lifetime.Singleton);
             builder.RegisterComponent(inventoryUI);
+            builder.Register<Inventory>(Lifetime.Singleton);
 
             builder.RegisterComponent(infoUI);
 
-            builder.RegisterComponent(rewards);
             builder.RegisterComponent(rewardsUI);
+            builder.RegisterComponent(rewards);
+
+            builder.RegisterComponent(resultMessageUIView);
+            builder.RegisterEntryPoint<ResultMessageUI>(Lifetime.Singleton);
         }
     }
 }

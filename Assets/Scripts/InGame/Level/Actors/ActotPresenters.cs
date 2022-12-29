@@ -17,8 +17,10 @@ namespace yumehiko.LOF.Presenter
         public Player Player { get; private set; }
         public IReadOnlyList<IActorBrain> Enemies => enemies;
         public ActorModels Models => models;
+        public IObservable<Unit> OnSetLevelActors => onSetLevelActors;
         public IObservable<Unit> OnDefeatAllEnemy => onDefeatAllEnemy;
 
+        private readonly Subject<Unit> onSetLevelActors = new Subject<Unit>();
         private readonly Subject<Unit> onDefeatAllEnemy = new Subject<Unit>();
         private readonly List<IActorBrain> enemies = new List<IActorBrain>();
         private readonly ActorViews views;
@@ -43,6 +45,7 @@ namespace yumehiko.LOF.Presenter
             {
                 SpawnActor(spawnPoint, level);
             }
+            onSetLevelActors.OnNext(Unit.Default);
         }
 
         public void ClearActorsWithoutPlayer()
@@ -68,7 +71,7 @@ namespace yumehiko.LOF.Presenter
             }
         }
 
-        public void AddPlayer(Player player, IActor model, IActorView view)
+        public void AddPlayer(Player player, IActorModel model, IActorView view)
         {
             models.AddPlayer(model);
             views.AddView(view);
@@ -97,7 +100,7 @@ namespace yumehiko.LOF.Presenter
             return brain;
         }
 
-        private IActorBrain SpawnBrain(BrainType type, IActor body, IActorView view, Level level)
+        private IActorBrain SpawnBrain(BrainType type, IActorModel body, IActorView view, Level level)
         {
             switch (type)
             {

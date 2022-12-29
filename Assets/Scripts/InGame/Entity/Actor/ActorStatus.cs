@@ -22,7 +22,7 @@ namespace yumehiko.LOF.Model
         private readonly IntReactiveProperty maxHP;
         private readonly IntReactiveProperty hp;
         private readonly int baseHP;
-        private readonly EquipSlot equipSlot = new EquipSlot();
+        private readonly EquipSlot equipSlot;
         private readonly BoolReactiveProperty isDied = new BoolReactiveProperty(false);
         private readonly IDisposable hpDisposable;
 
@@ -32,8 +32,7 @@ namespace yumehiko.LOF.Model
             baseHP = profile.BaseHP;
             var weapon = profile.Weapon.MakeCopy();
             var armor = profile.Armor.MakeCopy();
-            equipSlot.EquipWeapon(weapon);
-            equipSlot.EquipArmor(armor);
+            equipSlot = new EquipSlot(weapon, armor);
             maxHP = new IntReactiveProperty(baseHP + equipSlot.AdditionalHP.Value);
             hp = new IntReactiveProperty(baseHP + equipSlot.AdditionalHP.Value);
 
@@ -50,9 +49,7 @@ namespace yumehiko.LOF.Model
         /// <summary>
         /// ダメージを受ける。
         /// </summary>
-        /// <param name="dealer"></param>
-        /// <param name="ad"></param>
-        public void GetDamage(IActor dealer, AttackStatus attackStatus)
+        public void TakeDamage(Damage damage)
         {
             if (isDied.Value)
             {
@@ -60,7 +57,7 @@ namespace yumehiko.LOF.Model
             }
 
             //MEMO: なんか跳ね返したりする場合もあるし、攻撃者はメモっておきたいが現状は使わない。
-            hp.Value = Mathf.Max(hp.Value - attackStatus.AD, 0);
+            hp.Value = Mathf.Max(hp.Value - damage.Amount, 0);
             if (hp.Value <= 0)
             {
                 Die();

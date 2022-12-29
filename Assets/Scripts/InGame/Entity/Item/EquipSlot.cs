@@ -19,6 +19,12 @@ namespace yumehiko.LOF.Model
         private ICardModel weapon;
         private ICardModel armor;
 
+        public EquipSlot(ICardModel weapon, ICardModel armor)
+        {
+            EquipWeapon(weapon);
+            EquipArmor(armor);
+        }
+
         public void EquipWeapon(ICardModel card)
         {
             weapon = card;

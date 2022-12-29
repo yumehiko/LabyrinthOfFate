@@ -12,13 +12,16 @@ namespace yumehiko.LOF.Model
     /// ActorのModel。ゲーム上の実体。
     /// ステータスを管理し、行動を実行する。
     /// </summary>
-    public class ActorModel : IActor
+    public class ActorModel : IActorModel
     {
         public string Name => Status.Name;
         public Vector2Int Position { get; private set; }
         public ActorType ActorType { get; }
-        public IReadOnlyReactiveProperty<bool> IsDied => Status.IsDied;
         public ActorStatus Status { get; }
+        public IReadOnlyReactiveProperty<bool> IsDied => Status.IsDied;
+        public IObservable<IActResult> OnActResult => onActResult;
+
+        private readonly Subject<IActResult> onActResult = new Subject<IActResult>();
 
         public ActorModel(IActorProfile profile, Vector2Int position)
         {
@@ -27,7 +30,6 @@ namespace yumehiko.LOF.Model
         }
 
         public void WarpTo(Vector2Int position) => Position = position;
-        public void GetDamage(IActor dealer, AttackStatus attack) => Status.GetDamage(dealer, attack);
         public void Heal(int amount) => Status.Heal(amount);
         public void Die() => Status.Die();
 
@@ -36,10 +38,18 @@ namespace yumehiko.LOF.Model
         /// </summary>
         /// <param name="target"></param>
         /// <param name="ad"></param>
-        public void Attack(IActor target)
+        public void Attack(IActorModel target)
         {
             var attack = Status.PickAttackStatus();
             target.GetDamage(this, attack);
+        }
+
+        public void GetDamage(IActorModel dealer, AttackStatus attack)
+        {
+            var damage = new Damage(attack, Status.DefenceStatus);
+            var result = new BattleResult(dealer, this, damage);
+            onActResult.OnNext(result);
+            Status.TakeDamage(damage);
         }
 
         /// <summary>

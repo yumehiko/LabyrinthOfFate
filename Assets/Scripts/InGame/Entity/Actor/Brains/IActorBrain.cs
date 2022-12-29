@@ -16,7 +16,7 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
     public interface IActorBrain
     {
-        IActor Model { get; }
+        IActorModel Model { get; }
         IActorView View { get; }
         UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
         void WarpTo(Vector2Int position);

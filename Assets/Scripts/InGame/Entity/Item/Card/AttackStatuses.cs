@@ -15,9 +15,9 @@ namespace yumehiko.LOF.Model
 
         public AttackStatuses(AttackStatuses attackStatuses)
         {
-            foreach (var attack in attackStatuses.list)
+            for(int i = 0; i < 6; i++)
             {
-                var copy = new AttackStatus(attack);
+                var copy = new AttackStatus(attackStatuses.list[i], i);
                 list.Add(copy);
             }
         }

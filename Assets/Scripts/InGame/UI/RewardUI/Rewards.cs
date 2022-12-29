@@ -13,6 +13,7 @@ namespace yumehiko.LOF.Presenter
 {
     /// <summary>
     /// レベルクリア時のリワード処理。
+    /// TODO:これはmonobehaviourでなくてよいので、カード候補を別のクラスに切り分けておく。
     /// </summary>
     public class Rewards : MonoBehaviour
     {
@@ -32,7 +33,7 @@ namespace yumehiko.LOF.Presenter
             currentCandiates.Clear();
             for (int i = 0; i < 3; i++)
             {
-                currentCandiates.Add(PickRandomCard());
+                currentCandiates.Add(PickRandomCard().MakeCopy());
             }
             SetupUI();
             int pickID = -1;

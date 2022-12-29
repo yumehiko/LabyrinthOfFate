@@ -11,6 +11,7 @@ using TMPro;
 
 namespace yumehiko.LOF.Presenter
 {
+    //TODO:Viewと切り分ける
     public class InfoUI : MonoBehaviour
     {
         [SerializeField] private UICursor cursor;
@@ -59,7 +60,7 @@ namespace yumehiko.LOF.Presenter
         /// 表示情報を指定したActorのステータスにする。
         /// </summary>
         /// <param name="actor"></param>
-        public void SetInfo(IActor actor)
+        public void SetInfo(IActorModel actor)
         {
             if (actor == null)
             {

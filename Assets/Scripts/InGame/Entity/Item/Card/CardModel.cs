@@ -11,7 +11,6 @@ namespace yumehiko.LOF.Model
     /// アイテムのうち、装備や発動が可能なもの。
     /// このゲームにおけるほとんど全てのアイテム。
     /// </summary>
-    [Serializable]
 	[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/Card")]
     public class CardModel : ScriptableObject, ICardModel
     {
@@ -42,19 +41,6 @@ namespace yumehiko.LOF.Model
         }
 
         /// <summary>
-        /// このカードに指定したカードの情報を全てディープコピーする。
-        /// </summary>
-        /// <param name="target"></param>
-        public void SetCopyParameter(CardModel target)
-        {
-            cardName = target.Name;
-            frame = target.Frame;
-            invokeEffect = target.InvokeEffect;
-            attackStatuses = new AttackStatuses(target.AttackStatuses);
-            defenceStatus = new DefenceStatus(target.DefenceStatus);
-        }
-
-        /// <summary>
         /// このカードのコピーを作る。
         /// </summary>
         /// <returns></returns>
@@ -63,6 +49,19 @@ namespace yumehiko.LOF.Model
             var copy = CreateInstance<CardModel>();
             copy.SetCopyParameter(this);
             return copy;
+        }
+
+        /// <summary>
+        /// このカードに指定したカードの情報を全てディープコピーする。
+        /// </summary>
+        /// <param name="target"></param>
+        private void SetCopyParameter(CardModel target)
+        {
+            cardName = target.Name;
+            frame = target.Frame;
+            invokeEffect = target.InvokeEffect;
+            attackStatuses = new AttackStatuses(target.AttackStatuses);
+            defenceStatus = new DefenceStatus(target.DefenceStatus);
         }
 
         private string GetInfo()

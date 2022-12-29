@@ -7,35 +7,36 @@ namespace yumehiko.LOF.Model
 {
     /// <summary>
     /// Actorの実体のコレクション。
+    /// TODO:多分なくせる。ややこしい。ActorのコレクションはActorPresenterにまかせて、個々のmodelとviewはactor本体が持つだけにする。
     /// </summary>
     public class ActorModels
     {
-        public IActor Player => player;
-        public IReadOnlyList<IActor> Enemies => enemies;
+        public IActorModel Player => player;
+        public IReadOnlyList<IActorModel> Enemies => enemies;
 
-        private IActor player;
-        private readonly List<IActor> enemies = new List<IActor>();
+        private IActorModel player;
+        private readonly List<IActorModel> enemies = new List<IActorModel>();
 
-        public IActor SpawnPlayer(IActorProfile profile, Vector2Int position)
+        public IActorModel SpawnPlayer(IActorProfile profile, Vector2Int position)
         {
             var body = new ActorModel(profile, position);
             player = body;
             return body;
         }
 
-        public void AddPlayer(IActor player)
+        public void AddPlayer(IActorModel player)
         {
             this.player = player;
         }
 
-        public IActor SpawnEnemy(IActorProfile profile, Vector2Int position)
+        public IActorModel SpawnEnemy(IActorProfile profile, Vector2Int position)
         {
             var enemy = new ActorModel(profile, position);
             enemies.Add(enemy);
             return enemy;
         }
 
-        public void RemoveEnemy(IActor enemy)
+        public void RemoveEnemy(IActorModel enemy)
         {
             enemies.Remove(enemy);
         }
@@ -44,7 +45,7 @@ namespace yumehiko.LOF.Model
         /// 指定したActorがプレイヤーかを返す。
         /// </summary>
         /// <returns></returns>
-        public bool IsPlayer(IActor actor)
+        public bool IsPlayer(IActorModel actor)
         {
             return actor == player;
         }
@@ -63,7 +64,7 @@ namespace yumehiko.LOF.Model
         /// </summary>
         /// <param name="position"></param>
         /// <returns>いない場合はnull、いる場合はActorを返す。</returns>
-        public IActor GetActorAt(Vector2Int position)
+        public IActorModel GetActorAt(Vector2Int position)
         {
             if (player.Position == position)
             {
@@ -77,7 +78,7 @@ namespace yumehiko.LOF.Model
         /// </summary>
         /// <param name="position"></param>
         /// <returns>いない場合はnull、いる場合はEnemyを返す。</returns>
-		public IActor GetEnemyAt(Vector2Int position)
+		public IActorModel GetEnemyAt(Vector2Int position)
         {
             foreach (var enemy in enemies)
             {

@@ -11,17 +11,15 @@ namespace yumehiko.LOF.Model
     [Serializable]
     public class AttackStatus
     {
-        public int AD => ad;
         [SerializeField] private int ad;
 
-        public AttackStatus(int ad)
-        {
-            this.ad = ad;
-        }
+        public int AD => ad;
+        public int ID { get; }
 
-        public AttackStatus(AttackStatus status)
+        public AttackStatus(AttackStatus status, int id)
         {
             this.ad = status.ad;
+            ID = id;
         }
 
         /// <summary>

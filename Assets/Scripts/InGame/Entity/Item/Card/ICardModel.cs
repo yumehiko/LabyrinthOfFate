@@ -9,7 +9,6 @@ namespace yumehiko.LOF.Model
         AttackStatuses AttackStatuses { get; }
         DefenceStatus DefenceStatus { get; }
 
-        void SetCopyParameter(CardModel target);
         CardModel MakeCopy();
     }
 }

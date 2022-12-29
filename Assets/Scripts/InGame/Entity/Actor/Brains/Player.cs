@@ -18,7 +18,7 @@ namespace yumehiko.LOF.Presenter
     public class Player : ActorBrainBase, IDisposable
     {
         public ActorType ActorType => ActorType.Player;
-        public override IActor Model { get; }
+        public override IActorModel Model { get; }
         public override IActorView View { get; }
         public Inventory Inventory { get; }
 
@@ -106,7 +106,7 @@ namespace yumehiko.LOF.Presenter
                 var targetPoint = Model.GetPositionWithDirection(direction);
 
                 //指定地点にEnemyがいないかをチェックする。
-                IActor enemy = adventure.CurrentLevel.Actors.GetEnemyAt(targetPoint);
+                IActorModel enemy = adventure.CurrentLevel.Actors.GetEnemyAt(targetPoint);
                 if (enemy != null) //Enemyがいるなら、それを攻撃する。
                 {
                     TurnInputConfirm();

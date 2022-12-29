@@ -13,14 +13,14 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
 	public class RandomStepper : ActorBrainBase
     {
-        public override IActor Model => model;
+        public override IActorModel Model => model;
         public override IActorView View => view;
 
         private readonly Level level;
-        private readonly IActor model;
+        private readonly IActorModel model;
         private readonly IActorView view;
 
-        public RandomStepper(Level level, IActor model, IActorView view)
+        public RandomStepper(Level level, IActorModel model, IActorView view)
         {
             this.level = level;
             this.model = model;

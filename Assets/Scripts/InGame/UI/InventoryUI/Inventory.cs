@@ -106,8 +106,6 @@ namespace yumehiko.LOF.Presenter
 
         private void DoCommand(InventoryCommand command)
         {
-            Debug.Log($"Command:{command.Type}");
-
             switch (command.Type)
             {
                 case InventoryCommandType.Invoke:
