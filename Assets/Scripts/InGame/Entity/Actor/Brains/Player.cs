@@ -30,12 +30,12 @@ namespace yumehiko.LOF.Presenter
         private bool canTurnControl = false;
 
         [Inject]
-        public Player(Inventory inventory, PlayerProfile profile, ActorPresenters actorPresenters)
+        public Player(Inventory inventory, PlayerProfile profile, Actors actors)
         {
             Inventory = inventory;
             Model = new ActorModel(profile, Vector2Int.zero);
             View = UnityEngine.Object.Instantiate(profile.View);
-            actorPresenters.AddPlayer(this, Model, View);
+            actors.AddPlayer(this, Model, View);
             inventory.InitializeEquips(Model.Status.EquipSlot);
 
             _ = ReactiveInput.OnMove

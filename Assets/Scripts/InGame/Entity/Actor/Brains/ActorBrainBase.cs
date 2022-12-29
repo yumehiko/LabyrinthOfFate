@@ -10,6 +10,7 @@ namespace yumehiko.LOF.Presenter
 {
     public abstract class ActorBrainBase : IActorBrain
     {
+        //TODO:モデルやViewを直接公開せず、presenter側でなんとかしてやりたいな。
         public abstract IActorModel Model { get; }
         public abstract IActorView View { get; }
         public abstract UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
@@ -19,6 +20,11 @@ namespace yumehiko.LOF.Presenter
         {
             Model.WarpTo(position);
             View.WarpTo(position);
+        }
+
+        public virtual void Destroy()
+        {
+            View.DestroySelf();
         }
     }
 }

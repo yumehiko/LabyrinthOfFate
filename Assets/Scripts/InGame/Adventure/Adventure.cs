@@ -21,7 +21,7 @@ namespace yumehiko.LOF.Presenter
         public Player Player { get; }
 
         private readonly DungeonView dungeonView;
-        private readonly ActorPresenters actorPresenters;
+        private readonly Actors actorPresenters;
         private readonly InfoUI infoUI;
         private readonly AdventureProgress progress;
         private readonly Rewards rewards;
@@ -33,7 +33,7 @@ namespace yumehiko.LOF.Presenter
         [Inject]
         public Adventure(
             Player player,
-            ActorPresenters actorPresenters,
+            Actors actorPresenters,
             DungeonView dungeonView,
             Rewards rewards,
             InfoUI infoUI,

@@ -46,7 +46,7 @@ namespace yumehiko.LOF.Presenter
             //経路番号1がPlayerの位置なら、隣接しているので攻撃する。
             if (path[1] == level.Actors.GetPlayerPosition())
             {
-                model.Attack(level.Actors.Player);
+                model.Attack(level.Actors.Player.Model);
                 await view.AttackAnimation(path[1], animationSpeedFactor, token);
                 return;
             }

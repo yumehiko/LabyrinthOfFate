@@ -3333,11 +3333,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1006142034}
+  - component: {fileID: 1006142037}
   - component: {fileID: 1006142033}
   - component: {fileID: 1006142035}
   - component: {fileID: 1006142038}
   - component: {fileID: 1006142036}
-  - component: {fileID: 1006142037}
   - component: {fileID: 1006142039}
   m_Layer: 0
   m_Name: UI
@@ -3621,7 +3621,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1019438511}
-  - component: {fileID: 1019438512}
   m_Layer: 0
   m_Name: ActorViews
   m_TagString: Untagged
@@ -3643,19 +3642,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1019438512
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1019438510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2cac033f236674fbc9839bd97dbaf7f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  viewParent: {fileID: 1019438511}
 --- !u!1 &1070186389
 GameObject:
   m_ObjectHideFlags: 0
@@ -7098,7 +7084,7 @@ MonoBehaviour:
     TypeName: 
   autoRun: 1
   autoInjectGameObjects: []
-  actorViews: {fileID: 1019438512}
+  viewParent: {fileID: 1019438511}
 --- !u!114 &2094627282
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -20,7 +20,7 @@ namespace yumehiko.LOF.Presenter
     {
         public Dungeon Dungeon { get; }
         public Turn Turn { get; }
-        public ActorModels Actors { get; }
+        public Actors Actors { get; }
         public IReadOnlyList<ActorProfile> EnemyProfiles { get; }
         public IObservable<LevelEndStat> OnEnd => onEnd;
 
@@ -28,18 +28,16 @@ namespace yumehiko.LOF.Presenter
         private readonly CancellationTokenSource levelCancellationTokenSource = new CancellationTokenSource();
         private readonly CompositeDisposable disposables = new CompositeDisposable();
         private readonly DungeonView view;
-        private readonly ActorPresenters actorPresenters;
 
         public Level(
             DungeonAsset asset,
             DungeonView view,
-            ActorPresenters actorPresenters,
+            Actors actors,
             IReadOnlyList<ActorProfile> enemyProfiles,
             CancellationToken adventureCancelToken)
         {
             Dungeon = asset.Dungeon;
-            Actors = actorPresenters.Models;
-            this.actorPresenters = actorPresenters;
+            Actors = actors;
             this.EnemyProfiles = enemyProfiles;
             this.view = view;
             this.Turn = new Turn();
@@ -47,15 +45,15 @@ namespace yumehiko.LOF.Presenter
             //ダンジョンの見かけや経路を生成
             Dungeon.MakePathFinder();
             view.SetTiles(Dungeon);
-            actorPresenters.SpawnActors(asset.ActorSpawnPoints, this);
+            actors.SpawnActors(asset.ActorSpawnPoints, this);
 
             //レベルの終了処理を登録
-            _ = actorPresenters.OnDefeatAllEnemy
+            _ = actors.OnDefeatAllEnemy
                 .First()
                 .Subscribe(_ => EndLevel(LevelEndStat.Beat, adventureCancelToken).Forget())
                 .AddTo(disposables);
 
-            _ = actorPresenters.Player.Model.IsDied
+            _ = actors.Player.Model.IsDied
                 .Where(isTrue => isTrue)
                 .First()
                 .Subscribe(_ => EndLevel(LevelEndStat.Lose, adventureCancelToken).Forget())
@@ -71,7 +69,7 @@ namespace yumehiko.LOF.Presenter
         public async UniTask StartLevel(CancellationToken adventureCancelToken)
         {
             await view.Show().ToUniTask(TweenCancelBehaviour.Complete, adventureCancelToken);
-            Turn.StartTurnLoop(actorPresenters.Player, actorPresenters.Enemies, levelCancellationTokenSource.Token).Forget();
+            Turn.StartTurnLoop(Actors.Player, Actors.Enemies, levelCancellationTokenSource.Token).Forget();
         }
 
         /// <summary>
@@ -83,7 +81,7 @@ namespace yumehiko.LOF.Presenter
             levelCancellationTokenSource.Cancel();
             levelCancellationTokenSource.Dispose();
             await view.Hide().ToUniTask(cancellationToken: adventureCancelToken);
-            actorPresenters.ClearActorsWithoutPlayer();
+            Actors.ClearActorsWithoutPlayer();
             onEnd.OnNext(endStat);
         }
     }

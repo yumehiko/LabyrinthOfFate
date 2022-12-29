@@ -21,5 +21,6 @@ namespace yumehiko.LOF.Presenter
         UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
         void WarpTo(Vector2Int position);
         void Heal(int amount);
+        void Destroy();
     }
 }

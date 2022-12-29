@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace yumehiko.LOF
 {
+    //TODO:UI全部詰め込んでるけど分離した方がいいだろう。それぞれは無関係だし。
     public class UILifetimeScope : LifetimeScope
     {
         [SerializeField] private Rewards rewards;

@@ -12,13 +12,13 @@ namespace yumehiko.LOF.Presenter
 {
     public class ResultMessageUI : IDisposable, IInitializable
     {
-        private readonly ActorPresenters actors;
+        private readonly Actors actors;
         private readonly ResultMessageUIView view;
         private IDisposable dispose;
         private CompositeDisposable actorMessageDisposable;
 
         [Inject]
-        public ResultMessageUI(ActorPresenters actors, ResultMessageUIView view)
+        public ResultMessageUI(Actors actors, ResultMessageUIView view)
         {
             this.actors = actors;
             this.view = view;
@@ -36,7 +36,7 @@ namespace yumehiko.LOF.Presenter
             actorMessageDisposable?.Dispose();
         }
 
-        public void SubscribeActorMessages(ActorPresenters actors)
+        public void SubscribeActorMessages(Actors actors)
         {
             actorMessageDisposable?.Dispose();
             actorMessageDisposable = new CompositeDisposable();

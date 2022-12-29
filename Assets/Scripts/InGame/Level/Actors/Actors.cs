@@ -12,31 +12,34 @@ namespace yumehiko.LOF.Presenter
     /// <summary>
     /// 実行中のゲームの、全てのActorBrainのコレクション。
     /// </summary>
-    public class ActorPresenters : IDisposable
+    public class Actors : IDisposable
     {
         public Player Player { get; private set; }
         public IReadOnlyList<IActorBrain> Enemies => enemies;
-        public ActorModels Models => models;
         public IObservable<Unit> OnSetLevelActors => onSetLevelActors;
         public IObservable<Unit> OnDefeatAllEnemy => onDefeatAllEnemy;
 
         private readonly Subject<Unit> onSetLevelActors = new Subject<Unit>();
         private readonly Subject<Unit> onDefeatAllEnemy = new Subject<Unit>();
         private readonly List<IActorBrain> enemies = new List<IActorBrain>();
-        private readonly ActorViews views;
-        private readonly ActorModels models;
+        private readonly Transform viewParent;
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
         [Inject]
-        public ActorPresenters(ActorModels models, ActorViews views)
+        public Actors(Transform viewParent)
         {
-            this.models = models;
-            this.views = views;
+            this.viewParent = viewParent;
         }
 
         public void Dispose()
         {
             disposables.Dispose();
+        }
+
+        public void AddPlayer(Player player, IActorModel model, IActorView view)
+        {
+            Player = player;
+            disposables.Add(player);
         }
 
         public void SpawnActors(ActorSpawnPoints spawnPoints, Level level)
@@ -58,6 +61,47 @@ namespace yumehiko.LOF.Presenter
             enemies.Clear();
         }
 
+        /// <summary>
+        /// プレイヤーのポジションを返す。
+        /// </summary>
+        /// <returns></returns>
+        public Vector2Int GetPlayerPosition()
+        {
+            return Player.Model.Position;
+        }
+
+        /// <summary>
+        /// 指定地点にActorがいるか返す（プレイヤーも含む）。
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns>いない場合はnull、いる場合はActorを返す。</returns>
+        public IActorModel GetActorAt(Vector2Int position)
+        {
+            if (Player.Model.Position == position)
+            {
+                return Player.Model;
+            }
+            return GetEnemyAt(position);
+        }
+
+        /// <summary>
+        /// 指定地点にEnemyがいるか返す。
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns>いない場合はnull、いる場合はEnemyを返す。</returns>
+		public IActorModel GetEnemyAt(Vector2Int position)
+        {
+            foreach (var enemy in enemies)
+            {
+                if (enemy.Model.Position == position)
+                {
+                    return enemy.Model;
+                }
+            }
+
+            return null;
+        }
+
         private void SpawnActor(ActorSpawnPoint spawnPoint, Level level)
         {
             switch (spawnPoint.Type)
@@ -71,14 +115,6 @@ namespace yumehiko.LOF.Presenter
             }
         }
 
-        public void AddPlayer(Player player, IActorModel model, IActorView view)
-        {
-            models.AddPlayer(model);
-            views.AddView(view);
-            Player = player;
-            disposables.Add(player);
-        }
-
         private void SetPlayerPosition(ActorSpawnPoint spawnPoint)
         {
             Player.WarpTo(spawnPoint.Position);
@@ -88,8 +124,8 @@ namespace yumehiko.LOF.Presenter
         {
             var id = UnityEngine.Random.Range(0, level.EnemyProfiles.Count);
             var profile = level.EnemyProfiles[id];
-            var model = models.SpawnEnemy(profile, spawnPoint.Position);
-            var view = views.SpawnActorView(spawnPoint.Position, profile.View);
+            var model = new ActorModel(profile, spawnPoint.Position);
+            var view = UnityEngine.Object.Instantiate(profile.View, (Vector2)spawnPoint.Position, Quaternion.identity, viewParent);
             var brain = SpawnBrain(profile.BrainType, model, view, level);
             enemies.Add(brain);
             model.IsDied
@@ -124,8 +160,7 @@ namespace yumehiko.LOF.Presenter
         private void RemoveEnemy(IActorBrain brain)
         {
             enemies.Remove(brain);
-            models.RemoveEnemy(brain.Model);
-            views.Remove(brain.View);
+            brain.Destroy();
         }
     }
 }

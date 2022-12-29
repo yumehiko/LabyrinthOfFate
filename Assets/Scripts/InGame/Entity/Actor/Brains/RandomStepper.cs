@@ -53,7 +53,7 @@ namespace yumehiko.LOF.Presenter
                 var actor = level.Actors.GetActorAt(point);
 
                 //それがプレイヤーなら攻撃する。
-                if (level.Actors.IsPlayer(actor))
+                if (actor != null && actor.ActorType == ActorType.Player)
                 {
                     model.Attack(actor);
                     await view.AttackAnimation(point, animationSpeedFactor, token);
@@ -61,7 +61,7 @@ namespace yumehiko.LOF.Presenter
                 }
 
                 //それがプレイヤー以外なら、行動入力へ戻る。
-                if(actor != null)
+                if (actor != null)
                 {
                     continue;
                 }
