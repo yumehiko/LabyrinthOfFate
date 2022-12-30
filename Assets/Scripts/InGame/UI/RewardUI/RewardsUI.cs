@@ -6,6 +6,7 @@ using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using UniRx;
+using UniRx.Triggers;
 using System;
 
 namespace yumehiko.LOF.View
@@ -14,8 +15,10 @@ namespace yumehiko.LOF.View
     {
         [SerializeField] private CanvasGroup group;
         [SerializeField] private List<RewardView> views;
+        [SerializeField] private CommandButton ignoreButton;
 
         public IObservable<int> OnPick => onPick;
+        public IObservable<Unit> OnIgnore => ignoreButton.OnClick;
 
         private readonly Subject<int> onPick = new Subject<int>();
 

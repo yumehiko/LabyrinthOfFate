@@ -18,6 +18,7 @@ namespace yumehiko.LOF.Presenter
         public IReadOnlyReactiveProperty<bool> IsOpen => isOpen;
         public IObservable<Unit> OnCommand => onCommand;
         public IObservable<IItemModel> OnInvokeEffect => onInvokeEffect;
+        public bool IsFull => model.IsFull;
 
         private readonly Subject<Unit> onCommand = new Subject<Unit>();
         private readonly Subject<IItemModel> onInvokeEffect = new Subject<IItemModel>();
@@ -49,7 +50,6 @@ namespace yumehiko.LOF.Presenter
             openCancellation.Dispose();
         }
 
-        public bool CanAddItem() => model.Count < 5;
 
         /// <summary>
         /// アイテムをインベントリに新たに追加する。

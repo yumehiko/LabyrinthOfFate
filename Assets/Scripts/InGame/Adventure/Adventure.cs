@@ -87,12 +87,20 @@ namespace yumehiko.LOF.Presenter
             }
 
             actorPresenters.Player.Heal(1000);
-            //TODO:ここでリワードを与えたりする
-            if (endStat == LevelEndStat.Beat)
+
+            try
             {
-                await rewards.WaitUntilePickReward(actorPresenters.Player.Inventory, adventureCanncelation.Token);
+                //TODO:ここでリワードを与えたりする
+                if (endStat == LevelEndStat.Beat)
+                {
+                    await rewards.WaitUntilePickReward(actorPresenters.Player.Inventory, adventureCanncelation.Token);
+                    Debug.Log("RewardsConfirm");
+                }
             }
-            StartNewLevel();
+            finally
+            {
+                StartNewLevel();
+            }
         }
     }
 }
