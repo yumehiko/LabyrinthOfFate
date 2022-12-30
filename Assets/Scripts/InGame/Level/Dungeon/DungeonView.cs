@@ -25,8 +25,8 @@ namespace yumehiko.LOF.View
             {
                 SetTile(tile);
             }
-
-            var cameraPosition = new Vector3(-dungeon.Bounds.position.x, -dungeon.Bounds.position.y, mainCamera.transform.position.z);
+            //TODO:ちょっと左にずらしてるけどこのやり方はどっかで直す
+            var cameraPosition = new Vector3(-dungeon.Bounds.position.x -6.0f, -dungeon.Bounds.position.y, mainCamera.transform.position.z);
             mainCamera.transform.position = cameraPosition;
         }
 

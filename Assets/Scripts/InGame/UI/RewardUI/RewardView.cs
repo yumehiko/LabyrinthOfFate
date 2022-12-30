@@ -60,7 +60,7 @@ namespace yumehiko.LOF.View
         {
             cardName.text = itemView.Name;
             stats.text = itemView.StatsInfo;
-            invokeEffect.text = itemView.InvokeEffect;
+            invokeEffect.text = itemView.InvokeEffectInfo;
             cardFrame.sprite = itemView.Frame;
         }
 

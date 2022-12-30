@@ -55,6 +55,10 @@ namespace yumehiko.LOF.Presenter
                 .Subscribe(_ => inventory.SwitchOpen())
                 .AddTo(disposables);
 
+            _ = inventory.OnInvokeEffect
+                .Subscribe(item => item.InvokeEffect.Invoke(this, item))
+                .AddTo(disposables);
+
             _ = Model.IsDied
                 .Where(isTrue => isTrue)
                 .First()

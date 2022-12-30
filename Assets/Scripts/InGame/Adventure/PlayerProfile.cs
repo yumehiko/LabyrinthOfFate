@@ -13,14 +13,14 @@ namespace yumehiko.LOF.Presenter
 		public ActorView View => view;
 		public string ActorName => actorName;
 		public int BaseHP => baseHP;
-		public ICardModel Weapon => weapon;
-		public ICardModel Armor => armor;
+		public CardProfile Weapon => weapon;
+		public CardProfile Armor => armor;
 
 		[SerializeField] private BrainType brainType;
 		[SerializeField] private ActorView view;
 		[SerializeField] private string actorName;
 		[SerializeField] int baseHP;
-		[SerializeField] private CardModel weapon;
-		[SerializeField] private CardModel armor;
+		[SerializeField] private CardProfile weapon;
+		[SerializeField] private CardProfile armor;
 	}
 }

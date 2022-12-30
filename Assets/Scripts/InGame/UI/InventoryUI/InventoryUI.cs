@@ -19,6 +19,9 @@ namespace yumehiko.LOF.View
         [SerializeField] private InventorySlotView armorSlot;
         [SerializeField] private List<InventorySlotView> slots;
         [SerializeField] private ItemExplanation explanation;
+        [Space(10)]
+        [SerializeField] private Transform slotViewsParent;
+        [SerializeField] private InventorySlotView slotViewPrefab;
 
         private readonly Subject<InventorySlotView> onClickSlot = new Subject<InventorySlotView>();
         private float initY;
@@ -27,16 +30,10 @@ namespace yumehiko.LOF.View
         public void Initialize()
         {
             initY = uiRect.anchoredPosition.y;
-            weaponSlot.Initialize(SlotType.Weapon, 0);
-            armorSlot.Initialize(SlotType.Armor, 0);
+            weaponSlot.Initialize(SlotType.Weapon);
+            armorSlot.Initialize(SlotType.Armor);
             _ = weaponSlot.OnClick.Subscribe(_ => onClickSlot.OnNext(weaponSlot)).AddTo(this);
             _ = armorSlot.OnClick.Subscribe(_ => onClickSlot.OnNext(armorSlot)).AddTo(this);
-            for (int i = 0; i < slots.Count; i++)
-            {
-                int id = i;
-                slots[i].Initialize(SlotType.Inventory, id);
-                _ = slots[id].OnClick.Subscribe(_ => onClickSlot.OnNext(slots[id])).AddTo(this);
-            }
         }
 
         public void SetWeapon(IItemView view)
@@ -49,16 +46,39 @@ namespace yumehiko.LOF.View
             armorSlot.SetView(view);
         }
 
-        public void SetItem(IItemView view, int id)
+        public void Add(IItemView view)
         {
-            slots[id].SetView(view);
+            var slot = Instantiate(slotViewPrefab, slotViewsParent);
+            slots.Add(slot);
+            slot.Initialize(SlotType.Inventory);
+            _ = slot.OnClick.Subscribe(_ => onClickSlot.OnNext(slot)).AddTo(slot);
+            slot.SetView(view);
+            AlignViews();
+        }
+
+        public void RemoveAt(int index)
+        {
+            slots[index].DestroySelf();
+            slots.RemoveAt(index);
+            AlignViews();
+        }
+
+        /// <summary>
+        /// カードViewを整列する。
+        /// </summary>
+        private void AlignViews()
+        {
+            for (int i = 0; i < slots.Count; i++)
+            {
+                slots[i].AlignPositionByID(i);
+            }
         }
 
         public async UniTask<InventoryCommand> Open(CancellationToken token)
         {
             try
             {
-                await OpenAnimation();
+                await OpenAnimation().ToUniTask(cancellationToken: token);
                 InventorySlotView slot = null;
                 InventoryCommandType type = InventoryCommandType.Cancel;
                 while (!token.IsCancellationRequested)

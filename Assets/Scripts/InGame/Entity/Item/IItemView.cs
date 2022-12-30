@@ -8,7 +8,7 @@ namespace yumehiko.LOF.View
     {
         string Name { get; }
         Sprite Frame { get; }
-        string InvokeEffect { get; }
+        string InvokeEffectInfo { get; }
         string StatsInfo { get; }
     }
 }

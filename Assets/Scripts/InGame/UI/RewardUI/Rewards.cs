@@ -18,7 +18,7 @@ namespace yumehiko.LOF.Presenter
     public class Rewards : MonoBehaviour
     {
         private RewardsUI ui;
-        [SerializeField] private List<CardModel> candiateCards;
+        [SerializeField] private List<CardProfile> candiateCards;
 
         private List<CardModel> currentCandiates = new List<CardModel>();
 
@@ -33,7 +33,8 @@ namespace yumehiko.LOF.Presenter
             currentCandiates.Clear();
             for (int i = 0; i < 3; i++)
             {
-                currentCandiates.Add(PickRandomCard().MakeCopy());
+                var card = new CardModel(PickRandomCard());
+                currentCandiates.Add(card);
             }
             SetupUI();
             int pickID = -1;
@@ -59,7 +60,7 @@ namespace yumehiko.LOF.Presenter
             ui.SetRewardsInfo(views);
         }
 
-        private CardModel PickRandomCard()
+        private CardProfile PickRandomCard()
         {
             var id = UnityEngine.Random.Range(0, candiateCards.Count);
             return candiateCards[id];

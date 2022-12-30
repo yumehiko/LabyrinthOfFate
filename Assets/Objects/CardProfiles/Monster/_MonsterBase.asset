@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: DUMMY MONSTER
   frame: {fileID: 21300000, guid: bd785822424f143f2a003278978c0a41, type: 3}
-  invokeEffect: Delete this card.
+  invokeType: 1
   attackStatuses:
     list:
     - ad: 1

@@ -1,67 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using UniRx;
-
+using System;
+using yumehiko.LOF.Invoke;
 
 namespace yumehiko.LOF.Model
 {
-    /// <summary>
-    /// アイテムのうち、装備や発動が可能なもの。
-    /// このゲームにおけるほとんど全てのアイテム。
-    /// </summary>
-	[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/Card")]
-    public class CardModel : ScriptableObject, ICardModel
+    public class CardModel : ICardModel
     {
         public ITemType Type => ITemType.Card;
-        public string Name => cardName;
-        public Sprite Frame => frame;
-        public string InvokeEffect => invokeEffect;
+        public string Name { get; }
+        public Sprite Frame { get; }
+        public IInvokeEffect InvokeEffect { get; }
         public string StatsInfo => GetInfo();
-        public AttackStatuses AttackStatuses => attackStatuses;
-        public DefenceStatus DefenceStatus => defenceStatus;
+        public AttackStatuses AttackStatuses { get; }
+        public DefenceStatus DefenceStatus { get; }
 
-        public IObservable<Unit> OnRemove => onRemove;
-
-        private readonly Subject<Unit> onRemove = new Subject<Unit>();
-
-        [SerializeField] private string cardName;
-        [SerializeField] private Sprite frame;
-        [SerializeField] private string invokeEffect;
-        [SerializeField] private AttackStatuses attackStatuses;
-        [SerializeField] private DefenceStatus defenceStatus;
-
-        /// <summary>
-        /// 装備されているなら、これを外す。
-        /// </summary>
-        public void TryRemoveBySlot()
+        public CardModel(CardProfile profile)
         {
-            onRemove.OnNext(Unit.Default);
-        }
-
-        /// <summary>
-        /// このカードのコピーを作る。
-        /// </summary>
-        /// <returns></returns>
-        public CardModel MakeCopy()
-        {
-            var copy = CreateInstance<CardModel>();
-            copy.SetCopyParameter(this);
-            return copy;
-        }
-
-        /// <summary>
-        /// このカードに指定したカードの情報を全てディープコピーする。
-        /// </summary>
-        /// <param name="target"></param>
-        private void SetCopyParameter(CardModel target)
-        {
-            cardName = target.Name;
-            frame = target.Frame;
-            invokeEffect = target.InvokeEffect;
-            attackStatuses = new AttackStatuses(target.AttackStatuses);
-            defenceStatus = new DefenceStatus(target.DefenceStatus);
+            Name = profile.Name;
+            Frame = profile.Frame;
+            InvokeEffect = InvokeFactory(profile.InvokeType);
+            AttackStatuses = new AttackStatuses(profile.AttackStatuses);
+            DefenceStatus = new DefenceStatus(profile.DefenceStatus);
         }
 
         private string GetInfo()
@@ -70,6 +32,15 @@ namespace yumehiko.LOF.Model
             stats += Environment.NewLine;
             stats += DefenceStatus.GetInfo();
             return stats;
+        }
+
+        private IInvokeEffect InvokeFactory(InvokeType type)
+        {
+            switch (type)
+            {
+                case InvokeType.DestroySelf: return new DestroySelf();
+                default: throw new Exception($"未定義のInvokeEffectType");
+            }
         }
     }
 }

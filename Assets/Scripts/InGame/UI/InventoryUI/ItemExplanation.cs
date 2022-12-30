@@ -80,7 +80,7 @@ namespace yumehiko.LOF.View
             cardName.text = view.Name;
             frame.sprite = view.Frame;
             stats.text = view.StatsInfo;
-            invokeEffect.text = view.InvokeEffect;
+            invokeEffect.text = view.InvokeEffectInfo;
         }
     }
 }

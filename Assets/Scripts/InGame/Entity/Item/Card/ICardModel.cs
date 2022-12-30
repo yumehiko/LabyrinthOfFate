@@ -8,7 +8,5 @@ namespace yumehiko.LOF.Model
     {
         AttackStatuses AttackStatuses { get; }
         DefenceStatus DefenceStatus { get; }
-
-        CardModel MakeCopy();
     }
 }

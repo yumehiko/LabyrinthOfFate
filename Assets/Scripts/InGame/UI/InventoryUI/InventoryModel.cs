@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 namespace yumehiko.LOF.Model
 {
@@ -35,15 +36,8 @@ namespace yumehiko.LOF.Model
             return id;
         }
 
-        /// <summary>
-        /// スロットを指定してアイテムをセット。
-        /// </summary>
-        /// <param name="slotID"></param>
-        /// <param name="item"></param>
-        public void SetItemToSlot(IItemModel item, int slotID)
-        {
-            items[slotID] = item;
-        }
+        public int IndexOf(IItemModel item) => items.IndexOf(item);
+        public void RemoveAt(int index) => items.RemoveAt(index);
 
         public void InitializeEquipSlot(EquipSlot equipSlot) => this.equipSlot = equipSlot;
         public void EquipWeapon(ICardModel card) => equipSlot.EquipWeapon(card);

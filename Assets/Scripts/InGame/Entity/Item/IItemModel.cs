@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using yumehiko.LOF.Invoke;
 
 namespace yumehiko.LOF.Model
 {
@@ -13,7 +14,7 @@ namespace yumehiko.LOF.Model
 		string Name { get; }
 		Sprite Frame { get; }
 		string StatsInfo { get; }
-		string InvokeEffect { get; }
+		IInvokeEffect InvokeEffect { get; }
 	}
 
 	public enum ITemType

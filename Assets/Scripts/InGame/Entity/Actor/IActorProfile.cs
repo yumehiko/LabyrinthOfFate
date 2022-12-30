@@ -12,7 +12,7 @@ namespace yumehiko.LOF.Model
         ActorView View { get; }
         string ActorName { get; }
         int BaseHP { get; }
-        ICardModel Weapon { get; }
-        ICardModel Armor { get; }
+        CardProfile Weapon { get; }
+        CardProfile Armor { get; }
     }
 }

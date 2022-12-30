@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using yumehiko.LOF.Model;
+using yumehiko.LOF.Invoke;
 
 namespace yumehiko.LOF.View
 {
@@ -9,14 +10,14 @@ namespace yumehiko.LOF.View
     {
         public string Name { get; }
         public Sprite Frame { get; }
-        public string InvokeEffect { get; }
+        public string InvokeEffectInfo { get; }
         public string StatsInfo { get; }
 
-        public ItemView(string name, Sprite frame, string invokeEffect, string statsInfo)
+        public ItemView(string name, Sprite frame, IInvokeEffect invokeEffect, string statsInfo)
         {
             this.Name = name;
             this.Frame = frame;
-            this.InvokeEffect = invokeEffect;
+            this.InvokeEffectInfo = invokeEffect.Info;
             this.StatsInfo = statsInfo;
         }
     }

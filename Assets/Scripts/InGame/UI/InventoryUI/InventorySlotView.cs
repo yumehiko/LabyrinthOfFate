@@ -11,6 +11,7 @@ namespace yumehiko.LOF.View
 {
     public class InventorySlotView : MonoBehaviour
     {
+        [SerializeField] private RectTransform rectTransform;
         [SerializeField] private CanvasGroup group;
         [SerializeField] private TextMeshProUGUI cardName;
         [SerializeField] private Image frame;
@@ -21,10 +22,9 @@ namespace yumehiko.LOF.View
         public IItemView ItemView { get; private set; }
         public IObservable<Unit> OnClick => button.OnClickAsObservable();
 
-        public void Initialize(SlotType slotType, int id)
+        public void Initialize(SlotType slotType)
         {
             Type = slotType;
-            ID = id;
 
             _ = button.OnPointerEnterAsObservable()
                 .Subscribe(_ => Select())
@@ -47,6 +47,18 @@ namespace yumehiko.LOF.View
             EnableView();
         }
 
+        public void DestroySelf()
+        {
+            Destroy(gameObject);
+        }
+
+        public void AlignPositionByID(int id)
+        {
+            ID = id;
+            const float widthMargin = 60.0f;
+            rectTransform.anchoredPosition = new Vector2(widthMargin * id, rectTransform.anchoredPosition.y);
+        }
+
         private void Select()
         {
             group.alpha = 1.0f;
@@ -67,13 +79,6 @@ namespace yumehiko.LOF.View
             group.alpha = 0.75f;
             group.interactable = true;
             group.blocksRaycasts = true;
-        }
-
-        private void DisableView()
-        {
-            group.alpha = 0.0f;
-            group.interactable = false;
-            group.blocksRaycasts = false;
         }
     }
 

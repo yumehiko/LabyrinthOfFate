@@ -4,10 +4,12 @@ using UnityEngine;
 using yumehiko.LOF.Model;
 using yumehiko.LOF.View;
 using VContainer;
+using System.Linq;
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UniRx;
+using yumehiko.LOF.Invoke;
 
 namespace yumehiko.LOF.Presenter
 {
@@ -15,8 +17,11 @@ namespace yumehiko.LOF.Presenter
     {
         public IReadOnlyReactiveProperty<bool> IsOpen => isOpen;
         public IObservable<Unit> OnCommand => onCommand;
+        public IObservable<IItemModel> OnInvokeEffect => onInvokeEffect;
 
         private readonly Subject<Unit> onCommand = new Subject<Unit>();
+        private readonly Subject<IItemModel> onInvokeEffect = new Subject<IItemModel>();
+
         private readonly BoolReactiveProperty isOpen = new BoolReactiveProperty();
         private readonly InventoryModel model;
         private readonly InventoryUI view;
@@ -49,19 +54,26 @@ namespace yumehiko.LOF.Presenter
         /// <summary>
         /// アイテムをインベントリに新たに追加する。
         /// </summary>
-        /// <param name="itemModel"></param>
-        public void AddItem(IItemModel itemModel)
+        /// <param name="item"></param>
+        public void AddItem(IItemModel item)
         {
             try
             {
-                var itemView = MakeView(itemModel);
-                int id = model.Add(itemModel);
-                view.SetItem(itemView, id);
+                var itemView = MakeView(item);
+                int id = model.Add(item);
+                view.Add(itemView);
             }
             catch (Exception e)
             {
                 throw e;
             }
+        }
+
+        public void RemoveItem(IItemModel item)
+        {
+            int id = model.IndexOf(item);
+            view.RemoveAt(id);
+            model.RemoveAt(id);
         }
 
         public void SwitchOpen()
@@ -78,20 +90,17 @@ namespace yumehiko.LOF.Presenter
 
         public async UniTask Open()
         {
+            openCancellation?.Dispose();
             openCancellation = new CancellationTokenSource();
             isOpen.Value = true;
             var command = await view.Open(openCancellation.Token);
             DoCommand(command);
-            Close();
         }
 
         public void Close()
         {
             isOpen.Value = false;
-            if (openCancellation == null) return;
-            openCancellation.Cancel();
-            openCancellation.Dispose();
-            openCancellation = null;
+            openCancellation?.Cancel();
         }
 
         public static IItemView MakeView(IItemModel model)
@@ -109,7 +118,7 @@ namespace yumehiko.LOF.Presenter
             switch (command.Type)
             {
                 case InventoryCommandType.Invoke:
-                    Debug.Log($"Invokeは未実装");
+                    InvokeCard(command.Slot);
                     break;
                 case InventoryCommandType.EquipAsWeapon:
                     EquipAsWeaponCommand(command.Slot);
@@ -117,9 +126,17 @@ namespace yumehiko.LOF.Presenter
                 case InventoryCommandType.EquipAsArmor:
                     EquipAsArmorCommand(command.Slot);
                     break;
+                case InventoryCommandType.Cancel: //何もしない
+                    break;
                 default: throw new Exception($"不正なインベントリコマンド：{command.Type}");
             }
+        }
 
+        private void InvokeCard(InventorySlotView slotView)
+        {
+            //処理は所有者側で行う。
+            int id = slotView.ID;
+            onInvokeEffect.OnNext(model[id]);
             onCommand.OnNext(Unit.Default);
         }
 
@@ -135,6 +152,7 @@ namespace yumehiko.LOF.Presenter
                 model.EquipArmor(origin);
                 view.SetWeapon(MakeView(weapon));
                 view.SetArmor(MakeView(origin));
+                onCommand.OnNext(Unit.Default);
                 return;
             }
 
@@ -142,10 +160,13 @@ namespace yumehiko.LOF.Presenter
             {
                 int id = slotView.ID;
                 weapon = (ICardModel)model[id];
+                model.RemoveAt(id);
+                view.RemoveAt(id);
                 model.EquipWeapon(weapon);
-                model.SetItemToSlot(origin, id);
                 view.SetWeapon(MakeView(weapon));
-                view.SetItem(MakeView(origin), id);
+                model.Add(origin);
+                view.Add(MakeView(origin));
+                onCommand.OnNext(Unit.Default);
                 return;
             }
 
@@ -165,6 +186,7 @@ namespace yumehiko.LOF.Presenter
                 model.EquipWeapon(origin);
                 view.SetArmor(MakeView(armor));
                 view.SetWeapon(MakeView(origin));
+                onCommand.OnNext(Unit.Default);
                 return;
             }
 
@@ -173,10 +195,13 @@ namespace yumehiko.LOF.Presenter
             {
                 int id = slotView.ID;
                 armor = (ICardModel)model[id];
+                model.RemoveAt(id);
+                view.RemoveAt(id);
                 model.EquipArmor(armor);
-                model.SetItemToSlot(origin, id);
                 view.SetArmor(MakeView(armor));
-                view.SetItem(MakeView(origin), id);
+                model.Add(origin);
+                view.Add(MakeView(origin));
+                onCommand.OnNext(Unit.Default);
                 return;
             }
 

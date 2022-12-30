@@ -30,8 +30,8 @@ namespace yumehiko.LOF.Model
         {
             Name = profile.ActorName;
             baseHP = profile.BaseHP;
-            var weapon = profile.Weapon.MakeCopy();
-            var armor = profile.Armor.MakeCopy();
+            var weapon = new CardModel(profile.Weapon);
+            var armor = new CardModel(profile.Armor);
             equipSlot = new EquipSlot(weapon, armor);
             maxHP = new IntReactiveProperty(baseHP + equipSlot.AdditionalHP.Value);
             hp = new IntReactiveProperty(baseHP + equipSlot.AdditionalHP.Value);
