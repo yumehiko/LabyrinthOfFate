@@ -1,148 +1,150 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using DG.Tweening;
+using yumehiko.LOF.Model;
+using yumehiko.LOF.View;
+using VContainer;
+using System.Linq;
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UniRx;
-using UniRx.Triggers;
-using System;
 
-namespace yumehiko.LOF.View
+namespace yumehiko.LOF.Presenter
 {
-    public class InventoryUI : MonoBehaviour
+    /// <summary>
+    /// プレイヤーのためのインベントリUI。そのプレゼンター。
+    /// </summary>
+    public class InventoryUI : IDisposable
     {
-        [SerializeField] private CanvasGroup uiGroup;
-        [SerializeField] private RectTransform uiRect;
-        [SerializeField] private InventorySlotView weaponSlot;
-        [SerializeField] private InventorySlotView armorSlot;
-        [SerializeField] private List<InventorySlotView> slots;
-        [SerializeField] private ItemExplanation explanation;
-        [Space(10)]
-        [SerializeField] private Transform slotViewsParent;
-        [SerializeField] private InventorySlotView slotViewPrefab;
+        public IReadOnlyReactiveProperty<bool> IsOpen => isOpen;
+        public IObservable<InventoryCommand> OnCommand => onCommand;
+        public InventoryModel Model => model;
+        public bool IsFull => model.IsFull;
 
-        private readonly Subject<InventorySlotView> onClickSlot = new Subject<InventorySlotView>();
-        private float initY;
-        private Sequence openSequence;
+        private readonly Subject<InventoryCommand> onCommand = new Subject<InventoryCommand>();
+        private readonly BoolReactiveProperty isOpen = new BoolReactiveProperty();
+        private readonly InventoryUIView view;
+        private InventoryModel model;
+        private CancellationTokenSource openCancellation = null;
+        private IDisposable refleshDisposable;
 
-        public void Initialize()
+        [Inject]
+        public InventoryUI(InventoryUIView view)
         {
-            initY = uiRect.anchoredPosition.y;
-            weaponSlot.Initialize(SlotType.Weapon);
-            armorSlot.Initialize(SlotType.Armor);
-            _ = weaponSlot.OnClick.Subscribe(_ => onClickSlot.OnNext(weaponSlot)).AddTo(this);
-            _ = armorSlot.OnClick.Subscribe(_ => onClickSlot.OnNext(armorSlot)).AddTo(this);
-        }
-
-        public void SetWeapon(IItemView view)
-        {
-            weaponSlot.SetView(view);
-        }
-
-        public void SetArmor(IItemView view)
-        {
-            armorSlot.SetView(view);
-        }
-
-        public void Add(IItemView view)
-        {
-            var slot = Instantiate(slotViewPrefab, slotViewsParent);
-            slots.Add(slot);
-            slot.Initialize(SlotType.Inventory);
-            _ = slot.OnClick.Subscribe(_ => onClickSlot.OnNext(slot)).AddTo(slot);
-            slot.SetView(view);
-            AlignViews();
-        }
-
-        public void RemoveAt(int index)
-        {
-            slots[index].DestroySelf();
-            slots.RemoveAt(index);
-            AlignViews();
+            this.view = view;
+            view.Initialize();
         }
 
         /// <summary>
-        /// カードViewを整列する。
+        /// モデルを登録し、モデルに応じてカードインベントリUIを更新する。
         /// </summary>
-        private void AlignViews()
+        /// <param name="model"></param>
+        public void Initialize(InventoryModel model)
         {
-            for (int i = 0; i < slots.Count; i++)
-            {
-                slots[i].AlignPositionByID(i);
-            }
+            this.model = model;
+            refleshDisposable = model.OnReflesh.Subscribe(_ => RefleshView());
+            RefleshView();
         }
 
-        public async UniTask<InventoryCommand> Open(CancellationToken token)
+        public void Dispose()
         {
-            try
-            {
-                await OpenAnimation().ToUniTask(cancellationToken: token);
-                InventorySlotView slot = null;
-                InventoryCommandType type = InventoryCommandType.Cancel;
-                while (!token.IsCancellationRequested)
-                {
-                    slot = await onClickSlot.ToUniTask(true, token);
-                    type = await explanation.Open(slot.ItemView, token);
-                    if (type != InventoryCommandType.Cancel) break;
-                }
-                var command = new InventoryCommand(slot, type);
-                return command;
-            }
-            catch (OperationCanceledException e)
-            {
-                throw e;
-            }
-            finally
+            refleshDisposable.Dispose();
+            if (openCancellation == null) return;
+            openCancellation.Cancel();
+            openCancellation.Dispose();
+        }
+
+        public void SwitchOpen()
+        {
+            if (isOpen.Value)
             {
                 Close();
             }
+            else
+            {
+                Open().Forget();
+            }
         }
 
-        private void Close()
+        public async UniTask Open()
         {
-            uiGroup.interactable = false;
-            uiGroup.blocksRaycasts = false;
-            openSequence?.Kill();
-            openSequence = DOTween.Sequence()
-                .Append(uiGroup.DOFade(0.5f, 0.5f))
-                .Join(uiRect.DOAnchorPosY(initY, 0.5f))
-                .SetLink(gameObject);
-            openSequence.Play();
+            openCancellation?.Dispose();
+            openCancellation = new CancellationTokenSource();
+            isOpen.Value = true;
+            var command = await view.Open(openCancellation.Token);
+
+            if (command.Type == InventoryCommandType.Cancel)
+            {
+                return;
+            }
+            onCommand.OnNext(command); //コマンドの実際の発動は親（Player）が実行する。
         }
 
-        private Sequence OpenAnimation()
+        public void Close()
         {
-            openSequence?.Kill();
-            openSequence = DOTween.Sequence()
-                .Append(uiGroup.DOFade(1.0f, 0.5f))
-                .Join(uiRect.DOMoveY(0.0f, 0.5f))
-                .AppendCallback(() => uiGroup.interactable = true)
-                .AppendCallback(() => uiGroup.blocksRaycasts = true)
-                .SetLink(gameObject);
-            return openSequence.Play();
+            isOpen.Value = false;
+            openCancellation?.Cancel();
         }
-    }
 
-    public enum InventoryCommandType
-    {
-        None,
-        Invoke,
-        EquipAsWeapon,
-        EquipAsArmor,
-        Cancel,
-    }
-
-    public class InventoryCommand
-    {
-        public InventorySlotView Slot { get; }
-        public InventoryCommandType Type { get; }
-
-        public InventoryCommand(InventorySlotView slot, InventoryCommandType type)
+        public static IItemView MakeView(IItemModel model)
         {
-            Slot = slot;
-            Type = type;
+            var name = model.Name;
+            var frame = model.Frame;
+            var invokeEffect = model.InvokeEffect;
+            var statsInfo = model.StatsInfo;
+            var view = new ItemView(name, frame, invokeEffect, statsInfo);
+            return view;
+        }
+
+        public void EquipAsWeaponCommand(SlotType type, int slotID)
+        {
+            if (type == SlotType.Armor)
+            {
+                model.SwitchWeaponArmor();
+                return;
+            }
+
+            if (type == SlotType.Inventory)
+            {
+                model.EquipAsWeaponFromInventory(slotID);
+                return;
+            }
+
+            throw new Exception($"武器の交換に失敗した。");
+        }
+
+        public void EquipAsArmorCommand(SlotType type, int slotID)
+        {
+            //武器と防具を交換
+            if (type == SlotType.Weapon)
+            {
+                model.SwitchWeaponArmor();
+                return;
+            }
+
+            //アイテムと防具を交換。
+            if (type == SlotType.Inventory)
+            {
+                model.EquipAsArmorFromInventory(slotID);
+                return;
+            }
+
+            throw new Exception($"防具の交換に失敗した。");
+        }
+
+        private void RefleshView()
+        {
+            var weapon = MakeView(model.EquipSlot.Weapon);
+            var armor = MakeView(model.EquipSlot.Armor);
+            var itemViews = new List<IItemView>();
+            foreach (IItemModel item in model)
+            {
+                var itemView = MakeView(item);
+                itemViews.Add(itemView);
+            }
+
+            view.RefleshView(weapon, armor, itemViews);
         }
     }
 }

@@ -17,10 +17,9 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
     public class Player : ActorBrainBase, IDisposable
     {
-        public ActorType ActorType => ActorType.Player;
         public override IActorModel Model { get; }
         public override IActorView View { get; }
-        public Inventory Inventory { get; }
+        public InventoryUI InventoryUI { get; }
 
         private Adventure adventure;
 
@@ -30,20 +29,20 @@ namespace yumehiko.LOF.Presenter
         private bool canTurnControl = false;
 
         [Inject]
-        public Player(Inventory inventory, PlayerProfile profile, Actors actors)
+        public Player(InventoryUI inventoryUI, PlayerProfile profile, Actors actors)
         {
-            Inventory = inventory;
-            Model = new ActorModel(profile, Vector2Int.zero);
+            InventoryUI = inventoryUI;
+            Model = new ActorModel(profile, Vector2Int.zero, ActorType.Player);
             View = UnityEngine.Object.Instantiate(profile.View);
             actors.AddPlayer(this, Model, View);
-            inventory.InitializeEquips(Model.Status.EquipSlot);
+            inventoryUI.Initialize(Model.Inventory);
 
-            
+
             _ = ReactiveInput.OnMove
                  .Where(_ => canTurnControl)
                  .Subscribe(value => inputDirection.Value = value)
                  .AddTo(disposables);
-            
+
             _ = ReactiveInput.OnWait
                 .Where(_ => canTurnControl)
                 .Where(isTrue => isTrue)
@@ -53,11 +52,7 @@ namespace yumehiko.LOF.Presenter
             _ = ReactiveInput.OnInventory
                 .Where(_ => canTurnControl)
                 .Where(isTrue => isTrue)
-                .Subscribe(_ => inventory.SwitchOpen())
-                .AddTo(disposables);
-
-            _ = inventory.OnInvokeEffect
-                .Subscribe(item => item.InvokeEffect.Invoke(this, item))
+                .Subscribe(_ => inventoryUI.SwitchOpen())
                 .AddTo(disposables);
 
             _ = Model.IsDied
@@ -85,20 +80,21 @@ namespace yumehiko.LOF.Presenter
             try
             {
                 canTurnControl = true;
-                //移動入力・UI入力を待つ。
+                
+                //移動入力やUI入力を受ける。
                 var inputs = new List<UniTask>
                 {
                     InputDirection(animationSpeedFactor, token),
                     InputWait(animationSpeedFactor, token),
-                    Inventory.OnCommand.ToUniTask(true, token),
+                    InputInventoryCommand(animationSpeedFactor, token),
                 };
 
                 //いずれかのターン消費行動が確定したら、行動終了。
                 await UniTask.WhenAny(inputs);
+                
             }
             catch (OperationCanceledException e)
             {
-                Debug.Log("PlayerTurnCanceled");
                 throw e;
             }
         }
@@ -161,7 +157,7 @@ namespace yumehiko.LOF.Presenter
         private void TurnInputConfirm()
         {
             canTurnControl = false;
-            Inventory.Close();
+            InventoryUI.Close();
         }
 
         /// <summary>
@@ -170,7 +166,25 @@ namespace yumehiko.LOF.Presenter
         private void OnDied()
         {
             canTurnControl = false;
-            Inventory.Close();
+            InventoryUI.Close();
+        }
+
+        private async UniTask InputInventoryCommand(float animationSpeedFactor, CancellationToken token)
+        {
+            var command = await InventoryUI.OnCommand.ToUniTask(true, token);
+            switch (command.Type)
+            {
+                case InventoryCommandType.Invoke:
+                    InventoryUI.Model.InvokeCard(command.Slot.ID, Model);
+                    break;
+                case InventoryCommandType.EquipAsWeapon:
+                    InventoryUI.EquipAsWeaponCommand(command.Slot.Type, command.Slot.ID);
+                    break;
+                case InventoryCommandType.EquipAsArmor:
+                    InventoryUI.EquipAsArmorCommand(command.Slot.Type, command.Slot.ID);
+                    break;
+                default: throw new Exception($"不正なインベントリコマンド：{command.Type}");
+            }
         }
     }
 }

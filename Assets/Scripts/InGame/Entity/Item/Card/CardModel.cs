@@ -38,6 +38,7 @@ namespace yumehiko.LOF.Model
         {
             switch (type)
             {
+                case InvokeType.CantInvoke: return new CantInvoke();
                 case InvokeType.DestroySelf: return new DestroySelf();
                 default: throw new Exception($"未定義のInvokeEffectType");
             }

@@ -17,10 +17,8 @@ namespace yumehiko.LOF.Presenter
         public Player Player { get; private set; }
         public IReadOnlyList<IActorBrain> Enemies => enemies;
         public IObservable<Unit> OnSetLevelActors => onSetLevelActors;
-        public IObservable<Unit> OnDefeatAllEnemy => onDefeatAllEnemy;
 
         private readonly Subject<Unit> onSetLevelActors = new Subject<Unit>();
-        private readonly Subject<Unit> onDefeatAllEnemy = new Subject<Unit>();
         private readonly List<IActorBrain> enemies = new List<IActorBrain>();
         private readonly Transform viewParent;
         private readonly CompositeDisposable disposables = new CompositeDisposable();
@@ -110,7 +108,7 @@ namespace yumehiko.LOF.Presenter
             var temp = new List<IActorBrain>(enemies);
             foreach(var enemy in temp)
             {
-                DefeatEnemy(enemy);
+                RemoveEnemy(enemy);
             }
         }
 
@@ -136,14 +134,14 @@ namespace yumehiko.LOF.Presenter
         {
             var id = UnityEngine.Random.Range(0, level.EnemyProfiles.Count);
             var profile = level.EnemyProfiles[id];
-            var model = new ActorModel(profile, spawnPoint.Position);
+            var model = new ActorModel(profile, spawnPoint.Position, ActorType.Enemy);
             var view = UnityEngine.Object.Instantiate(profile.View, (Vector2)spawnPoint.Position, Quaternion.identity, viewParent);
             var brain = SpawnBrain(profile.BrainType, model, view, level);
             enemies.Add(brain);
             model.IsDied
                 .Where(isTrue => isTrue)
                 .First()
-                .Subscribe(_ => DefeatEnemy(brain))
+                .Subscribe(_ => RemoveEnemy(brain))
                 .AddTo(disposables);
             return brain;
         }
@@ -157,15 +155,6 @@ namespace yumehiko.LOF.Presenter
                 case BrainType.PathFindMelee:
                     return new PathFindMelee(level, body, view);
                 default: throw new Exception("未定義のBrainTypeが指定された。");
-            }
-        }
-
-        private void DefeatEnemy(IActorBrain brain)
-        {
-            RemoveEnemy(brain);
-            if (enemies.Count == 0)
-            {
-                onDefeatAllEnemy.OnNext(Unit.Default);
             }
         }
 

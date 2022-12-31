@@ -18,24 +18,21 @@ namespace yumehiko.LOF.View
         private void Awake()
         {
             _ = button.OnPointerEnterAsObservable()
+                .Where(_ => button.interactable)
                 .Subscribe(_ => Select())
                 .AddTo(this);
 
             _ = button.OnPointerExitAsObservable()
+                .Where(_ => button.interactable)
                 .Subscribe(_ => Deselect())
                 .AddTo(this);
         }
 
-        public void SetEnable()
+        public void SetEnable(bool isEnable)
         {
-            graphic.SetAlpha(0.8f);
-            button.interactable = true;
-        }
-
-        public void SetDisable()
-        {
-            graphic.SetAlpha(0.25f);
-            button.interactable = false;
+            float alpha = isEnable ? 0.8f : 0.25f;
+            graphic.SetAlpha(alpha);
+            button.interactable = isEnable;
         }
 
         private void Select()

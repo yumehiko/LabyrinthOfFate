@@ -31,7 +31,7 @@ namespace yumehiko.LOF.Presenter
                 .Subscribe(_ => SetInfo(player.Model))
                 .AddTo(this);
 
-            _ = player.Inventory.IsOpen
+            _ = player.InventoryUI.IsOpen
                 .Subscribe(isOpen => cursor.SetEnable(!isOpen))
                 .AddTo(this);
         }

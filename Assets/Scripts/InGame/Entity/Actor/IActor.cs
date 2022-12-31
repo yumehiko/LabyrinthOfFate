@@ -12,10 +12,12 @@ namespace yumehiko.LOF.Model
 	{
 		string Name { get; }
 		ActorStatus Status { get; }
+		InventoryModel Inventory { get; }
 		Vector2Int Position { get; }
 		ActorType ActorType { get; }
 		IObservable<IActResult> OnActResult { get; }
 
+		void SendResultMessage(IActResult result);
 		void GetDamage(IActorModel dealer, AttackStatus attack);
 		void Attack(IActorModel target);
 		void StepTo(Vector2Int position);

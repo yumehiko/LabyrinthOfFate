@@ -12,6 +12,7 @@ namespace yumehiko.LOF.View
         public Sprite Frame { get; }
         public string InvokeEffectInfo { get; }
         public string StatsInfo { get; }
+        public bool CanInvoke { get; }
 
         public ItemView(string name, Sprite frame, IInvokeEffect invokeEffect, string statsInfo)
         {
@@ -19,6 +20,7 @@ namespace yumehiko.LOF.View
             this.Frame = frame;
             this.InvokeEffectInfo = invokeEffect.Info;
             this.StatsInfo = statsInfo;
+            CanInvoke = invokeEffect.Type != InvokeType.CantInvoke;
         }
     }
 }

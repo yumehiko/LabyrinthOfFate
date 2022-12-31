@@ -22,9 +22,10 @@ namespace yumehiko.LOF.View
         public IItemView ItemView { get; private set; }
         public IObservable<Unit> OnClick => button.OnClickAsObservable();
 
-        public void Initialize(SlotType slotType)
+        public void Initialize(SlotType slotType, int id)
         {
             Type = slotType;
+            ID = id;
 
             _ = button.OnPointerEnterAsObservable()
                 .Subscribe(_ => Select())
@@ -47,16 +48,11 @@ namespace yumehiko.LOF.View
             EnableView();
         }
 
-        public void DestroySelf()
+        public void DisableView()
         {
-            Destroy(gameObject);
-        }
-
-        public void AlignPositionByID(int id)
-        {
-            ID = id;
-            const float widthMargin = 60.0f;
-            rectTransform.anchoredPosition = new Vector2(widthMargin * id, rectTransform.anchoredPosition.y);
+            group.alpha = 0.0f;
+            group.interactable = false;
+            group.blocksRaycasts = false;
         }
 
         private void Select()

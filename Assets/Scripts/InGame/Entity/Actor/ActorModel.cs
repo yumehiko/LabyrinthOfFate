@@ -18,16 +18,21 @@ namespace yumehiko.LOF.Model
         public Vector2Int Position { get; private set; }
         public ActorType ActorType { get; }
         public ActorStatus Status { get; }
+        public InventoryModel Inventory { get; }
         public IReadOnlyReactiveProperty<bool> IsDied => Status.IsDied;
         public IObservable<IActResult> OnActResult => onActResult;
 
         private readonly Subject<IActResult> onActResult = new Subject<IActResult>();
 
-        public ActorModel(IActorProfile profile, Vector2Int position)
+        public ActorModel(IActorProfile profile, Vector2Int position, ActorType actorType)
         {
-            Status = new ActorStatus(profile);
+            ActorType = actorType;
+            Inventory = new InventoryModel(profile);
+            Status = new ActorStatus(profile, Inventory.EquipSlot);
             Position = position;
         }
+
+        public void SendResultMessage(IActResult result) => onActResult.OnNext(result);
 
         public void WarpTo(Vector2Int position) => Position = position;
         public void Heal(int amount) => Status.Heal(amount);

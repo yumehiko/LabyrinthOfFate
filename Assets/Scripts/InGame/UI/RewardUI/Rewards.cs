@@ -30,7 +30,7 @@ namespace yumehiko.LOF.Presenter
             this.uiView = uiView;
         }
 
-        public async UniTask WaitUntilePickReward(Inventory inventory, CancellationToken token)
+        public async UniTask WaitUntilePickReward(InventoryUI inventory, CancellationToken token)
         {
             SetRewardCandiates();
             SetupUI();
@@ -50,7 +50,7 @@ namespace yumehiko.LOF.Presenter
                 await uiView.EnableUI(token);
                 var pickID = await WaitUntilPick(inventory, pickCancellation.Token);
                 var pick = currentCandiates[pickID];
-                inventory.AddItem(pick);
+                inventory.Model.Add(pick);
             }
             finally
             {
@@ -67,7 +67,7 @@ namespace yumehiko.LOF.Presenter
         /// <param name="inventory"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async UniTask<int> WaitUntilPick(Inventory inventory, CancellationToken token)
+        private async UniTask<int> WaitUntilPick(InventoryUI inventory, CancellationToken token)
         {
             int pickID = -1;
             var pickDisposable = uiView.OnPick.Subscribe(id => pickID = id);
@@ -101,7 +101,7 @@ namespace yumehiko.LOF.Presenter
             var views = new List<IItemView>();
             for (int i = 0; i < 3; i++)
             {
-                var view = Inventory.MakeView(currentCandiates[i]);
+                var view = InventoryUI.MakeView(currentCandiates[i]);
                 views.Add(view);
             }
             uiView.SetRewardsInfo(views);

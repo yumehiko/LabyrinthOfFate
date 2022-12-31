@@ -13,6 +13,6 @@ namespace yumehiko.LOF.Invoke
 	{
 		InvokeType Type { get; }
 		string Info { get; }
-		void Invoke(Player player, IItemModel parent);
+		void Invoke(IActorModel user, IItemModel parent);
 	}
 }

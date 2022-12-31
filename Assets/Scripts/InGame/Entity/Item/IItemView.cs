@@ -10,5 +10,6 @@ namespace yumehiko.LOF.View
         Sprite Frame { get; }
         string InvokeEffectInfo { get; }
         string StatsInfo { get; }
+        bool CanInvoke { get; }
     }
 }

@@ -15,9 +15,13 @@ namespace yumehiko.LOF.Invoke
         public string Info =>
             $"Invoke: Destroy this Card.";
 
-        public void Invoke(Player player, IItemModel parent)
+        public void Invoke(IActorModel user, IItemModel parent)
         {
-            player.Inventory.RemoveItem(parent);
+            user.Inventory.Remove(parent);
+            var userName = user.ActorType == ActorType.Player ? "You" : user.Name;
+            var message = $"{userName} tore up the card.";
+            var result = new RawResult(message);
+            user.SendResultMessage(result);
         }
     }
 }

@@ -15,28 +15,25 @@ namespace yumehiko.LOF.Model
         public IReadOnlyReactiveProperty<int> MaxHP => maxHP;
         public IReadOnlyReactiveProperty<int> HP => hp;
         public IReadOnlyReactiveProperty<bool> IsDied => isDied;
-        public EquipSlot EquipSlot => equipSlot;
-        public AttackStatuses AttackStatuses => equipSlot.Weapon.AttackStatuses;
-        public DefenceStatus DefenceStatus => equipSlot.Armor.DefenceStatus;
+        public EquipSlot EquipSlot { get; }
+        public AttackStatuses AttackStatuses => EquipSlot.Weapon.AttackStatuses;
+        public DefenceStatus DefenceStatus => EquipSlot.Armor.DefenceStatus;
 
         private readonly IntReactiveProperty maxHP;
         private readonly IntReactiveProperty hp;
         private readonly int baseHP;
-        private readonly EquipSlot equipSlot;
         private readonly BoolReactiveProperty isDied = new BoolReactiveProperty(false);
         private readonly IDisposable hpDisposable;
 
-        public ActorStatus(IActorProfile profile)
+        public ActorStatus(IActorProfile profile, EquipSlot equipSlot)
         {
             Name = profile.ActorName;
             baseHP = profile.BaseHP;
-            var weapon = new CardModel(profile.Weapon);
-            var armor = new CardModel(profile.Armor);
-            equipSlot = new EquipSlot(weapon, armor);
-            maxHP = new IntReactiveProperty(baseHP + equipSlot.AdditionalHP.Value);
-            hp = new IntReactiveProperty(baseHP + equipSlot.AdditionalHP.Value);
+            EquipSlot = equipSlot;
+            maxHP = new IntReactiveProperty(baseHP + EquipSlot.AdditionalHP.Value);
+            hp = new IntReactiveProperty(baseHP + EquipSlot.AdditionalHP.Value);
 
-            hpDisposable = equipSlot.AdditionalHP.Subscribe(amount => ResetMaxHP(amount));
+            hpDisposable = EquipSlot.AdditionalHP.Subscribe(amount => ResetMaxHP(amount));
         }
 
         public void Dispose()
@@ -44,7 +41,7 @@ namespace yumehiko.LOF.Model
             hpDisposable.Dispose();
         }
 
-        public AttackStatus PickAttackStatus() => equipSlot.PickRandomAttackStatus();
+        public AttackStatus PickAttackStatus() => EquipSlot.PickRandomAttackStatus();
 
         /// <summary>
         /// ダメージを受ける。

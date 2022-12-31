@@ -46,11 +46,11 @@ namespace yumehiko.LOF.View
         /// <summary>
         /// 説明画面を開く。操作が終わるまで待機する。
         /// </summary>
-        public async UniTask<InventoryCommandType> Open(IItemView view, CancellationToken token)
+        public async UniTask<InventoryCommandType> Open(InventorySlotView slot, CancellationToken token)
         {
             try
             {
-                SetItem(view);
+                SetItem(slot);
                 Open();
                 var command = await onCommand.ToUniTask(true, token);
                 return command;
@@ -75,12 +75,16 @@ namespace yumehiko.LOF.View
             group.alpha = 0.0f;
         }
 
-        private void SetItem(IItemView view)
+        private void SetItem(InventorySlotView slot)
         {
+            var view = slot.ItemView;
             cardName.text = view.Name;
             frame.sprite = view.Frame;
             stats.text = view.StatsInfo;
             invokeEffect.text = view.InvokeEffectInfo;
+
+            bool canInvoke = slot.Type == SlotType.Inventory && view.CanInvoke;
+            invokeButton.SetEnable(canInvoke);
         }
     }
 }

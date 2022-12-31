@@ -6,7 +6,7 @@ namespace yumehiko.LOF.Invoke
 {
 	public enum InvokeType 
 	{
-		Nothing,
+		CantInvoke,
 		DestroySelf,
 	}
 }

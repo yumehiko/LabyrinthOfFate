@@ -14,7 +14,7 @@ using yumehiko.Resident;
 namespace yumehiko.LOF.Presenter
 {
     /// <summary>
-    /// 一連の冒険。
+    /// 一連の冒険。レベルの生成・終了・プレイヤーの敗北処理など。
     /// </summary>
     public class Adventure : IDisposable, IInitializable
     {
@@ -92,11 +92,9 @@ namespace yumehiko.LOF.Presenter
 
             try
             {
-                //TODO:ここでリワードを与えたりする
                 if (endStat == LevelEndStat.Beat)
                 {
-                    await rewards.WaitUntilePickReward(actorPresenters.Player.Inventory, adventureCanncelation.Token);
-                    Debug.Log("RewardsConfirm");
+                    await rewards.WaitUntilePickReward(actorPresenters.Player.InventoryUI, adventureCanncelation.Token);
                 }
             }
             finally

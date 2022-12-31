@@ -21,9 +21,12 @@ namespace yumehiko.LOF.Model
         {
             if (damage.Amount == 0)
             {
-                return "MISS!";
+                return $"{damage.Dice}  MISS!";
             }
-            return $"{damage.Dice}  {dealer.Name} hits {taker.Name} for {damage.Amount} damage!";
+            var dealerName = dealer.ActorType == ActorType.Player ? "You" : dealer.Name;
+            var takerName = taker.ActorType == ActorType.Player ? "You" : taker.Name;
+
+            return $"{damage.Dice}  {dealerName} hits {takerName} for {damage.Amount} damage!";
         }
     }
 }
