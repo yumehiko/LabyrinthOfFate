@@ -38,11 +38,12 @@ namespace yumehiko.LOF.Presenter
             actors.AddPlayer(this, Model, View);
             inventory.InitializeEquips(Model.Status.EquipSlot);
 
+            
             _ = ReactiveInput.OnMove
                  .Where(_ => canTurnControl)
                  .Subscribe(value => inputDirection.Value = value)
                  .AddTo(disposables);
-
+            
             _ = ReactiveInput.OnWait
                 .Where(_ => canTurnControl)
                 .Where(isTrue => isTrue)
@@ -81,17 +82,25 @@ namespace yumehiko.LOF.Presenter
         /// </summary>
         public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
-            canTurnControl = true;
-            //移動入力・UI入力を待つ。
-            var inputs = new List<UniTask>
+            try
             {
-                InputDirection(animationSpeedFactor, token),
-                InputWait(animationSpeedFactor, token),
-                Inventory.OnCommand.ToUniTask(true, token),
-            };
+                canTurnControl = true;
+                //移動入力・UI入力を待つ。
+                var inputs = new List<UniTask>
+                {
+                    InputDirection(animationSpeedFactor, token),
+                    InputWait(animationSpeedFactor, token),
+                    Inventory.OnCommand.ToUniTask(true, token),
+                };
 
-            //いずれかのターン消費行動が確定したら、行動終了。
-            await UniTask.WhenAny(inputs);
+                //いずれかのターン消費行動が確定したら、行動終了。
+                await UniTask.WhenAny(inputs);
+            }
+            catch (OperationCanceledException e)
+            {
+                Debug.Log("PlayerTurnCanceled");
+                throw e;
+            }
         }
 
         /// <summary>
@@ -104,30 +113,38 @@ namespace yumehiko.LOF.Presenter
         {
             ReactiveInput.ClearDirection();
 
-            while (true)
+            try
             {
-                var direction = await inputDirection.WaitAsync(token);
-                var targetPoint = Model.GetPositionWithDirection(direction);
-
-                //指定地点にEnemyがいないかをチェックする。
-                IActorModel enemy = adventure.CurrentLevel.Actors.GetEnemyAt(targetPoint);
-                if (enemy != null) //Enemyがいるなら、それを攻撃する。
+                while (!token.IsCancellationRequested)
                 {
-                    TurnInputConfirm();
-                    Model.Attack(enemy);
-                    await View.AttackAnimation(targetPoint, animationSpeedFactor, token);
-                    break;
-                }
+                    var direction = await inputDirection.WaitAsync(token);
+                    token.ThrowIfCancellationRequested();
+                    var targetPoint = Model.GetPositionWithDirection(direction);
 
-                //指定地点の地形をチェックする。
-                var tileType = adventure.CurrentLevel.Dungeon.GetTileType(targetPoint);
-                if (tileType == TileType.Empty)
-                {
-                    TurnInputConfirm();
-                    Model.StepTo(targetPoint);
-                    await View.StepAnimation(targetPoint, animationSpeedFactor, token);
-                    break;
+                    //指定地点にEnemyがいないかをチェックする。
+                    IActorModel enemy = adventure.CurrentLevel.Actors.GetEnemyAt(targetPoint);
+                    if (enemy != null) //Enemyがいるなら、それを攻撃する。
+                    {
+                        TurnInputConfirm();
+                        Model.Attack(enemy);
+                        await View.AttackAnimation(targetPoint, animationSpeedFactor, token);
+                        break;
+                    }
+
+                    //指定地点の地形をチェックする。
+                    var tileType = adventure.CurrentLevel.Dungeon.GetTileType(targetPoint);
+                    if (tileType == TileType.Empty)
+                    {
+                        TurnInputConfirm();
+                        Model.StepTo(targetPoint);
+                        await View.StepAnimation(targetPoint, animationSpeedFactor, token);
+                        break;
+                    }
                 }
+            }
+            catch (OperationCanceledException e)
+            {
+                throw e;
             }
         }
 

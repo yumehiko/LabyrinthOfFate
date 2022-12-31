@@ -190,6 +190,13 @@
       },
       "hash": "80086eec36bc14d0841ffe84aa4a7ce50bf5b613"
     },
+    "yumehiko.resident": {
+      "version": "https://github.com/yumehiko/GameBase.git?path=Packages/yumehikoResident",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "262d63d06e054f90cf6aea2327a74d5f0b825390"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

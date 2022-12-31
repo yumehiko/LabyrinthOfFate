@@ -21,34 +21,27 @@ namespace yumehiko.LOF.Presenter
 
         private readonly Subject<Unit> onPlayerActEnd = new Subject<Unit>();
         private readonly List<UniTask> enemyTasks = new List<UniTask>();
-        private CancellationTokenSource turnTokenSource;
+        private CancellationTokenSource turnCTS;
 
         /// <summary>
         /// ターンループを開始する。
         /// </summary>
         public async UniTaskVoid StartTurnLoop(IActorBrain player, IReadOnlyList<IActorBrain> enemies, CancellationToken levelCancellToken)
         {
-            try
+            while (!levelCancellToken.IsCancellationRequested)
             {
-                await TurnLoop(player, enemies, levelCancellToken);
-            }
-            catch (OperationCanceledException)
-            {
-                await UniTask.WhenAll(enemyTasks);
-                turnTokenSource?.Cancel();
-                turnTokenSource?.Dispose();
+                await DoTurn(player, enemies, levelCancellToken);
             }
         }
 
-        private async UniTask TurnLoop(IActorBrain player, IReadOnlyList<IActorBrain> enemies, CancellationToken levelCancelToken)
+        private async UniTask DoTurn(IActorBrain player, IReadOnlyList<IActorBrain> enemies, CancellationToken levelCT)
         {
-            while (true)
+            turnCTS = new CancellationTokenSource();
+            try
             {
-                levelCancelToken.ThrowIfCancellationRequested();
-                turnTokenSource = new CancellationTokenSource();
                 //プレイヤーターン
-                await player.DoTurnAction(1.0f, turnTokenSource.Token);
-                levelCancelToken.ThrowIfCancellationRequested();
+                await player.DoTurnAction(1.0f, turnCTS.Token);
+                levelCT.ThrowIfCancellationRequested();
                 onPlayerActEnd.OnNext(Unit.Default);
 
                 //エネミーターン
@@ -59,15 +52,21 @@ namespace yumehiko.LOF.Presenter
                 //TODO:途中で敵が自爆したりするとInvaildするかも？　新たにリストを作ってみたいな処理がいるか？
                 foreach (IActorBrain enemy in enemies)
                 {
-                    enemyTasks.Add(enemy.DoTurnAction(0.5f, turnTokenSource.Token));
-                    await UniTask.DelayFrame(2, cancellationToken: turnTokenSource.Token);
-                    levelCancelToken.ThrowIfCancellationRequested();
+                    enemyTasks.Add(enemy.DoTurnAction(0.5f, turnCTS.Token));
+                    await UniTask.DelayFrame(2, cancellationToken: turnCTS.Token);
+                    levelCT.ThrowIfCancellationRequested();
                 }
                 await UniTask.WhenAll(enemyTasks);
                 enemyTasks.Clear();
-
-                turnTokenSource.Cancel();
-                turnTokenSource.Dispose();
+            }
+            catch (OperationCanceledException e)
+            {
+                Debug.Log(e);
+            }
+            finally
+            {
+                turnCTS.Cancel();
+                turnCTS.Dispose();
             }
         }
     }

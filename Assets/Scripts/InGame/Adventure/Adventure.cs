@@ -9,6 +9,7 @@ using yumehiko.LOF.Model;
 using yumehiko.LOF.View;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using yumehiko.Resident;
 
 namespace yumehiko.LOF.Presenter
 {
@@ -82,7 +83,8 @@ namespace yumehiko.LOF.Presenter
         {
             if(endStat == LevelEndStat.Lose)
             {
-                Debug.Log($"プレイヤー敗北時の処理を入れる");
+                Debug.Log($"プレイヤー敗北時の処理を入れる。とりあえずシーンリセット");
+                await LoadManager.RequireResetScene();
                 return;
             }
 

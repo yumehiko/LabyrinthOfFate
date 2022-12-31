@@ -68,16 +68,22 @@ namespace yumehiko.Input
         /// </summary>
         public static IReadOnlyReactiveProperty<bool> OnInventory => onInventory;
 
+        /// <summary>
+        /// デバッグキー入力
+        /// </summary>
+        public static IReadOnlyReactiveProperty<bool> OnDebug => onDebug;
 
-        private static Vector2ReactiveProperty onPointer = new Vector2ReactiveProperty();
-        private static Vector2ReactiveProperty onRightStick = new Vector2ReactiveProperty();
-        private static BoolReactiveProperty onMaru = new BoolReactiveProperty();
-        private static BoolReactiveProperty onPeke = new BoolReactiveProperty();
-        private static BoolReactiveProperty onPause = new BoolReactiveProperty();
-        private static BoolReactiveProperty onRestart = new BoolReactiveProperty();
-        private static BoolReactiveProperty onInventory = new BoolReactiveProperty();
-        private static ActorDirectionReactiveProperty onMove = new ActorDirectionReactiveProperty();
-        private static BoolReactiveProperty onWait = new BoolReactiveProperty();
+
+        private static readonly Vector2ReactiveProperty onPointer = new Vector2ReactiveProperty();
+        private static readonly Vector2ReactiveProperty onRightStick = new Vector2ReactiveProperty();
+        private static readonly BoolReactiveProperty onMaru = new BoolReactiveProperty();
+        private static readonly BoolReactiveProperty onPeke = new BoolReactiveProperty();
+        private static readonly BoolReactiveProperty onPause = new BoolReactiveProperty();
+        private static readonly BoolReactiveProperty onRestart = new BoolReactiveProperty();
+        private static readonly BoolReactiveProperty onInventory = new BoolReactiveProperty();
+        private static readonly ActorDirectionReactiveProperty onMove = new ActorDirectionReactiveProperty();
+        private static readonly BoolReactiveProperty onWait = new BoolReactiveProperty();
+        private static readonly BoolReactiveProperty onDebug = new BoolReactiveProperty();
 
 
 
@@ -127,6 +133,10 @@ namespace yumehiko.Input
             //待機入力
             inputActions.Player.Wait.started += context => onWait.Value = true;
             inputActions.Player.Wait.canceled += context => onWait.Value = false;
+
+            //デバッグ入力
+            inputActions.Player.Debug.started += context => onDebug.Value = true;
+            inputActions.Player.Debug.canceled += context => onDebug.Value = false;
 
         }
 

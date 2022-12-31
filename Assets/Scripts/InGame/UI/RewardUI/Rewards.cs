@@ -77,6 +77,7 @@ namespace yumehiko.LOF.Presenter
                 if (inventory.IsFull)
                 {
                     Debug.Log("インベントリがフル（赤点滅+テキストで示す）");
+                    pickID = -1;
                     continue;
                 }
                 if (pickID != -1) break;

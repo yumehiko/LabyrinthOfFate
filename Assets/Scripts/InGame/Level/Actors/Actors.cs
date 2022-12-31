@@ -102,6 +102,18 @@ namespace yumehiko.LOF.Presenter
             return null;
         }
 
+        /// <summary>
+        /// [Debug]全ての敵を排除する。
+        /// </summary>
+        public void DefeatAllEnemy()
+        {
+            var temp = new List<IActorBrain>(enemies);
+            foreach(var enemy in temp)
+            {
+                DefeatEnemy(enemy);
+            }
+        }
+
         private void SpawnActor(ActorSpawnPoint spawnPoint, Level level)
         {
             switch (spawnPoint.Type)

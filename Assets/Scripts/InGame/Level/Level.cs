@@ -25,7 +25,7 @@ namespace yumehiko.LOF.Presenter
         public IObservable<LevelEndStat> OnEnd => onEnd;
 
         private readonly Subject<LevelEndStat> onEnd = new Subject<LevelEndStat>();
-        private readonly CancellationTokenSource levelCancellationTokenSource = new CancellationTokenSource();
+        private readonly CancellationTokenSource levelCTS = new CancellationTokenSource();
         private readonly CompositeDisposable disposables = new CompositeDisposable();
         private readonly DungeonView view;
 
@@ -62,14 +62,14 @@ namespace yumehiko.LOF.Presenter
 
         public void Dispose()
         {
-            levelCancellationTokenSource?.Dispose();
+            levelCTS?.Dispose();
             disposables.Dispose();
         }
 
         public async UniTask StartLevel(CancellationToken adventureCancelToken)
         {
             await view.Show().ToUniTask(TweenCancelBehaviour.Complete, adventureCancelToken);
-            Turn.StartTurnLoop(Actors.Player, Actors.Enemies, levelCancellationTokenSource.Token).Forget();
+            Turn.StartTurnLoop(Actors.Player, Actors.Enemies, levelCTS.Token).Forget();
         }
 
         /// <summary>
@@ -78,8 +78,8 @@ namespace yumehiko.LOF.Presenter
         /// </summary>
         private async UniTask EndLevel(LevelEndStat endStat, CancellationToken adventureCancelToken)
         {
-            levelCancellationTokenSource.Cancel();
-            levelCancellationTokenSource.Dispose();
+            levelCTS.Cancel();
+            levelCTS.Dispose();
             await view.Hide().ToUniTask(cancellationToken: adventureCancelToken);
             Actors.ClearActorsWithoutPlayer();
             onEnd.OnNext(endStat);
