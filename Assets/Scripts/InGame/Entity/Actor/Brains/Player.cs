@@ -97,6 +97,10 @@ namespace yumehiko.LOF.Presenter
             {
                 throw e;
             }
+            finally
+            {
+                Model.Status.UseEnergy();
+            }
         }
 
         /// <summary>

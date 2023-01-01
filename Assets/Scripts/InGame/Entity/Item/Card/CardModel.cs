@@ -40,6 +40,7 @@ namespace yumehiko.LOF.Model
             {
                 case InvokeType.CantInvoke: return new CantInvoke();
                 case InvokeType.DestroySelf: return new DestroySelf();
+                case InvokeType.Acceleration: return new Acceleration();
                 default: throw new Exception($"未定義のInvokeEffectType");
             }
         }

@@ -8,5 +8,6 @@ namespace yumehiko.LOF.Invoke
 	{
 		CantInvoke,
 		DestroySelf,
+		Acceleration,
 	}
 }

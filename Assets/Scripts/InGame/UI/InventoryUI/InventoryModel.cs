@@ -15,6 +15,7 @@ namespace yumehiko.LOF.Model
         public EquipSlot EquipSlot { get; }
         public IItemModel this[int index] => items[index];
         public int MaxCapacity = 5;
+        public int Count => items.Count;
         public bool IsFull => items.Count == MaxCapacity;
         public IObservable<Unit> OnReflesh => onReflesh;
 
@@ -26,6 +27,11 @@ namespace yumehiko.LOF.Model
             var weapon = new CardModel(profile.Weapon);
             var armor = new CardModel(profile.Armor);
             EquipSlot = new EquipSlot(weapon, armor);
+            foreach (var cardProfile in profile.InventoryCards)
+            {
+                var card = new CardModel(cardProfile);
+                Add(card);
+            }
         }
 
         /// <summary>

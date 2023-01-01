@@ -13,18 +13,15 @@ namespace yumehiko.LOF.Presenter
     /// </summary>
     public class PathFindMelee : ActorBrainBase
     {
-        public override IActorModel Model => model;
-        public override IActorView View => view;
-
+        public override IActorModel Model { get; }
+        public override IActorView View { get; }
         private readonly Level level;
-        private readonly IActorModel model;
-        private readonly IActorView view;
 
         public PathFindMelee(Level level, IActorModel model, IActorView view)
         {
             this.level = level;
-            this.model = model;
-            this.view = view;
+            this.Model = model;
+            this.View = view;
         }
 
         /// <summary>
@@ -32,35 +29,60 @@ namespace yumehiko.LOF.Presenter
         /// </summary>
         public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
         {
-            var start = model.Position;
+            try
+            {
+                Debug.Log($"{Model.Inventory.Count}");
+                //インベントリにカードがあるなら、それをInvokeする。
+                if(Model.Inventory.Count > 0)
+                {
+                    Model.Inventory.InvokeCard(0, Model);
+                    return;
+                }
+                await StepOrAttack(animationSpeedFactor, token);
+            }
+            finally
+            {
+                Model.Status.UseEnergy();
+            }
+        }
+
+        /// <summary>
+        /// 移動または攻撃
+        /// </summary>
+        /// <param name="animationSpeedFactor"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async UniTask StepOrAttack(float animationSpeedFactor, CancellationToken token)
+        {
+            var start = Model.Position;
             var end = level.Actors.GetPlayerPosition();
             var path = level.Dungeon.FindPath(start, end);
 
             //経路がない場合は、その場で待機。
             if (path.Length <= 1)
             {
-                await view.WaitAnimation(start, animationSpeedFactor, token);
+                await View.WaitAnimation(start, animationSpeedFactor, token);
                 return;
             }
 
             //経路番号1がPlayerの位置なら、隣接しているので攻撃する。
             if (path[1] == level.Actors.GetPlayerPosition())
             {
-                model.Attack(level.Actors.Player.Model);
-                await view.AttackAnimation(path[1], animationSpeedFactor, token);
+                Model.Attack(level.Actors.Player.Model);
+                await View.AttackAnimation(path[1], animationSpeedFactor, token);
                 return;
             }
 
             //移動先にPlayer以外のActorがいる場合、単に停止する。
             if (level.Actors.GetEnemyAt(path[1]) != null)
             {
-                await view.WaitAnimation(start, animationSpeedFactor, token);
+                await View.WaitAnimation(start, animationSpeedFactor, token);
                 return;
             }
 
             //それ以外の場合、経路1へ移動する。
-            model.StepTo(path[1]);
-            await view.StepAnimation(path[1], animationSpeedFactor, token);
+            Model.StepTo(path[1]);
+            await View.StepAnimation(path[1], animationSpeedFactor, token);
         }
     }
 }

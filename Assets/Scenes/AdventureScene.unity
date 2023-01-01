@@ -2778,6 +2778,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b368406c630f0467582b45a6c645bd4e, type: 2}
   - {fileID: 11400000, guid: 76cf4ee661596494793bf174270b94c6, type: 2}
   - {fileID: 11400000, guid: 75d2919997c494301a19e29edda82a59, type: 2}
+  - {fileID: 11400000, guid: d82ecffa5ebc9459ca98aa8126ca6f9d, type: 2}
 --- !u!114 &1006142039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5961,6 +5962,7 @@ MonoBehaviour:
   baseHP: 5
   weapon: {fileID: 11400000, guid: 11839038433bf4750bd16d5a2ab446e0, type: 2}
   armor: {fileID: 11400000, guid: 76cf4ee661596494793bf174270b94c6, type: 2}
+  inventoryCards: []
 --- !u!114 &2094627283
 MonoBehaviour:
   m_ObjectHideFlags: 0

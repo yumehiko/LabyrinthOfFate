@@ -22,7 +22,7 @@ namespace yumehiko.LOF.Presenter
         public Player Player { get; }
 
         private readonly DungeonView dungeonView;
-        private readonly Actors actorPresenters;
+        private readonly Actors actors;
         private readonly InfoUI infoUI;
         private readonly AdventureProgress progress;
         private readonly Rewards rewards;
@@ -34,14 +34,14 @@ namespace yumehiko.LOF.Presenter
         [Inject]
         public Adventure(
             Player player,
-            Actors actorPresenters,
+            Actors actors,
             DungeonView dungeonView,
             Rewards rewards,
             InfoUI infoUI,
             AdventureProgress progress)
         {
             Player = player;
-            this.actorPresenters = actorPresenters;
+            this.actors = actors;
             this.dungeonView = dungeonView;
             this.rewards = rewards;
             this.infoUI = infoUI;
@@ -71,7 +71,7 @@ namespace yumehiko.LOF.Presenter
             levelDisposable?.Dispose();
             CurrentLevel?.Dispose();
             var levelAsset = progress.PickNextLevelAssets();
-            CurrentLevel = new Level(levelAsset.DungeonAsset, dungeonView, actorPresenters, levelAsset.EnemyProfiles, adventureCanncelation.Token);
+            CurrentLevel = new Level(levelAsset.DungeonAsset, dungeonView, actors, levelAsset.EnemyProfiles, adventureCanncelation.Token);
             infoUI.SetLevel(CurrentLevel);
             levelDisposable = CurrentLevel.OnEnd
                 .First()
@@ -88,13 +88,15 @@ namespace yumehiko.LOF.Presenter
                 return;
             }
 
-            actorPresenters.Player.Heal(1000);
+            Player.Heal(1000);
+            Player.Model.Status.Buffs.CountLevelLifetime();
+            Player.Model.Status.RefleshEnergy();
 
             try
             {
                 if (endStat == LevelEndStat.Beat)
                 {
-                    await rewards.WaitUntilePickReward(actorPresenters.Player.InventoryUI, adventureCanncelation.Token);
+                    await rewards.WaitUntilePickReward(actors.Player.InventoryUI, adventureCanncelation.Token);
                 }
             }
             finally

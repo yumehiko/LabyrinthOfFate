@@ -15,6 +15,7 @@ namespace yumehiko.LOF.Presenter
 		public int BaseHP => baseHP;
 		public CardProfile Weapon => weapon;
 		public CardProfile Armor => armor;
+		public IReadOnlyList<CardProfile> InventoryCards => inventoryCards;
 
 		[SerializeField] private BrainType brainType;
 		[SerializeField] private ActorView view;
@@ -22,5 +23,6 @@ namespace yumehiko.LOF.Presenter
 		[SerializeField] int baseHP;
 		[SerializeField] private CardProfile weapon;
 		[SerializeField] private CardProfile armor;
+		[SerializeField] private List<CardProfile> inventoryCards;
 	}
 }

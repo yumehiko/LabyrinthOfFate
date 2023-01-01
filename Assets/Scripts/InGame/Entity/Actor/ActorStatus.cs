@@ -12,12 +12,14 @@ namespace yumehiko.LOF.Model
 	public class ActorStatus : IDisposable
     {
         public string Name { get; }
+        public int Energy { get; private set; }
         public IReadOnlyReactiveProperty<int> MaxHP => maxHP;
         public IReadOnlyReactiveProperty<int> HP => hp;
         public IReadOnlyReactiveProperty<bool> IsDied => isDied;
         public EquipSlot EquipSlot { get; }
         public AttackStatuses AttackStatuses => EquipSlot.Weapon.AttackStatuses;
         public DefenceStatus DefenceStatus => EquipSlot.Armor.DefenceStatus;
+        public Buffs Buffs { get; }
 
         private readonly IntReactiveProperty maxHP;
         private readonly IntReactiveProperty hp;
@@ -32,13 +34,25 @@ namespace yumehiko.LOF.Model
             EquipSlot = equipSlot;
             maxHP = new IntReactiveProperty(baseHP + EquipSlot.AdditionalHP.Value);
             hp = new IntReactiveProperty(baseHP + EquipSlot.AdditionalHP.Value);
+            Buffs = new Buffs();
 
             hpDisposable = EquipSlot.AdditionalHP.Subscribe(amount => ResetMaxHP(amount));
+            Energy = 1;
         }
 
         public void Dispose()
         {
             hpDisposable.Dispose();
+        }
+
+        public void RefleshEnergy()
+        {
+            Energy = 1 + Buffs.AddibleEnergy;
+        }
+
+        public void UseEnergy()
+        {
+            Energy--;
         }
 
         public AttackStatus PickAttackStatus() => EquipSlot.PickRandomAttackStatus();

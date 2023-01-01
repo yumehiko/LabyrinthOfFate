@@ -18,6 +18,8 @@ namespace yumehiko.LOF.Presenter
     {
         IActorModel Model { get; }
         IActorView View { get; }
+        bool HasEnergy { get; }
+        void RefleshEnergy();
         UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
         void WarpTo(Vector2Int position);
         void Heal(int amount);

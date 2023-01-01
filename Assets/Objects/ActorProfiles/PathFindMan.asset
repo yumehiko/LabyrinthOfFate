@@ -16,3 +16,5 @@ MonoBehaviour:
   view: {fileID: 2031511874585273929, guid: 800e267098fe443c093f673696d789a6, type: 3}
   baseHP: 0
   card: {fileID: 11400000, guid: d82ecffa5ebc9459ca98aa8126ca6f9d, type: 2}
+  inventoryCards:
+  - {fileID: 11400000, guid: d82ecffa5ebc9459ca98aa8126ca6f9d, type: 2}

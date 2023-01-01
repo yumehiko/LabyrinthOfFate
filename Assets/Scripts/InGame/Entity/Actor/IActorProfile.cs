@@ -14,5 +14,6 @@ namespace yumehiko.LOF.Model
         int BaseHP { get; }
         CardProfile Weapon { get; }
         CardProfile Armor { get; }
+        IReadOnlyList<CardProfile> InventoryCards { get; }
     }
 }
