@@ -1,67 +1,116 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using System.Threading;
-using UniRx;
-using UniRx.Triggers;
+using VContainer;
+using yumehiko.LOF.View;
+using yumehiko.LOF.Model;
+using yumehiko.Input;
 using System;
+using UniRx;
 
-namespace yumehiko.LOF.View
+namespace yumehiko.LOF.Presenter
 {
+    /// <summary>
+    /// レベルクリア時のリワード処理。
+    /// TODO:これはmonobehaviourでなくてよいので、カード候補を別のクラスに切り分けておく。
+    /// RewardGiverとかに名前を変える。
+    /// </summary>
     public class RewardsUI : MonoBehaviour
     {
-        [SerializeField] private CanvasGroup group;
-        [SerializeField] private List<RewardView> views;
-        [SerializeField] private CommandButton ignoreButton;
+        private RewardsUIView uiView;
+        [SerializeField] private List<CardProfile> candiateCards;
 
-        public IObservable<int> OnPick => onPick;
-        public IObservable<Unit> OnIgnore => ignoreButton.OnClick;
+        private readonly List<CardModel> currentCandiates = new List<CardModel>();
 
-        private readonly Subject<int> onPick = new Subject<int>();
-
-        private void Awake()
+        [Inject]
+        public void Construct(RewardsUIView uiView)
         {
-            for (int i = 0; i < 3; i++)
+            this.uiView = uiView;
+        }
+
+        public async UniTask WaitUntilePickReward(InventoryUI inventory, CancellationToken token)
+        {
+            SetRewardCandiates();
+            SetupUI();
+
+            //インベントリの開閉
+            var inventoryDisposable = ReactiveInput.OnInventory
+                .Where(isTrue => isTrue)
+                .Subscribe(_ => inventory.SwitchOpen())
+                .AddTo(this);
+
+            //Rewardを無視する処理。pickCancellationがCancel()されるとRewardの取得を中断し、finallyに入る。
+            var pickCancellation = new CancellationTokenSource();
+            var ignoreDisposable = uiView.OnIgnore.Subscribe(_ => pickCancellation.Cancel());
+
+            try
             {
-                var id = i;
-                views[i].OnClick
-                    .Subscribe(_ => onPick.OnNext(id))
-                    .AddTo(this);
+                await uiView.EnableUI(token);
+                var pickID = await WaitUntilPick(inventory, pickCancellation.Token);
+                var pick = currentCandiates[pickID];
+                inventory.Model.Add(pick);
+            }
+            finally
+            {
+                await uiView.DisableUI(token);
+                inventoryDisposable.Dispose();
+                pickCancellation.Dispose();
+                ignoreDisposable.Dispose();
             }
         }
 
-        public async UniTask EnableUI(CancellationToken token)
+        /// <summary>
+        /// 報酬が選ばれるまで待機する。
+        /// </summary>
+        /// <param name="inventory"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async UniTask<int> WaitUntilPick(InventoryUI inventory, CancellationToken token)
         {
-            await group.DOFade(0.95f, 0.5f).SetLink(gameObject).ToUniTask(cancellationToken: token);
-            for (int i = 0; i < 3; i++)
+            int pickID = -1;
+            var pickDisposable = uiView.OnPick.Subscribe(id => pickID = id);
+            while (!token.IsCancellationRequested)
             {
-                views[i].EnableView(0.4f, token).Forget();
-                await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: token);
+                await UniTask.WaitUntil(() => pickID > -1, cancellationToken: token);
+                if (inventory.IsFull)
+                {
+                    Debug.Log("インベントリがフル（赤点滅+テキストで示す）");
+                    pickID = -1;
+                    continue;
+                }
+                if (pickID != -1) break;
             }
-            group.interactable = true;
-            group.blocksRaycasts = true;
+            pickDisposable.Dispose();
+            return pickID;
         }
 
-        public async UniTask DisableUI(CancellationToken token)
+        private void SetRewardCandiates()
         {
-            group.interactable = false;
-            group.blocksRaycasts = false;
+            currentCandiates.Clear();
             for (int i = 0; i < 3; i++)
             {
-                views[i].DisableView(0.3f, token).Forget();
+                var card = new CardModel(PickRandomCard());
+                currentCandiates.Add(card);
             }
-            await group.DOFade(0.0f, 0.5f).SetLink(gameObject).ToUniTask(cancellationToken: token);
         }
 
-        public void SetRewardsInfo(IReadOnlyList<IItemView> itemViews)
+        private void SetupUI()
         {
+            var views = new List<IItemView>();
             for (int i = 0; i < 3; i++)
             {
-                views[i].SetRewardInfo(itemViews[i]);
+                var view = InventoryUI.MakeView(currentCandiates[i]);
+                views.Add(view);
             }
+            uiView.SetRewardsInfo(views);
+        }
+
+        private CardProfile PickRandomCard()
+        {
+            var id = UnityEngine.Random.Range(0, candiateCards.Count);
+            return candiateCards[id];
         }
     }
 }

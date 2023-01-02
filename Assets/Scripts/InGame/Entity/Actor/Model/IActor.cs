@@ -12,7 +12,7 @@ namespace yumehiko.LOF.Model
 	{
 		string Name { get; }
 		ActorStatus Status { get; }
-		InventoryModel Inventory { get; }
+		Inventory Inventory { get; }
 		Vector2Int Position { get; }
 		ActorType ActorType { get; }
 		IObservable<IActResult> OnActResult { get; }

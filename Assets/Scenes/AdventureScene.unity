@@ -737,7 +737,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -2703,10 +2703,9 @@ MonoBehaviour:
     TypeName: yumehiko.LOF.ActorsLifetimeScope
   autoRun: 1
   autoInjectGameObjects: []
-  rewards: {fileID: 1006142038}
+  rewardsUI: {fileID: 1006142038}
   infoUI: {fileID: 1006142033}
-  rewardsUI: {fileID: 1006142035}
-  inventoryUIView: {fileID: 1006142036}
+  rewardsUIView: {fileID: 1006142035}
   resultMessageUIView: {fileID: 1006142039}
 --- !u!114 &1006142038
 MonoBehaviour:
@@ -5757,6 +5756,7 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects: []
   playerProfile: {fileID: 2094627282}
+  inventoryUIView: {fileID: 1006142036}
 --- !u!1001 &4431470718091454206
 PrefabInstance:
   m_ObjectHideFlags: 0

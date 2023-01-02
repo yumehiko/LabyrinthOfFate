@@ -19,13 +19,13 @@ namespace yumehiko.LOF.Presenter
     {
         public IReadOnlyReactiveProperty<bool> IsOpen => isOpen;
         public IObservable<InventoryCommand> OnCommand => onCommand;
-        public InventoryModel Model => model;
+        public Inventory Model => model;
         public bool IsFull => model.IsFull;
 
         private readonly Subject<InventoryCommand> onCommand = new Subject<InventoryCommand>();
         private readonly BoolReactiveProperty isOpen = new BoolReactiveProperty();
         private readonly InventoryUIView view;
-        private InventoryModel model;
+        private Inventory model;
         private CancellationTokenSource openCancellation = null;
         private IDisposable refleshDisposable;
 
@@ -40,7 +40,7 @@ namespace yumehiko.LOF.Presenter
         /// モデルを登録し、モデルに応じてカードインベントリUIを更新する。
         /// </summary>
         /// <param name="model"></param>
-        public void Initialize(InventoryModel model)
+        public void Initialize(Inventory model)
         {
             this.model = model;
             refleshDisposable = model.OnReflesh.Subscribe(_ => RefleshView());

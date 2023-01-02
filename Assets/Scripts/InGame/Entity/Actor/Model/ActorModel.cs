@@ -18,7 +18,7 @@ namespace yumehiko.LOF.Model
         public Vector2Int Position { get; private set; }
         public ActorType ActorType { get; }
         public ActorStatus Status { get; }
-        public InventoryModel Inventory { get; }
+        public Inventory Inventory { get; }
         public IReadOnlyReactiveProperty<bool> IsDied => Status.IsDied;
         public IObservable<IActResult> OnActResult => onActResult;
 
@@ -27,7 +27,7 @@ namespace yumehiko.LOF.Model
         public ActorModel(IActorProfile profile, Vector2Int position, ActorType actorType)
         {
             ActorType = actorType;
-            Inventory = new InventoryModel(profile);
+            Inventory = new Inventory(profile);
             Status = new ActorStatus(profile, Inventory.EquipSlot);
             Position = position;
         }

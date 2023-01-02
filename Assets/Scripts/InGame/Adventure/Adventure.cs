@@ -25,7 +25,7 @@ namespace yumehiko.LOF.Presenter
         private readonly Actors actors;
         private readonly InfoUI infoUI;
         private readonly AdventureProgress progress;
-        private readonly Rewards rewards;
+        private readonly RewardsUI rewardsUI;
 
         private readonly CancellationTokenSource adventureCanncelation = new CancellationTokenSource();
         private readonly CompositeDisposable adventureDisposable = new CompositeDisposable();
@@ -36,14 +36,14 @@ namespace yumehiko.LOF.Presenter
             Player player,
             Actors actors,
             DungeonView dungeonView,
-            Rewards rewards,
+            RewardsUI rewardsUI,
             InfoUI infoUI,
             AdventureProgress progress)
         {
             Player = player;
             this.actors = actors;
             this.dungeonView = dungeonView;
-            this.rewards = rewards;
+            this.rewardsUI = rewardsUI;
             this.infoUI = infoUI;
             this.progress = progress;
         }
@@ -96,7 +96,7 @@ namespace yumehiko.LOF.Presenter
             {
                 if (endStat == LevelEndStat.Beat)
                 {
-                    await rewards.WaitUntilePickReward(actors.Player.InventoryUI, adventureCanncelation.Token);
+                    await rewardsUI.WaitUntilePickReward(actors.Player.InventoryUI, adventureCanncelation.Token);
                 }
             }
             finally

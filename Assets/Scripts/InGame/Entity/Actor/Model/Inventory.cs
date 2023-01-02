@@ -10,7 +10,7 @@ namespace yumehiko.LOF.Model
     /// <summary>
     /// アイテムのコレクション。
     /// </summary>
-    public class InventoryModel : IEnumerable<IItemModel>
+    public class Inventory : IEnumerable<IItemModel>
     {
         public EquipSlot EquipSlot { get; }
         public IItemModel this[int index] => items[index];
@@ -22,7 +22,7 @@ namespace yumehiko.LOF.Model
         private readonly Subject<Unit> onReflesh = new Subject<Unit>();
         private readonly List<IItemModel> items = new List<IItemModel>();
 
-        public InventoryModel(IActorProfile profile)
+        public Inventory(IActorProfile profile)
         {
             var weapon = new CardModel(profile.Weapon);
             var armor = new CardModel(profile.Armor);
