@@ -6,13 +6,15 @@ using System.Threading;
 
 namespace yumehiko.LOF.View
 {
-	public interface IActorView
-	{
-		void DestroySelf();
-		UniTask WaitAnimation(Vector2Int point, float speedFactor, CancellationToken token);
-		UniTask StepAnimation(Vector2Int point, float speedFactor, CancellationToken token);
-		UniTask AttackAnimation(Vector2Int point, float speedFactor, CancellationToken token);
-		UniTask ItemAnimation(Vector2Int point, float speedFactor, CancellationToken token);
-		void WarpTo(Vector2Int position);
-	}
+    public interface IActorView
+    {
+        void Initialize(EffectController effectController);
+        void DestroySelf();
+        UniTask InvokeAnimation(Vector2Int point, float speedFactor, CancellationToken token);
+        UniTask WaitAnimation(Vector2Int point, float speedFactor, CancellationToken token);
+        UniTask StepAnimation(Vector2Int point, float speedFactor, CancellationToken token);
+        UniTask AttackAnimation(Vector2Int point, float speedFactor, CancellationToken token);
+        UniTask ItemAnimation(Vector2Int point, float speedFactor, CancellationToken token);
+        void WarpTo(Vector2Int position);
+    }
 }

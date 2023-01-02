@@ -29,11 +29,12 @@ namespace yumehiko.LOF.Presenter
         private bool canTurnControl = false;
 
         [Inject]
-        public Player(InventoryUI inventoryUI, PlayerProfile profile, Actors actors)
+        public Player(InventoryUI inventoryUI, PlayerProfile profile, Actors actors, EffectController effectController)
         {
             InventoryUI = inventoryUI;
             Model = new ActorModel(profile, Vector2Int.zero, ActorType.Player);
             View = UnityEngine.Object.Instantiate(profile.View);
+            View.Initialize(effectController);
             actors.AddPlayer(this, Model, View);
             inventoryUI.Initialize(Model.Inventory);
 
@@ -179,12 +180,16 @@ namespace yumehiko.LOF.Presenter
             switch (command.Type)
             {
                 case InventoryCommandType.Invoke:
+                    TurnInputConfirm();
                     InventoryUI.Model.InvokeCard(command.Slot.ID, Model);
+                    await View.InvokeAnimation(Model.Position, animationSpeedFactor, token);
                     break;
                 case InventoryCommandType.EquipAsWeapon:
+                    TurnInputConfirm();
                     InventoryUI.EquipAsWeaponCommand(command.Slot.Type, command.Slot.ID);
                     break;
                 case InventoryCommandType.EquipAsArmor:
+                    TurnInputConfirm();
                     InventoryUI.EquipAsArmorCommand(command.Slot.Type, command.Slot.ID);
                     break;
                 default: throw new Exception($"不正なインベントリコマンド：{command.Type}");

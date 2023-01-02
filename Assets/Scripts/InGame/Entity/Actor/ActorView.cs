@@ -13,6 +13,13 @@ namespace yumehiko.LOF.View
     /// </summary>
     public class ActorView : MonoBehaviour, IActorView
     {
+        private EffectController effectController;
+
+        public async UniTask InvokeAnimation(Vector2Int point, float speedFactor, CancellationToken token)
+        {
+            await effectController.DoBuffEffect(point, speedFactor, token);
+        }
+
         public async UniTask AttackAnimation(Vector2Int point, float speedFactor, CancellationToken token)
         {
             speedFactor *= 0.4f;
@@ -54,6 +61,11 @@ namespace yumehiko.LOF.View
             await transform.DOScaleY(1.0f, speedFactor)
                 .SetLink(gameObject)
                 .ToUniTask(TweenCancelBehaviour.Complete, token);
+        }
+
+        public void Initialize(EffectController effectController)
+        {
+            this.effectController = effectController;
         }
 
         public void DestroySelf()

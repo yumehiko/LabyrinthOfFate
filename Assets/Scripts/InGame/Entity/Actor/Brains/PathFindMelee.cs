@@ -31,11 +31,11 @@ namespace yumehiko.LOF.Presenter
         {
             try
             {
-                Debug.Log($"{Model.Inventory.Count}");
                 //インベントリにカードがあるなら、それをInvokeする。
                 if(Model.Inventory.Count > 0)
                 {
                     Model.Inventory.InvokeCard(0, Model);
+                    await View.InvokeAnimation(Model.Position, animationSpeedFactor, token);
                     return;
                 }
                 await StepOrAttack(animationSpeedFactor, token);

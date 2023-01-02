@@ -21,12 +21,14 @@ namespace yumehiko.LOF.Presenter
         private readonly Subject<Unit> onSetLevelActors = new Subject<Unit>();
         private readonly List<IActorBrain> enemies = new List<IActorBrain>();
         private readonly Transform viewParent;
+        private readonly EffectController effectController;
         private readonly CompositeDisposable disposables = new CompositeDisposable();
 
         [Inject]
-        public Actors(Transform viewParent)
+        public Actors(Transform viewParent, EffectController effectController)
         {
             this.viewParent = viewParent;
+            this.effectController = effectController;
         }
 
         public void Dispose()
@@ -136,6 +138,7 @@ namespace yumehiko.LOF.Presenter
             var profile = level.EnemyProfiles[id];
             var model = new ActorModel(profile, spawnPoint.Position, ActorType.Enemy);
             var view = UnityEngine.Object.Instantiate(profile.View, (Vector2)spawnPoint.Position, Quaternion.identity, viewParent);
+            view.Initialize(effectController);
             var brain = SpawnBrain(profile.BrainType, model, view, level);
             enemies.Add(brain);
             model.IsDied

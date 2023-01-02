@@ -53,6 +53,9 @@ TagManager:
   - name: Player
     uniqueID: 3715534671
     locked: 0
+  - name: Effect
+    uniqueID: 1493191107
+    locked: 0
   - name: WroldUI
     uniqueID: 3658166953
     locked: 0
