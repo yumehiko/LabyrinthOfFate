@@ -647,9 +647,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 2129074185
-  m_SortingLayer: 0
-  m_SortingOrder: -5
+  m_SortingLayerID: 1523759101
+  m_SortingLayer: 3
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 212a2765730e546e4aeb974068f678cf, type: 3}
   m_Color: {r: 0.08, g: 0.08, b: 0.08, a: 0}
   m_FlipX: 0
@@ -737,7 +737,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -5013,8 +5013,8 @@ SortingGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1857139797}
   m_Enabled: 1
-  m_SortingLayerID: -1290524427
-  m_SortingLayer: 0
+  m_SortingLayerID: 1251980125
+  m_SortingLayer: 1
   m_SortingOrder: 0
 --- !u!1001 &1875621454
 PrefabInstance:

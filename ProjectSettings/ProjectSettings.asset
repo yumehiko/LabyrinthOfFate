@@ -566,7 +566,7 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
     1: UNITASK_DOTWEEN_SUPPORT
-    13: UNITASK_DOTWEEN_SUPPORT
+    13: UNITASK_DOTWEEN_SUPPORT;USING_URP
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
