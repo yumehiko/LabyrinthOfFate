@@ -20,7 +20,7 @@ namespace yumehiko.LOF.Presenter
         IActorView View { get; }
         bool HasEnergy { get; }
         void RefleshEnergy();
-        UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
+        UniTask DoTurnAction(ActRequest request);
         void WarpTo(Vector2Int position);
         void Heal(int amount);
         void Destroy();

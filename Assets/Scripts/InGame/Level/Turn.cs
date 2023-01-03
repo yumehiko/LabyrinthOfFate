@@ -26,7 +26,8 @@ namespace yumehiko.LOF.Presenter
         private readonly Subject<Unit> onDefeatAllEnemies = new Subject<Unit>();
         private readonly Subject<Unit> onPlayerActEnd = new Subject<Unit>();
         private readonly List<UniTask> enemyTasks = new List<UniTask>();
-        private CancellationTokenSource turnCTS;
+        private CancellationTokenSource logicCTS;
+        private CancellationTokenSource animationCTS;
 
         /// <summary>
         /// ターンループを開始する。
@@ -47,26 +48,43 @@ namespace yumehiko.LOF.Presenter
 
         public void Dispose()
         {
-            turnCTS?.Cancel();
-            turnCTS?.Dispose();
+            logicCTS?.Cancel();
+            logicCTS?.Dispose();
+            animationCTS?.Cancel();
+            animationCTS?.Dispose();
+        }
+
+        /// <summary>
+        /// アニメーションを即時・強制的に完了する。
+        /// </summary>
+        public void ForceCompleteAnimation()
+        {
+            animationCTS?.Cancel();
+            animationCTS?.Dispose();
         }
 
         private async UniTask<bool> DoTurn(Actors actors, CancellationToken levelCT)
         {
             try
             {
-                turnCTS = new CancellationTokenSource();
+                logicCTS = new CancellationTokenSource();
+                animationCTS = new CancellationTokenSource();
+                var playerActRequest = new ActRequest(1.0f, logicCTS.Token, animationCTS.Token);
+                var enemyActRequest = new ActRequest(0.5f, logicCTS.Token, animationCTS.Token);
                 bool someoneHadEnergy = false;
-                someoneHadEnergy = await DoPlayerTurn(actors.Player, turnCTS.Token, levelCT);
-                someoneHadEnergy = await DoEnemiesTurn(actors.Enemies, turnCTS.Token, levelCT) || someoneHadEnergy;
+                someoneHadEnergy = await DoPlayerTurn(actors.Player, playerActRequest, levelCT);
+                someoneHadEnergy = await DoEnemiesTurn(actors.Enemies, enemyActRequest, levelCT) || someoneHadEnergy;
                 return someoneHadEnergy;
             }
             finally
             {
                 enemyTasks.Clear();
-                turnCTS.Cancel();
-                turnCTS.Dispose();
-                turnCTS = null;
+                logicCTS.Cancel();
+                logicCTS.Dispose();
+                animationCTS?.Cancel();
+                animationCTS?.Dispose();
+                logicCTS = null;
+                animationCTS = null;
 
                 if (actors.Player.Model.IsDied.Value)
                 {
@@ -86,12 +104,12 @@ namespace yumehiko.LOF.Presenter
         /// <param name="player"></param>
         /// <param name="levelCT"></param>
         /// <returns></returns>
-        private async UniTask<bool> DoPlayerTurn(IActorBrain player, CancellationToken turnCT, CancellationToken levelCT)
+        private async UniTask<bool> DoPlayerTurn(IActorBrain player, ActRequest request, CancellationToken levelCT)
         {
             bool hadEnergy = false;
             if (player.HasEnergy)
             {
-                await player.DoTurnAction(1.0f, turnCT);
+                await player.DoTurnAction(request);
                 levelCT.ThrowIfCancellationRequested();
                 onPlayerActEnd.OnNext(Unit.Default);
                 hadEnergy = true;
@@ -105,7 +123,7 @@ namespace yumehiko.LOF.Presenter
         /// <param name="enemies"></param>
         /// <param name="levelCT"></param>
         /// <returns></returns>
-        private async UniTask<bool> DoEnemiesTurn(IReadOnlyList<IActorBrain> enemies, CancellationToken turnCT, CancellationToken levelCT)
+        private async UniTask<bool> DoEnemiesTurn(IReadOnlyList<IActorBrain> enemies, ActRequest request, CancellationToken levelCT)
         {
             //TODO:アニメーション用のキャンセルトークンを作っておくと、アニメーション動作だけほっといてプレイヤーターンへ移れるかもしれん。
             //あと、挙動によってはアニメーションの終わりを待つべき重要なアクションはあるかもしれん。
@@ -118,8 +136,8 @@ namespace yumehiko.LOF.Presenter
             {
                 if (enemy.HasEnergy)
                 {
-                    enemyTasks.Add(enemy.DoTurnAction(0.5f, turnCT));
-                    await UniTask.DelayFrame(2, cancellationToken: turnCT);
+                    enemyTasks.Add(enemy.DoTurnAction(request));
+                    await UniTask.DelayFrame(2, cancellationToken: request.AnimationCT);
                     levelCT.ThrowIfCancellationRequested();
                     hadEnergy = true;
                 }

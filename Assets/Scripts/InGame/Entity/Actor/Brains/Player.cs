@@ -76,7 +76,7 @@ namespace yumehiko.LOF.Presenter
         /// <summary>
         /// ターンアクションを実行する。
         /// </summary>
-        public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
+        public override async UniTask DoTurnAction(ActRequest request)
         {
             try
             {
@@ -85,9 +85,9 @@ namespace yumehiko.LOF.Presenter
                 //移動入力やUI入力を受ける。
                 var inputs = new List<UniTask>
                 {
-                    InputDirection(animationSpeedFactor, token),
-                    InputWait(animationSpeedFactor, token),
-                    InputInventoryCommand(animationSpeedFactor, token),
+                    InputDirection(request),
+                    InputWait(request),
+                    InputInventoryCommand(request),
                 };
 
                 //いずれかのターン消費行動が確定したら、行動終了。
@@ -108,18 +108,18 @@ namespace yumehiko.LOF.Presenter
         /// 方向入力による行動。
         /// </summary>
         /// <param name="animationSpeedFactor"></param>
-        /// <param name="token"></param>
+        /// <param name="logicCT"></param>
         /// <returns></returns>
-        private async UniTask InputDirection(float animationSpeedFactor, CancellationToken token)
+        private async UniTask InputDirection(ActRequest request)
         {
             ReactiveInput.ClearDirection();
 
             try
             {
-                while (!token.IsCancellationRequested)
+                while (!request.LogicCT.IsCancellationRequested)
                 {
-                    var direction = await inputDirection.WaitAsync(token);
-                    token.ThrowIfCancellationRequested();
+                    var direction = await inputDirection.WaitAsync(request.LogicCT);
+                    request.LogicCT.ThrowIfCancellationRequested();
                     var targetPoint = Model.GetPositionWithDirection(direction);
 
                     //指定地点にEnemyがいないかをチェックする。
@@ -128,7 +128,7 @@ namespace yumehiko.LOF.Presenter
                     {
                         TurnInputConfirm();
                         Model.Attack(enemy);
-                        await View.AttackAnimation(targetPoint, animationSpeedFactor, token);
+                        await View.AttackAnimation(targetPoint, request);
                         break;
                     }
 
@@ -138,7 +138,7 @@ namespace yumehiko.LOF.Presenter
                     {
                         TurnInputConfirm();
                         Model.StepTo(targetPoint);
-                        await View.StepAnimation(targetPoint, animationSpeedFactor, token);
+                        await View.StepAnimation(targetPoint, request);
                         break;
                     }
                 }
@@ -149,11 +149,11 @@ namespace yumehiko.LOF.Presenter
             }
         }
 
-        private async UniTask InputWait(float animationSpeedFactor, CancellationToken token)
+        private async UniTask InputWait(ActRequest request)
         {
-            await inputWait.ToUniTask(true, token);
+            await inputWait.ToUniTask(true, request.LogicCT);
             TurnInputConfirm();
-            await View.WaitAnimation(Model.Position, animationSpeedFactor, token);
+            await View.WaitAnimation(Model.Position, request);
         }
 
         /// <summary>
@@ -174,15 +174,15 @@ namespace yumehiko.LOF.Presenter
             InventoryUI.Close();
         }
 
-        private async UniTask InputInventoryCommand(float animationSpeedFactor, CancellationToken token)
+        private async UniTask InputInventoryCommand(ActRequest request)
         {
-            var command = await InventoryUI.OnCommand.ToUniTask(true, token);
+            var command = await InventoryUI.OnCommand.ToUniTask(true, request.LogicCT);
             switch (command.Type)
             {
                 case InventoryCommandType.Invoke:
                     TurnInputConfirm();
                     InventoryUI.Model.InvokeCard(command.Slot.ID, Model);
-                    await View.InvokeAnimation(Model.Position, animationSpeedFactor, token);
+                    await View.InvokeAnimation(Model.Position, request);
                     break;
                 case InventoryCommandType.EquipAsWeapon:
                     TurnInputConfirm();

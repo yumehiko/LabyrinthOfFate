@@ -12,7 +12,7 @@ namespace yumehiko.LOF.View
         [SerializeField] private Transform effectsParent;
         [SerializeField] private BuffEffect buffEffectPrefab;
 
-        public async UniTask DoBuffEffect(Vector2Int position, float speedFactor, CancellationToken token)
-            => await buffEffectPrefab.DoEffect(position, speedFactor, effectsParent, token);
+        public async UniTask DoBuffEffect(Vector2Int position, ActRequest request)
+            => await buffEffectPrefab.DoEffect(position, effectsParent, request);
     }
 }

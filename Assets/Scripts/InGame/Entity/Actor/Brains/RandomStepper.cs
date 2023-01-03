@@ -28,11 +28,11 @@ namespace yumehiko.LOF.Presenter
         /// <summary>
         /// ターンアクションを実行する。
         /// </summary>
-        public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
+        public override async UniTask DoTurnAction(ActRequest request)
         {
             try
             {
-                await RandomStep(animationSpeedFactor, token);
+                await RandomStep(request);
             }
             finally
             {
@@ -40,7 +40,7 @@ namespace yumehiko.LOF.Presenter
             }
         }
 
-        private async UniTask RandomStep(float animationSpeedFactor, CancellationToken token)
+        private async UniTask RandomStep(ActRequest request)
         {
             while (true)
             {
@@ -50,7 +50,7 @@ namespace yumehiko.LOF.Presenter
                 //方向指定がない場合は、その場で待機。
                 if (direction == ActorDirection.None)
                 {
-                    await View.WaitAnimation(point, animationSpeedFactor, token);
+                    await View.WaitAnimation(point, request);
                     return;
                 }
 
@@ -61,7 +61,7 @@ namespace yumehiko.LOF.Presenter
                 if (actor != null && actor.ActorType == ActorType.Player)
                 {
                     Model.Attack(actor);
-                    await View.AttackAnimation(point, animationSpeedFactor, token);
+                    await View.AttackAnimation(point, request);
                     return;
                 }
 
@@ -75,7 +75,7 @@ namespace yumehiko.LOF.Presenter
                 if (level.Dungeon.GetTileType(point) == TileType.Empty)
                 {
                     Model.StepTo(point);
-                    await View.StepAnimation(point, animationSpeedFactor, token);
+                    await View.StepAnimation(point, request);
                     return;
                 }
             }

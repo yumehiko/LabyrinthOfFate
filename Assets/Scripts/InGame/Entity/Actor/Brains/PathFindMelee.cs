@@ -27,7 +27,7 @@ namespace yumehiko.LOF.Presenter
         /// <summary>
         /// ターンアクションを実行する。
         /// </summary>
-        public override async UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token)
+        public override async UniTask DoTurnAction(ActRequest request)
         {
             try
             {
@@ -35,10 +35,10 @@ namespace yumehiko.LOF.Presenter
                 if(Model.Inventory.Count > 0)
                 {
                     Model.Inventory.InvokeCard(0, Model);
-                    await View.InvokeAnimation(Model.Position, animationSpeedFactor, token);
+                    await View.InvokeAnimation(Model.Position, request);
                     return;
                 }
-                await StepOrAttack(animationSpeedFactor, token);
+                await StepOrAttack(request);
             }
             finally
             {
@@ -50,9 +50,9 @@ namespace yumehiko.LOF.Presenter
         /// 移動または攻撃
         /// </summary>
         /// <param name="animationSpeedFactor"></param>
-        /// <param name="token"></param>
+        /// <param name="logicCT"></param>
         /// <returns></returns>
-        private async UniTask StepOrAttack(float animationSpeedFactor, CancellationToken token)
+        private async UniTask StepOrAttack(ActRequest request)
         {
             var start = Model.Position;
             var end = level.Actors.GetPlayerPosition();
@@ -61,7 +61,7 @@ namespace yumehiko.LOF.Presenter
             //経路がない場合は、その場で待機。
             if (path.Length <= 1)
             {
-                await View.WaitAnimation(start, animationSpeedFactor, token);
+                await View.WaitAnimation(start, request);
                 return;
             }
 
@@ -69,20 +69,20 @@ namespace yumehiko.LOF.Presenter
             if (path[1] == level.Actors.GetPlayerPosition())
             {
                 Model.Attack(level.Actors.Player.Model);
-                await View.AttackAnimation(path[1], animationSpeedFactor, token);
+                await View.AttackAnimation(path[1], request);
                 return;
             }
 
             //移動先にPlayer以外のActorがいる場合、単に停止する。
             if (level.Actors.GetEnemyAt(path[1]) != null)
             {
-                await View.WaitAnimation(start, animationSpeedFactor, token);
+                await View.WaitAnimation(start, request);
                 return;
             }
 
             //それ以外の場合、経路1へ移動する。
             Model.StepTo(path[1]);
-            await View.StepAnimation(path[1], animationSpeedFactor, token);
+            await View.StepAnimation(path[1], request);
         }
     }
 }

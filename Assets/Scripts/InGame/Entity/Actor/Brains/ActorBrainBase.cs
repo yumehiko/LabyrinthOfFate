@@ -15,7 +15,7 @@ namespace yumehiko.LOF.Presenter
         public abstract IActorView View { get; }
         public bool HasEnergy => Model.Status.Energy > 0;
         public void RefleshEnergy() => Model.Status.RefleshEnergy();
-        public abstract UniTask DoTurnAction(float animationSpeedFactor, CancellationToken token);
+        public abstract UniTask DoTurnAction(ActRequest request);
 
         public virtual void Heal(int amount) => Model.Heal(amount);
         public virtual void WarpTo(Vector2Int position)

@@ -14,10 +14,10 @@ namespace yumehiko.LOF.View
         [SerializeField] private float duration;
         [SerializeField] private ParticleSystem particle;
 
-        public async UniTask DoEffect(Vector2Int position, float speedFactor, Transform parent, CancellationToken token)
+        public async UniTask DoEffect(Vector2Int position, Transform parent, ActRequest request)
         {
             var buffEffect = Instantiate(this, (Vector2)position, Quaternion.identity, parent);
-            await UniTask.DelayFrame(3, cancellationToken: token);
+            await UniTask.DelayFrame(3, cancellationToken: request.AnimationCT);
             Destroy(buffEffect);
         }
     }
